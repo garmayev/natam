@@ -1,0 +1,22 @@
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 15" width="14" height="15">
+	<title>Group</title>
+	<defs>
+		<image  width="8" height="8" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAMAAADz0U65AAAAAXNSR0IB2cksfwAAAGNQTFRFgIAAls0qlc0jl84qls8ol88qgIAAj78gl84ql84pl84qls8oj78gl84pl8sml84pl88ql8smgKoAl84pls4ql8UjgKoAlcogl84pl8Ujlcogl84pls0ql84qmM0pkcwikcwiSE4RHQAAACF0Uk5TAj0kAAAAABC439xfAAA2y6QABruBAAAY6xYAp1xujwAeq0yi1AAAADxJREFUeJxjYGBkYmZhZWNjYOfg5OIGMXiYefn4BRjADEEhYRFRMENMXEISwpCSlgEyQEBWjoFHHgQU+ABc1gNuUDR2QgAAAABJRU5ErkJggg=="/>
+		<image  width="5" height="5" id="img2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAMAAAC6sdbXAAAAAXNSR0IB2cksfwAAADxQTFRFgL8Alc4olMkols4plswplb8Vl84pl84qls4plb8Vl84pj78gl84qlswpj78gls0ql88pjsYcjsYcl80oYO8vUQAAABR0Uk5TBFkmAAAMoOeDAAAQ1UsAXKkAEkfqHfVCAAAAJElEQVR4nGNgYGRiZmFgZWPnYGHg5OLm4QWSfPwCDJyCgkLCAAnPAPCKRPgtAAAAAElFTkSuQmCC"/>
+		<image  width="12" height="13" id="img3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAANCAMAAACq939wAAAAAXNSR0IB2cksfwAAAORQTFRFlcomgL8Akcwils4qls0qgMwak8wml84ol84qlcomls8pl84qls4ql84qls4nlb8Vl84pls0ql84pgL8glb8VlMkol84pgMwal84plswogL8Alssmk84nk84nl8sols4qjsYcl8sol84ql80pl80nkcwil88ql80nlc0ll80pjsYcl84qk8wmlc0olc0lmM4qmM4ql84pl84ql84olc0ol84pl80pmM0pl84plcogl84pl84qlcwnl84pmM0pksgklM8qls0pl88plcwnl84qlM8ql84pl80pk8knl80ol84qls4qsoF6NAAAAEx0Uk5TAAQeAAAAAAAANd7nktdODMxh9wgAJusKu1oAIhoAQEkAALh2AADtQgAAEm4oTSkAqqfpeABdUQAAGMeHQeWPDgA40wCYT8VxIYWwaNQBhggAAACESURBVHicY2BgZGJmYQUCNnYOBk4ubh44h5ePX0AQxhESFhEVE4dyJCSlpMVkZGU5QBw5XkYmeVlZBTBHUUlZhVlWAcJRZVJT19BU0NLWAXFUdcX0NPUNDI2MQRwTUzUzc0YLSytrEMfCxtbOnsPB0QnMcdZyMbJ2dXOHcBQ4PDy9vDUBtFsRaDZVA6MAAAAASUVORK5CYII="/>
+	</defs>
+	<style>
+		tspan { white-space:pre }
+	</style>
+	<g id="Group">
+		<g id="футер">
+			<g id="контакты">
+				<g id="Group">
+					<use id="167" href="#img1" x="6" y="0" />
+					<use id="168" href="#img2" x="6" y="3" />
+					<use id="169" href="#img3" x="0" y="2" />
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>

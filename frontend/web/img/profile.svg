@@ -1,0 +1,22 @@
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17 18" width="17" height="18">
+	<title>Group</title>
+	<defs>
+		<image  width="17" height="8" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAICAMAAAAoauSbAAAAAXNSR0IB2cksfwAAAIRQTFRFACuAEj+VED6UEUCWET2TEkCUEUCVEj+VEkCVEkCVEECUDkCSEkCUAECAED6UEUCWEkCVEUCVACuAEj+VET+VED+TDzqSAACAEkCVDTyUET+VEkCUAECAEkCVEUCREUCVED+TDzqSAACADTyUET+VET+VDDqLEUCREj+VDDqLEUCUEUCULMnUSgAAACx0Uk5TAAAAADuDtNno13w4AABf3P/7Bq79YSMCACa2rATLLAAAAAAAAM0WAOkAlACBV7UoAAAAcElEQVR4nE3I2w6CMBBF0RmwFwVhqiBXEVFLKf//f4yEEM7Dyc4CwCA8Can0WV6iMIivAJikRGS04U8TltudMpk/irKo8jqjpgVBz+7Vv4dy+PTf7kcClLHjLqM1CpybDjI5x4KIm3CxeD/zVvmH9wvY+Qzppm730AAAAABJRU5ErkJggg=="/>
+		<image  width="9" height="10" id="img2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAKCAMAAABR24SMAAAAAXNSR0IB2cksfwAAAJNQTFRFET6VEkCUED6UEUCVEkCVET6VEUCVEj6VEkCUEkCVEkCVEUCVET6VEkCVEjuUEkCVET2QEj+VEj6VET+VDUCTEjuUET2QEkCVEj+VDUCTEkCVEUCVED2SEECVDz2UED+VEj+UED2SED+VEkCVEkCVEkCVEECVDz2UDz6VET+UEUCVDz6VET+UET+VEj+VET+VEj6VDPIZAwAAADF0Uk5TAABfw+hbAACs//CkZ9QrAC7ZY80oAADL6QDn7wAAAAC9P0G7SOMwMkaSiwAAwea+V+nIU0MAAABgSURBVHicHczZGkJQGAXQHRl2hj865ZibDkrk/Z+Oz926WsDBso+243qAT57IwEPIKJZzwhQXqqvcFDNonW/KtUZRVrU0bVngzsemJ19403TSGw6Qz758R8jPmeb/4o4rDXYHCMmN2vAAAAAASUVORK5CYII="/>
+	</defs>
+	<style>
+		tspan { white-space:pre }
+	</style>
+	<g id="Group">
+		<g id="главный экран">
+			<g id="контакты">
+				<g id="ЛК">
+					<g id="Group">
+						<use id="114" href="#img1" x="0" y="10" />
+						<use id="115" href="#img2" x="4" y="0" />
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>

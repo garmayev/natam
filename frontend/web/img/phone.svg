@@ -1,0 +1,24 @@
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 21" width="20" height="21">
+	<title>Group</title>
+	<defs>
+		<image  width="11" height="11" id="img1" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAMAAACecocUAAAAAXNSR0IB2cksfwAAAGZQTFRF////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////qxvLLQAAACJ0Uk5TAE0qBvH/4HgIIU+i+zIs1PU3DMznFhrzloAQIljrhMmZGCitLrwAAABGSURBVHicY2BgZGRigAJmFlZWNnYOCIeDk4ubh40XJsfAxy8gCOcICYuIwjli4hJwNoMkjxScLc0qg5CQlUOw5RUQbCZFAItLAllQuWpCAAAAAElFTkSuQmCC"/>
+		<image  width="7" height="7" id="img2" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAMAAADzjKfhAAAAAXNSR0IB2cksfwAAAEJQTFRF////////////////////////////////////////////////////////////////////////////////////////AJZvxwAAABZ0Uk5TACQiCPn/00EgV/1NBsLpCixM82o1DpBo208AAAAtSURBVHicY2BgZGIAAWYWVjZ2EIODk42LGyzEw8vHD2YIsAqCaQYhYQgtIgoAFTUA813yumQAAAAASUVORK5CYII="/>
+		<image  width="18" height="18" id="img3" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAAXNSR0IB2cksfwAAAPBQTFRF////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////ZmikqQAAAFB0Uk5TACRPEgac/f/rK4d8JdLjGOeiHO+t8186u9EO+XVNQpsqAtfJKEdhsR4Uygh0qlc+rgRpzrxVtAwtUffPKeU03vVaGp7a2Ta66rDdRjKYw6gQ4UZqAAAAr0lEQVR4nF3O1Q7CQBAF0Ivt4l1cipXixbW4u/3/31CakuwyDzOTk4wAsNkdEMLpItTtEchLfP5AUOKJhYBwJMpTzGukOE1wlEwZKS1nOMrSHJCPFThSiqqCQkk4WaYV/Ec1UvunOmto5opmq/2zjtztGaVPBnQYtmxExhNAb8POmG7ZdDZfmI0UWDotW603ze8wtnT325fek0OlB009codPZ3q53uS78M3j+XqfgA+mag+RWz0suAAAAABJRU5ErkJggg=="/>
+	</defs>
+	<style>
+		tspan { white-space:pre }
+	</style>
+	<g id="Group">
+		<g id="главный экран">
+			<g id="контакты">
+				<g id="заказать звонок">
+					<g id="Group">
+						<use id="108" href="#img1" x="9" y="0" />
+						<use id="109" href="#img2" x="9" y="4" />
+						<use id="110" href="#img3" x="0" y="3" />
+					</g>
+				</g>
+			</g>
+		</g>
+	</g>
+</svg>
