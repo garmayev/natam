@@ -1,4 +1,7 @@
 <?php
+
+use frontend\models\Staff;
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -11,14 +14,19 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'frontend\controllers',
+	'name' => 'Натам Трейд',
+	'timeZone' => 'Asia/Irkutsk',
+	'language' => "ru",
     'components' => [
+    	'view' => [
+    		'theme' => [
+    			'pathMap' => [
+    				'@dektrium/user/views' => '@app/views/user'
+			    ]
+		    ]
+	    ],
         'request' => [
             'csrfParam' => '_csrf-frontend',
-        ],
-        'user' => [
-            'identityClass' => 'common\models\User',
-            'enableAutoLogin' => true,
-            'identityCookie' => ['name' => '_identity-frontend', 'httpOnly' => true],
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
@@ -36,18 +44,55 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+            	'/' => 'site/index',
+	            '<action:\w+>/' => 'site/<action>',
+	            '<controller:\w+>/<action:\w+>' => '<controller>/<action>'
             ],
         ],
-        */
+	    'i18n' => [
+		    'translations' => [
+			    'app*' => [
+				    'class' => 'yii\i18n\PhpMessageSource',
+				    'fileMap' => [
+					    'app'       => 'app.php',
+					    'app/error' => 'error.php',
+					    'natam'     => 'natam.php',
+				    ],
+			    ],
+			    'natam' => [
+				    'class' => 'yii\i18n\PhpMessageSource',
+				    'fileMap' => [
+					    'natam'     => 'natam.php',
+				    ],
+			    ]
+		    ],
+	    ],
     ],
 	'modules' => [
+		'admin' => [
+			'class' => 'frontend\modules\admin\Module',
+		],
 		'user' => [
-			'class' => 'dektrium\user\Module'
+			'class' => 'dektrium\user\Module',
+			'controllerMap' => [
+				'settings' => [
+					'class' => \dektrium\user\controllers\SettingsController::className(),
+					'layout' => '//../../modules/admin/views/layouts/main'
+				],
+				'registration' => [
+					'class' => \dektrium\user\controllers\RegistrationController::className(),
+					'on '.\dektrium\user\controllers\RegistrationController::EVENT_AFTER_REGISTER => function ($e) {
+						Yii::error($e->form->email);
+						$user = \dektrium\user\models\User::find()->where(["email" => $e->form->email])->one();
+						$staff = new Staff(["user_id" => $user->id]);
+						$staff->save();
+					}
+				]
+			]
 		],
 	],
     'params' => $params,

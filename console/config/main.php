@@ -1,5 +1,7 @@
 <?php
 
+use frontend\models\Staff;
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -32,5 +34,18 @@ return [
             ],
         ],
     ],
+	'modules' => [
+		'user' => [
+			'class' => 'dektrium\user\Module',
+			'modelMap' => [
+				'User' => [
+					'class' => \dektrium\user\models\User::className(),
+					'on '.\dektrium\user\models\User::AFTER_REGISTER => function ($e) {
+						Yii::error($e);
+					}
+				]
+			]
+		],
+	],
     'params' => $params,
 ];

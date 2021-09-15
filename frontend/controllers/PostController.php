@@ -1,0 +1,27 @@
+<?php
+
+namespace frontend\controllers;
+
+use frontend\models\Post;
+use yii\data\ActiveDataProvider;
+use yii\web\Controller;
+
+class PostController extends Controller
+{
+	public function actionIndex()
+	{
+		return $this->render("index", [
+			"postProvider" => new ActiveDataProvider([
+				"query" => Post::find()
+			])
+		]);
+	}
+
+	public function actionView($id)
+	{
+		$model = Post::findOne($id);
+		return $this->render("view", [
+			"model" => $model
+		]);
+	}
+}

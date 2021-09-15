@@ -1,601 +1,203 @@
 <?php
 
-/* @var $this yii\web\View */
+use frontend\models\Client;
+use frontend\models\Order;
+use frontend\models\Product;
+use frontend\models\Service;
+use frontend\models\Ticket;
+use yii\web\View;
+use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\widgets\ActiveForm;
+use yii\widgets\ListView;
 
-$this->title = 'My Yii Application';
+/**
+ * @var $this View
+ * @var $postProvider ActiveDataProvider
+ * @var $productProvider ActiveDataProvider
+ * @var $serviceProvider ActiveDataProvider
+ */
+
+$this->title = Yii::$app->name;
 ?>
 <main>
+    <!-- Раздел "оставить заявку" или "Заказать" -->
     <section class="form" id="form">
         <div class="container-fluid">
             <div class="form_inner">
-                <img
-                        src="/img/journal.png"
-                        class="journal"
-                        alt="journal"
-                />
+				<?= Html::img(Url::to("/img/journal.png"), ["class" => "journal", "alt" => "journal"]) ?>
                 <div class="form_tab">
                     <button class="active">
-                        ОСТАВИТЬ <br />
+                        ОСТАВИТЬ <br/>
                         ЗАЯВКУ
                     </button>
                     <button>ЗАКАЗАТЬ</button>
                 </div>
-                <form class="form_block form_submit active">
-                    <label>
-                        Наш менеджер свяжется с вами в ближайшее время
-                    </label>
-                    <div class="form_content">
-                        <div class="form_item">
-                            <input type="text" placeholder="Ваше ФИО" />
-                            <input
-                                    type="text"
-                                    placeholder="+ 7 ( ____ ) - ___ - __ - __"
-                            />
-                            <input
-                                    type="email"
-                                    placeholder="Ваш E-mail"
-                            />
-                            <input
-                                    type="text"
-                                    placeholder="Название организации"
-                            />
-                        </div>
-                        <div class="form_item">
-                            <div class="form_select">
-                                <select>
-                                    <option>Товары</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                </select>
+				<?php
+				$ticket_form = ActiveForm::begin(["action" => Url::to(["ticket/create"]), "options" => ["class" => ["form_block", "form_submit", "active"]]]);
+				$client = new Client();
+				?>
+                <div class="form_content">
+                    <div class="form_item">
+						<?= Html::activeTextInput($client, "name", ["placeholder" => $client->getAttributeLabel("name")]) ?>
+						<?= Html::activeTextInput($client, "phone", ["placeholder" => $client->getAttributeLabel("phone")]) ?>
+                    </div>
+                    <div class="form_item">
+                        <div class="form_btn">
+                            <div class="form_policy">
+<!--                                <input type="checkbox" id="form_policy"/>-->
+                                <label for="form_policy">Нажимая кнопку "Отправть" вы даете свое согласие на обработку персональных данных</label>
                             </div>
-                            <div class="form_select">
-                                <select>
-                                    <option>Количество</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                </select>
-                            </div>
-                            <div class="form_btn">
-                                <div class="form_policy">
-                                    <input
-                                            type="checkbox"
-                                            id="form_policy"
-                                    />
-                                    <label for="form_policy">
-                                        Даю согласие на обработку
-                                        персональных данных
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn blue">
-                                    отправить
-                                </button>
-                            </div>
+                            <button type="submit" class="btn blue">
+                                отправить
+                            </button>
                         </div>
                     </div>
-                </form>
-                <form class="form_block form_order">
-                    <label>
-                        Таб Заказать Наш менеджер свяжется с вами в
-                        ближайшее время
-                    </label>
-                    <div class="form_content">
-                        <div class="form_item">
-                            <input type="text" placeholder="Ваше ФИО" />
-                            <input
-                                    type="text"
-                                    placeholder="+ 7 ( ____ ) - ___ - __ - __"
-                            />
-                            <input
-                                    type="email"
-                                    placeholder="Ваш E-mail"
-                            />
-                            <input
-                                    type="text"
-                                    placeholder="Название организации"
-                            />
-                        </div>
-                        <div class="form_item">
-                            <div class="form_select">
-                                <select>
-                                    <option>Товары</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                </select>
+                </div>
+				<?php
+				ActiveForm::end();
+                $this->registerCssFile("https://cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/css/suggestions.min.css");
+				$this->registerCss("
+                        .form_inner {
+                            transition: .5s;
+                        }
+                        .form_inner .form_order .form_content {
+                            margin-top: 120px; 
+                            max-width: 93%;
+                        } 
+                        .form_inner .form_order .form_content .form_item {
+                            padding: 0 5px;
+                        } 
+                        .form_inner .form_order .form_content .form_item:last-child {
+                            width: 425px
+                        }
+                        .form_inner .journal {
+                            bottom: auto;
+                            top: -90px;
+                        }
+                    ");
+				$this->registerJsFile("https://cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js", ["depends" => \yii\web\JqueryAsset::className()]);
+				$this->registerJs("
+                        $('.about_slider').slick({
+                            dots: false,
+                            infinite: true,
+                            slidesToShow: 1,
+                            slidesToScroll: 1,
+                            responsive: [
+                                {
+                                    breakpoint: 1000,
+                                    settings: {
+                                        slidesToShow: 1,
+                                    },
+                                },
+                                {
+                                    breakpoint: 630,
+                                    settings: {
+                                        slidesToShow: 1,
+                                    },
+                                },
+                            ],
+                        });
+                        $('#order-address').suggestions({
+                            token: '2c9418f4fdb909e7469087c681aac4dd7eca158c',
+                            type: 'ADDRESS',
+                            constraints: {
+                                locations: { region: 'Бурятия' },
+                            },
+                            onSelect: function(suggestion) {
+                                console.log(suggestion);
+                            }
+                        });
+                    ", View::POS_LOAD);
+				$order_form = ActiveForm::begin(["action" => Url::to(["order/create"]), "options" => ["class" => ["form_block", "form_order"]]]);
+				$order = new Order();
+				?>
+                <div class="form_content">
+                    <div class="form_item">
+						<?= Html::activeTextInput($client, "name", ["placeholder" => $client->getAttributeLabel("name")]) ?>
+						<?= Html::activeTextInput($client, "phone", ["placeholder" => $client->getAttributeLabel("phone")]) ?>
+						<?= Html::activeTextInput($client, "email", ["placeholder" => $client->getAttributeLabel("email")]) ?>
+						<?= Html::activeTextInput($client, "company", ["placeholder" => $client->getAttributeLabel("company")]) ?>
+						<?= Html::activeTextInput($order, "address", ["placeholder" => $order->getAttributeLabel("address")]) ?>
+                    </div>
+                    <div class="form_item">
+						<?php
+						echo Html::beginTag("div", ["class" => "form_select"]);
+						echo Html::dropDownList("Order[product][id][]", null, ArrayHelper::map(Product::find()->all(), "id", "title"), ["prompt" => "Товары"]);
+						echo Html::endTag("div");
+						?>
+                        <a href="#" class="btn blue add_product">
+                            Добавить товар
+                        </a>
+                    </div>
+                    <div class="form_item">
+						<?php
+						echo Html::beginTag("div", ["class" => "form_select"]);
+						echo Html::dropDownList("Order[product][count][]", null, [1 => "1", 2 => "2", 3 => "3", 4 => "4", 5 => "5", 6 => "6"], ["prompt" => "Количество"]);
+						echo Html::endTag("div");
+						?>
+                        <div class="form_btn">
+                            <div class="form_policy">
+<!--                                <input type="checkbox" id="form_policy" />-->
+                                <label for="form_policy">Нажимая кнопку "Отправть" вы даете свое согласие на обработку персональных данных</label>
                             </div>
-                            <div class="form_select">
-                                <select>
-                                    <option>Количество</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                </select>
-                            </div>
-                            <div class="form_btn">
-                                <div class="form_policy">
-                                    <input
-                                            type="checkbox"
-                                            id="form_policy"
-                                    />
-                                    <label for="form_policy">
-                                        Даю согласие на обработку
-                                        персональных данных
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn blue">
-                                    отправить
-                                </button>
-                            </div>
+                            <button type="submit" class="btn blue">
+                                отправить
+                            </button>
                         </div>
                     </div>
-                </form>
+                </div>
+				<?php
+				ActiveForm::end();
+				?>
             </div>
         </div>
     </section>
+    <!-- Популярные продукты -->
     <section class="product">
         <div class="container">
             <div class="product_top">
-                <h2 class="title">ОФОРМИТЬ ЗАКАЗ</h2>
-                <a href="#" class="more">СМОТРЕТЬ ВСЕ</a>
+				<?= Html::tag("h2", "ОФОРМИТЬ ЗАКАЗ", ["class" => "title"]) ?>
+				<?= Html::a("", Url::to("#"), ["class" => "more"]) ?>
             </div>
-            <div class="product_inner">
-                <div class="product_item">
-                    <div class="product_backface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur
-                            adipisicing elit. Expedita iste natus
-                            officiis? Dolores excepturi vel explicabo
-                            debitis aliquid, molestiae, quam sunt sequi
-                            expedita omnis porro ad consectetur at quos
-                            dolore?
-                        </p>
-                    </div>
-                    <div class="product_frontface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <div class="product_img">
-                            <img
-                                    src="/img/product-1.png"
-                                    alt="product"
-                            />
-                        </div>
-                        <p class="product_item_title">
-                            Баллон с аргоном
-                        </p>
-                        <p class="product_text">Объем/Масса: 6,4</p>
-                        <p class="product_price">
-                            1800
-                            <span>руб.</span>
-                        </p>
-                        <div class="product_order">
-                            <div class="product_count">
-                                <button class="plus">+</button>
-                                <input type="text" value="1" />
-                                <button class="minus">-</button>
-                            </div>
-                            <a href="#" class="btn blue">заказать</a>
-                        </div>
-                        <span class="product_info">Есть в наличии</span>
-                    </div>
-                </div>
-                <div class="product_item">
-                    <div class="product_backface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur
-                            adipisicing elit. Expedita iste natus
-                            officiis? Dolores excepturi vel explicabo
-                            debitis aliquid, molestiae, quam sunt sequi
-                            expedita omnis porro ad consectetur at quos
-                            dolore?
-                        </p>
-                    </div>
-                    <div class="product_frontface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <div class="product_img">
-                            <img
-                                    src="/img/product-2.png"
-                                    alt="product"
-                            />
-                        </div>
-                        <p class="product_item_title">
-                            Баллон с аргоном высокой чистоты
-                        </p>
-                        <p class="product_text">Объем/Масса: 6,4</p>
-                        <p class="product_price">
-                            3000
-                            <span>руб.</span>
-                        </p>
-                        <div class="product_order">
-                            <div class="product_count">
-                                <button class="plus">+</button>
-                                <input type="text" value="1" />
-                                <button class="minus">-</button>
-                            </div>
-                            <a href="#" class="btn blue">заказать</a>
-                        </div>
-                        <span class="product_info">Есть в наличии</span>
-                    </div>
-                </div>
-                <div class="product_item">
-                    <div class="product_backface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur
-                            adipisicing elit. Expedita iste natus
-                            officiis? Dolores excepturi vel explicabo
-                            debitis aliquid, molestiae, quam sunt sequi
-                            expedita omnis porro ad consectetur at quos
-                            dolore?
-                        </p>
-                    </div>
-                    <div class="product_frontface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <div class="product_img">
-                            <img
-                                    src="/img/product-1.png"
-                                    alt="product"
-                            />
-                        </div>
-                        <p class="product_item_title">
-                            Баллон c азотом газообразным
-                        </p>
-                        <p class="product_text">Объем/Масса: 6,4</p>
-                        <p class="product_price">
-                            700
-                            <span>руб.</span>
-                        </p>
-                        <div class="product_order">
-                            <div class="product_count">
-                                <button class="plus">+</button>
-                                <input type="text" value="1" />
-                                <button class="minus">-</button>
-                            </div>
-                            <a href="#" class="btn blue">заказать</a>
-                        </div>
-                        <span class="product_info">Есть в наличии</span>
-                    </div>
-                </div>
-                <div class="product_item">
-                    <div class="product_backface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur
-                            adipisicing elit. Expedita iste natus
-                            officiis? Dolores excepturi vel explicabo
-                            debitis aliquid, molestiae, quam sunt sequi
-                            expedita omnis porro ad consectetur at quos
-                            dolore?
-                        </p>
-                    </div>
-                    <div class="product_frontface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <div class="product_img">
-                            <img
-                                    src="/img/product-2.png"
-                                    alt="product"
-                            />
-                        </div>
-                        <p class="product_item_title">
-                            Баллон c жидким азотом
-                        </p>
-                        <p class="product_text">Объем/Масса: 6,4</p>
-                        <p class="product_price lowprice">
-                            150
-                            <span>руб.</span>
-                        </p>
-                        <div class="product_order">
-                            <div class="product_count">
-                                <button class="plus">+</button>
-                                <input type="text" value="1" />
-                                <button class="minus">-</button>
-                            </div>
-                            <a href="#" class="btn blue">заказать</a>
-                        </div>
-                        <span class="product_info">Есть в наличии</span>
-                    </div>
-                </div>
-                <div class="product_item">
-                    <div class="product_backface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur
-                            adipisicing elit. Expedita iste natus
-                            officiis? Dolores excepturi vel explicabo
-                            debitis aliquid, molestiae, quam sunt sequi
-                            expedita omnis porro ad consectetur at quos
-                            dolore?
-                        </p>
-                    </div>
-                    <div class="product_frontface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <div class="product_img">
-                            <img
-                                    src="/img/product-1.png"
-                                    alt="product"
-                            />
-                        </div>
-                        <p class="product_item_title">
-                            Баллон с аргоном
-                        </p>
-                        <p class="product_text">Объем/Масса: 6,4</p>
-                        <p class="product_price">
-                            1800
-                            <span>руб.</span>
-                        </p>
-                        <div class="product_order">
-                            <div class="product_count">
-                                <button class="plus">+</button>
-                                <input type="text" value="1" />
-                                <button class="minus">-</button>
-                            </div>
-                            <a href="#" class="btn blue">заказать</a>
-                        </div>
-                        <span class="product_info">Есть в наличии</span>
-                    </div>
-                </div>
-                <div class="product_item">
-                    <div class="product_backface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur
-                            adipisicing elit. Expedita iste natus
-                            officiis? Dolores excepturi vel explicabo
-                            debitis aliquid, molestiae, quam sunt sequi
-                            expedita omnis porro ad consectetur at quos
-                            dolore?
-                        </p>
-                    </div>
-                    <div class="product_frontface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <div class="product_img">
-                            <img
-                                    src="/img/product-2.png"
-                                    alt="product"
-                            />
-                        </div>
-                        <p class="product_item_title">
-                            Баллон с аргоном высокой чистоты
-                        </p>
-                        <p class="product_text">Объем/Масса: 6,4</p>
-                        <p class="product_price">
-                            3000
-                            <span>руб.</span>
-                        </p>
-                        <div class="product_order">
-                            <div class="product_count">
-                                <button class="plus">+</button>
-                                <input type="text" value="1" />
-                                <button class="minus">-</button>
-                            </div>
-                            <a href="#" class="btn blue">заказать</a>
-                        </div>
-                        <span class="product_info">Есть в наличии</span>
-                    </div>
-                </div>
-                <div class="product_item">
-                    <div class="product_backface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur
-                            adipisicing elit. Expedita iste natus
-                            officiis? Dolores excepturi vel explicabo
-                            debitis aliquid, molestiae, quam sunt sequi
-                            expedita omnis porro ad consectetur at quos
-                            dolore?
-                        </p>
-                    </div>
-                    <div class="product_frontface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <div class="product_img">
-                            <img
-                                    src="/img/product-1.png"
-                                    alt="product"
-                            />
-                        </div>
-                        <p class="product_item_title">
-                            Баллон c азотом газообразным
-                        </p>
-                        <p class="product_text">Объем/Масса: 6,4</p>
-                        <p class="product_price">
-                            700
-                            <span>руб.</span>
-                        </p>
-                        <div class="product_order">
-                            <div class="product_count">
-                                <button class="plus">+</button>
-                                <input type="text" value="1" />
-                                <button class="minus">-</button>
-                            </div>
-                            <a href="#" class="btn blue">заказать</a>
-                        </div>
-                        <span class="product_info">Есть в наличии</span>
-                    </div>
-                </div>
-                <div class="product_item">
-                    <div class="product_backface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <p>
-                            Lorem ipsum dolor sit amet consectetur
-                            adipisicing elit. Expedita iste natus
-                            officiis? Dolores excepturi vel explicabo
-                            debitis aliquid, molestiae, quam sunt sequi
-                            expedita omnis porro ad consectetur at quos
-                            dolore?
-                        </p>
-                    </div>
-                    <div class="product_frontface">
-                                <span
-                                        title="more information"
-                                        class="product_more"
-                                >
-                                    <img src="/img/info.svg" alt="info" />
-                                </span>
-                        <div class="product_img">
-                            <img
-                                    src="/img/product-2.png"
-                                    alt="product"
-                            />
-                        </div>
-                        <p class="product_item_title">
-                            Баллон c жидким азотом
-                        </p>
-                        <p class="product_text">Объем/Масса: 6,4</p>
-                        <p class="product_price lowprice">
-                            150
-                            <span>руб.</span>
-                        </p>
-                        <div class="product_order">
-                            <div class="product_count">
-                                <button class="plus">+</button>
-                                <input type="text" value="1" />
-                                <button class="minus">-</button>
-                            </div>
-                            <a href="#" class="btn blue">заказать</a>
-                        </div>
-                        <span class="product_info">Есть в наличии</span>
-                    </div>
-                </div>
-            </div>
+			<?= ListView::widget([
+				"dataProvider" => $productProvider,
+				"itemView" => "_product",
+				"summary" => "",
+				"options" => [
+					"tag" => "div",
+					"class" => "product_inner"
+				],
+				"itemOptions" => [
+					"tag" => "div",
+					"class" => "product_item"
+				],
+				"emptyText" => "Пока ничего не добавлено"
+			]) ?>
         </div>
     </section>
     <section class="services">
+
         <div class="container-fluid">
             <div class="services_inner">
-                <div
-                        class="services_item"
-                        style="
-                                background: url('/img/services-1.png') no-repeat
-                                    #fff;
-                            "
-                >
-                    <h2 class="title">
-                        ДОПОЛНИТЕЛЬНЫЕ <br />
-                        УСЛУГИ
-                    </h2>
-                </div>
-                <a
-                        href="#form"
-                        class="services_item"
-                        style="
-                                background: center/cover
-                                    url('/img/services-2.png');
-                            "
-                >
-                    <h2 class="services_title">
-                        ПОСТАВКА ОБОРУДОВАНИЯ И КОМПЛЕКТУЮЩИХ
-                    </h2>
-                </a>
-                <a
-                        href="#form"
-                        class="services_item"
-                        style="
-                                background: center/cover
-                                    url('/img/services-3.png');
-                            "
-                >
-                    <h2 class="services_title">
-                        ПЕРЕАТТЕСТАЦИЯ И РЕМОНТ БАЛЛОНОВ
-                        <span> без остаточного давления </span>
-                    </h2>
-                </a>
-                <a
-                        href="#form"
-                        class="services_item"
-                        style="
-                                background: center/cover
-                                    url('/img/services-4.png');
-                            "
-                >
-                    <h2 class="services_title">
-                        ПЕРЕВОЗКА ОПАСНЫХ ГРУЗОВ
-                    </h2>
-                </a>
-                <a
-                        href="#form"
-                        class="services_item"
-                        style="
-                                background: center/cover
-                                    url('/img/services-5.png');
-                            "
-                >
-                    <h2 class="services_title">
-                        РАЗРАБОТКА ПРОЕКТА И МОНТАЖ ОБОРУДОВАНИЯ
-                    </h2>
-                </a>
+				<?php
+				/**
+				 * @var $service Service
+				 */
+				echo Html::tag("div",
+					Html::tag("h2", "ДОПОЛНИТЕЛЬНЫЕ УСЛУГИ", ["class" => "title"]),
+					["style" => "background: url('/img/services-1.png') no-repeat #fff; text-transform: uppercase;", "class" => "services_item"]
+				);
+				foreach ($serviceProvider->getModels() as $service) {
+					echo Html::a(
+						Html::tag("h2", $service->title, ["class" => "services_title"]),
+						["service/view", "id" => $service->id],
+						["style" => "background: url('$service->thumbs') no-repeat; text-transform: uppercase;", "class" => "services_item"]
+					);
+				}
+				?>
             </div>
         </div>
     </section>
@@ -603,7 +205,7 @@ $this->title = 'My Yii Application';
         <div class="container">
             <div class="buy_inner">
                 <h2 class="title white">
-                    ПОКУПАЕМ Б/У <br />
+                    ПОКУПАЕМ Б/У <br/>
                     ГАЗОВЫЕ БАЛЛОНЫ
                 </h2>
                 <p class="buy_text">
@@ -619,62 +221,33 @@ $this->title = 'My Yii Application';
                     >+7 123 456 78 90</a
                     >
                     <a href="#" class="btn blue recall">
-                        <img src="/img/phone.svg" alt="phone" />
+                        <img src="/img/phone.svg" alt="phone"/>
                         ЗАКАЗАТЬ ЗВОНОК
                     </a>
                 </div>
-                <img src="/img/gaz.png" class="gaz" alt="gas" />
+                <img src="/img/gaz.png" class="gaz" alt="gas"/>
             </div>
         </div>
     </section>
     <section class="news">
         <div class="container">
             <div class="news_top">
-                <h2 class="title">НОВОСТИ И ВАКАНСИИ</h2>
-                <a href="#" class="more">СМОТРЕТЬ ВСЕ</a>
+				<?= Html::tag("h2", "НОВОСТИ", ["class" => "title"]) ?>
+				<?= Html::a("СМОТРЕТЬ ВСЕ", Url::to("/post/index"), ["class" => "more"]) ?>
             </div>
-            <div class="news_slider">
-                <div class="news_item">
-                    <img src="/img/news-1.png" alt="news" />
-                    <div class="news_content">
-                        <p class="news_title">
-                            Заголовок новости может быть длинным, в две
-                            и более строки
-                        </p>
-                        <span class="date"> 13.04.2022 </span>
-                    </div>
-                </div>
-                <div class="news_item">
-                    <img src="/img/news-2.png" alt="news" />
-                    <div class="news_content">
-                        <p class="news_title">
-                            Заголовок новости может быть длинным, в две
-                            и более строки
-                        </p>
-                        <span class="date"> 13.04.2022 </span>
-                    </div>
-                </div>
-                <div class="news_item">
-                    <img src="/img/news-3.png" alt="news" />
-                    <div class="news_content">
-                        <p class="news_title">
-                            Заголовок новости может быть длинным, в две
-                            и более строки
-                        </p>
-                        <span class="date"> 13.04.2022 </span>
-                    </div>
-                </div>
-                <div class="news_item">
-                    <img src="/img/news-2.png" alt="news" />
-                    <div class="news_content">
-                        <p class="news_title">
-                            Заголовок новости может быть длинным, в две
-                            и более строки
-                        </p>
-                        <span class="date"> 13.04.2022 </span>
-                    </div>
-                </div>
-            </div>
+			<?= ListView::widget([
+				"dataProvider" => $postProvider,
+				"itemView" => "_post",
+				"options" => [
+					"tag" => "div",
+					"class" => "news_slider"
+				],
+				"itemOptions" => [
+					"tag" => "div",
+					"class" => "news_item"
+				],
+				"summary" => "",
+			]) ?>
         </div>
     </section>
 </main>

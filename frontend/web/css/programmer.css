@@ -1,0 +1,67 @@
+.main_content {
+    display: flex;
+}
+.main_inner {
+    display: none;
+}
+.header_info .header_price {
+    display: none;
+}
+.home .main_content {
+    display: none;
+}
+.home .main_inner {
+    display: block;
+}
+.home .header_info .header_price {
+    display: flex;
+}
+
+#modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+}
+#modal.active {
+    display: block;
+}
+#modal.active > .modal_shadow {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(128, 128, 128, .3);
+    z-index: 0;
+}
+#modal.active > .container-fluid {
+    margin-top: 5%;
+    z-index: 2;
+}
+#modal.active > .container-fluid > .form_inner {
+    padding-top: 150px;
+}
+.main_text {
+    z-index: auto;
+}
+
+.login > .panel-title {
+    font-size: 32px;
+    text-align: center;
+    padding: 25px;
+}
+.login #login-form {
+    width:50%;
+    margin: 0 auto;
+}
+.login #login-form > .form-content > .form-item > input {
+    width: 100%;
+    text-align: center;
+    margin: 5px;
+    font-size: 21px;
+    padding: 10px 5px;
+}

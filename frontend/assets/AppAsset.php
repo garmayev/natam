@@ -18,11 +18,14 @@ class AppAsset extends AssetBundle
 	    'https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap',
 	    'css/slick.css',
 	    'css/style.css',
+	    'css/programmer.css',
 	    ['https://fonts.googleapis.com', 'rel' => 'preconnected'],
 	    ['https://fonts.gstatic.com', 'rel' => 'preconnected', 'crossorigin' => true],
     ];
     public $js = [
     	'js/slick.min.js',
+	    'js/jquery.maskedinput.min.js',
+	    'js/programmer.js',
 	    'js/main.js',
     ];
     public $depends = [

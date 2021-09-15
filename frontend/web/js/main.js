@@ -19,26 +19,6 @@ $(document).ready(function () {
             },
         ],
     });
-    $(".about_slider").slick({
-        dots: false,
-        infinite: true,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        responsive: [
-            {
-                breakpoint: 1000,
-                settings: {
-                    slidesToShow: 1,
-                },
-            },
-            {
-                breakpoint: 630,
-                settings: {
-                    slidesToShow: 1,
-                },
-            },
-        ],
-    });
     $(".nav_toggle, .close, .shadow").on("click", function () {
         $(".nav").toggleClass("active");
         $(".shadow").toggleClass("active");
