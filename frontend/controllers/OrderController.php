@@ -18,8 +18,6 @@ class OrderController extends \yii\web\Controller
 		if ( Yii::$app->request->isPost ) {
 			$phone = preg_replace("/[\(\)\ \+]*/", "", $post["Client"]["phone"], -1);
 			$client = Client::find()->where(["phone" => $phone])->one();
-//			Yii::error(json_encode($client->name));
-//			Yii::error($phone);
 			if ( empty($client) ) {
 				$client = new Client();
 				if ( !$client->load($post) || !$client->save() ) {

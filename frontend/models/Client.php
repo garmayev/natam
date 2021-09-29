@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use frontend\behaviors\PhoneNormalizeBehaviors;
 use Yii;
 
 /**
@@ -17,6 +18,7 @@ use Yii;
  */
 class Client extends \yii\db\ActiveRecord
 {
+
 	public static function tableName()
 	{
 		return "{{%client}}";
@@ -36,7 +38,6 @@ class Client extends \yii\db\ActiveRecord
 	public function beforeValidate()
 	{
 		$this->phone = preg_replace("/[\(\)\ \+]*/", "", $this->phone, -1);
-//		Yii::error($this->phone);
 		return strlen($this->phone);
 	}
 
@@ -53,6 +54,11 @@ class Client extends \yii\db\ActiveRecord
 	public static function findByPhone($mixed)
 	{
 		return Client::findOne(["phone" => $mixed]);
+	}
+
+	public function invite()
+	{
+
 	}
 
 	public function getOrders()

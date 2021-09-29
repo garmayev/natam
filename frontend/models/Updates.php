@@ -2,6 +2,8 @@
 
 namespace frontend\models;
 
+use yii\db\ActiveRecord;
+
 /**
  *
  * @property int $id [int(11)]
@@ -15,15 +17,34 @@ namespace frontend\models;
  * @property int $staff_id [int(11)]
  *
  * @property Staff $staff
+ * @property Order $order
  */
-class Updates extends \yii\db\ActiveRecord
+class Updates extends ActiveRecord
 {
+	public function behaviors()
+	{
+		return [
+			'timestamp' => [
+				'class' => 'yii\behaviors\TimestampBehavior',
+				'attributes' => [
+					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
+					ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+				],
+			]
+		];
+	}
+
 	public static function tableName()
 	{
 		return "{{%updates}}";
 	}
 
 	public function getStaff() {
-		return $this->hasOne(Staff::className(), ["user_id" => "staff_id"]);
+		return $this->hasOne(Staff::className(), ["id" => "staff_id"]);
+	}
+
+	public function getOrder()
+	{
+		return $this->hasOne(Order::className(), ["id" => "order_id"]);
 	}
 }

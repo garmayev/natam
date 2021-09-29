@@ -19,6 +19,8 @@ class m210826_095112_create_order_table extends Migration
 	        'comment' => $this->text(),
 	        'status' => $this->integer(),
 	        'created_at' => $this->integer(),
+			'updated_at' => $this->integer(),
+	        'last_notified_at' => $this->integer()
         ]);
 
         $this->createIndex(

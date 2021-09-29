@@ -45,12 +45,15 @@ class OrderController extends BaseController
 	public function actionCreate()
 	{
 		$order = new Order();
-		$client_id = Yii::$app->session->get("client_id");
-		$client = null;
 		$post = Yii::$app->request->post();
-		if ( $client_id ) {
-			$client = Client::findOne($client_id);
+		if ( Yii::$app->session->get("isConvert") ) {
+			$order->client_id = Yii::$app->session->get("client_id");
+			$client = Client::findOne(["id" => $order->client_id]);
+			$order->status = Order::STATUS_PREPARE;
+			(Ticket::findOne(Yii::$app->session->get("ticket_id")))->delete();
+			Yii::$app->session->remove("isConvert");
 			Yii::$app->session->remove("client_id");
+			Yii::$app->session->remove("ticket_id");
 		}
 		if ( Yii::$app->request->isPost ) {
 			$client = Client::findOne(["phone" => $post["Client"]["phone"]]);
@@ -62,19 +65,16 @@ class OrderController extends BaseController
 				}
 			}
 			$order->client_id = $client->id;
+//			var_dump($order);
 			if ( $order->load($post) && $order->save() ) {
 				Yii::$app->session->setFlash("success", "Order was created! Manager was calling you");
-				$ticket = Ticket::findOne(Yii::$app->session->get("convert"));
-				if ( $ticket ) {
-					$ticket->delete();
-					Yii::$app->session->remove("convert");
-				}
 				return $this->redirect("/admin/order/index");
 			} else {
 				Yii::$app->session->setFlash("error", "Failed! Order was not created!");
 				Yii::error($order->getErrorSummary(true));
 			}
 		}
+		$client = new Client();
 		return $this->render("create", [
 			"model" => $order,
 			"client" => $client

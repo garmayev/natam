@@ -2,8 +2,9 @@
 
 namespace frontend\models;
 
-use dektrium\user\models\User;
+use frontend\behaviors\UpdateBehavior;
 use Yii;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
@@ -14,12 +15,13 @@ use yii\db\ActiveRecord;
  * @property string $comment
  * @property int $status [int(11)]
  * @property int $created_at
+ * @property int $updated_at [int(11)]
  *
  * @property int $price
  *
  * @property Client $client
  * @property-read Product[] $products
- * @property OrderProduct $order_product
+ * @property OrderProduct $orderProduct
  * @property Updates[] $updates
  * @property int $notify_started_at [int(11)]
  */
@@ -40,11 +42,14 @@ class Order extends ActiveRecord
 	{
 		return [
 			'timestamp' => [
-				'class' => 'yii\behaviors\TimestampBehavior',
+				'class' => TimestampBehavior::className(),
 				'attributes' => [
 					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
 				],
-			],
+			], [
+				'class' => UpdateBehavior::className(),
+				'attribute_name' => 'status',
+			]
 		];
 	}
 
@@ -67,90 +72,6 @@ class Order extends ActiveRecord
 			"comment" => Yii::t("app", "Comment"),
 		];
 	}
-
-	public function afterSave($insert, $changedAttributes)
-	{
-		if ( method_exists( Yii::$app->request, "post" ) ) {
-			$post = Yii::$app->request->post();
-		} else {
-			$post = [];
-		}
-		if (count($post) > 0) {
-			$ids = $post["Order"]["product"]["id"];
-			$count = $post["Order"]["product"]["count"];
-			for ($i = 0; $i < count($ids); $i++) {
-				$order_product = OrderProduct::find()->where(["order_id" => $this->id]);
-				$op = $order_product->andWhere(["product_id" => $ids[$i]])->one();
-				if (!$op) {
-					$op = new OrderProduct(["order_id" => $this->id, "product_id" => $ids[$i], "product_count" => $count[$i]]);
-				} else {
-					$op->product_count = $count[$i];
-				}
-				$op->save();
-			}
-//			$this->sendSms();
-		}
-//		$this->notifier();
-	}
-
-//	private function notifier()
-//	{
-//		$client = new \yii\httpclient\Client();
-//		$text = "Новый заказ #{$this->id}\nКлиент: {$this->client->name}\nНомер телефона: {$this->client->phone}\nАдрес доставки: {$this->address}\nСтатус: {$this->getStatus($this->status)}\nЗаказ: \n";
-//		$price = 0;
-//		foreach ($this->order_product as $order_product) {
-//			$product = Product::findOne($order_product->product->id);
-//			$price += $order_product->product_count * $product->price;
-//			$text .= "{$product->title}\n\t\t\tОбъем: {$product->value}\n\t\t\tКоличество: {$order_product->product_count}\n\t\t\tЦена: {$product->price}\n";
-//		}
-//		$text .= "Общая стоимость заказа: {$price}";
-//		$keyboard = json_encode(["inline_keyboard" => [[
-//			["text" => "Complete", "callback_data" => "/order_complete id={$this->id}"],
-//			["text" => "Cancel", "callback_data" => "/order_cancel id={$this->id}"]]]
-//		]);
-//		$bot_id = Yii::$app->params["telegram"];
-//		$staff = Staff::find();
-//		switch ($this->status) {
-//			case self::STATUS_NEW:
-//				$staff->where(["state" => Staff::STATE_MANAGER]);
-//				break;
-//			case self::STATUS_PREPARE:
-//				$staff->where(["state" => Staff::STATE_STORE]);
-//				break;
-//			case self::STATUS_DELIVERY:
-//				$staff->where(["state" => Staff::STATE_DRIVER]);
-//				break;
-//		}
-//		$staff = $staff->one();
-//		if (!is_null($staff)) {
-//			Yii::error(json_encode($staff->attributes));
-//			$response = $client->createRequest()
-//				->setMethod("POST")
-//				->setData(["chat_id" => $staff->chat_id, "text" => $text, "parse_mode" => "markdown", "reply_markup" => $keyboard])
-//				->setUrl("https://api.telegram.org/bot{$bot_id['bot_id']}/sendMessage")
-//				->send();
-//			if ($response->isOk) {
-//				Yii::error($response->getData());
-//				$body = $response->getData();
-//				$update = new Updates([
-//					"order_id" => $this->id,
-//					"order_status" => $this->status,
-//					"per_time" => time(),
-//					"created_at" => time(),
-//					"staff_id" => $staff->user_id,
-//					"message_id" => $body["result"]["message_id"],
-//					"message_timestamp" => $body["result"]["date"],
-//				]);
-//				$update->save();
-////				$update = Updates::find()->where(["order_id" => $this->id]);
-////				$staff->message_id = $body["result"]["message_id"];
-////				$staff->message_timestamp = $body["result"]["date"];
-////				$staff->save();
-//			} else {
-//				Yii::error($response->getData());
-//			}
-//		}
-//	}
 
 	private function sendSms()
 	{
@@ -197,7 +118,7 @@ class Order extends ActiveRecord
 
 	public function getProducts()
 	{
-		return $this->hasMany(Product::className(), ["id" => "product_id"])->viaTable("{{%order_product}}", ["order_id" => "id"]);
+		return $this->hasMany(Product::className(), ["id" => "product_id"])->viaTable(OrderProduct::tableName(), ["order_id" => "id"]);
 	}
 
 	public function getPrice()
@@ -215,7 +136,8 @@ class Order extends ActiveRecord
 		return $query["product_count"];
 	}
 
-	public function getOrder_product() {
+	public function getOrderProduct()
+	{
 		return $this->hasMany(OrderProduct::className(), ["order_id" => "id"]);
 	}
 

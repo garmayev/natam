@@ -2,6 +2,7 @@
 
 namespace console\controllers;
 
+use console\models\Alert;
 use frontend\models\Order;
 use frontend\models\OrderProduct;
 use frontend\models\Staff;
@@ -15,13 +16,13 @@ class NotifyController extends \yii\console\Controller
 	{
 		$now = time();
 		echo "Выбор всех открытых заказов\n";
-		$orders = Order::find()->where(["<>", "status", Order::STATUS_COMPLETE])->orWhere(["<>", "status", Order::STATUS_CANCEL])->all();
+		$orders = Order::find()->where(["<>", "status", Order::STATUS_COMPLETE])->andWhere(["<>", "status", Order::STATUS_CANCEL])->all();
 		echo "Открытых заказов: " . count($orders) . "\n";
 		foreach ($orders as $order) {
 			$update = Updates::find()->where(["order_id" => $order->id])->orderBy(["created_at" => SORT_DESC, "order_status" => SORT_ASC])->one();
 			if (isset($update)) {
 				echo "Заказ #{$order->id} был кому-то отправлен ранее\n";
-				if (($now - $update->created_at) > \Yii::$app->params["notify"]["limit"]) {
+				if (($now - $update->created_at) > \Yii::$app->params["notify"]["limit"][$order->status]) {
 					echo "Сотрудник не ответил вовремя\n";
 					echo $this->lockMessage($order->id);
 					echo $this->next($order->id);
@@ -56,7 +57,7 @@ class NotifyController extends \yii\console\Controller
 		if (($order->notify_started_at !== $staff->user_id)) {
 			echo "\t\tОтправка сообщения другому сотруднику\n";
 			$text = $this->generateHeader($order);
-			$text .= $this->generateProduct_list($order);
+			$text .= $this->generateProductList($order);
 			$keyboard = json_encode($this->generateKeyboard($order));
 			$response = Telegram::sendMessage(["chat_id" => $staff->chat_id, "text" => $text, "reply_markup" => $keyboard, "parse_mode" => "markdown"]);
 			if ($response->isOk) {
@@ -86,7 +87,9 @@ class NotifyController extends \yii\console\Controller
 	{
 		$this->lockMessage($order_id);
 		$order = Order::findOne($order_id);
-		$response = Telegram::sendMessage(["chat_id" => \Yii::$app->params["notify"]["alert"], "text" => "Заказ #{$order->id} никто не обработал со стадии {$order->getStatus($order->status)}"]);
+		$time = (!is_null($order->updated_at)) ? $order->updated_at : $order->created_at;
+		$boss = Alert::findChat(time() - $time);
+		$response = Telegram::sendMessage(["chat_id" => $boss["chat_id"], "text" => "Заказ #{$order->id} никто не обработал со стадии {$order->getStatus($order->status)}"]);
 		if ($response->isOk) {
 			echo "\t\tОтправка сообщения начальству прошла успешно\n";
 			return 0;
@@ -187,14 +190,14 @@ class NotifyController extends \yii\console\Controller
 	 * @param Order $order
 	 * @return string
 	 */
-	private function generateProduct_list($order)
+	private function generateProductList($order)
 	{
 		/**
 		 * @var OrderProduct $order_product
 		 */
 		$text = "Список заказанных продуктов: \n";
 		$total_price = 0;
-		foreach ($order->order_product as $order_product) {
+		foreach ($order->orderProduct as $order_product) {
 			$product = $order_product->product;
 			$text .= "\t{$product->title}\n" .
 				"\t\tОбъем: {$product->value}\n" .
@@ -218,5 +221,10 @@ class NotifyController extends \yii\console\Controller
 			["text" => "Complete", "callback_data" => "/order_complete id={$order->id}"],
 //			["text" => "Cancel", "callback_data" => "/order_cancel id={$order->id}"]
 		]]];
+	}
+
+	public function actionAlert()
+	{
+//		var_dump();
 	}
 }

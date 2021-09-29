@@ -47,8 +47,9 @@ class TicketController extends BaseController
 
 	public function actionConvert($client_id, $id)
 	{
+		\Yii::$app->session->set("isConvert", true);
 		\Yii::$app->session->set("client_id", $client_id);
-		\Yii::$app->session->set("convert", $id);
+		\Yii::$app->session->set("ticket_id", $id);
 		return $this->redirect(["order/create"]);
 	}
 }

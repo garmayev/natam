@@ -65,6 +65,33 @@ $totalCost = 0;
         </table>
     </div>
 </div>
+
+<div class="panel">
+    <div class="panel-heading">
+        Сроки выполнения заказа
+    </div>
+    <div class="panel-body">
+
+            <?php
+                $result = [0, 0, 0, 0, 0];
+                $updates = \frontend\models\Updates::find()->where(["order_id" => $model->id])->orderBy(["staff_id" => SORT_ASC])->all();
+                foreach ( $updates as $update ) {
+                    Yii::error($update->attributes);
+                    $result[$update->staff_id] += $update->per_time;
+                }
+
+                if ( isset($result[0]) ) {
+                    echo Html::tag("p", "Менеджер: {$result[0]} сек");
+                }
+                if ( isset($result[1]) ) {
+                    echo Html::tag("p", "Кладовщик: {$result[1]} сек");
+                }
+                if ( isset($result[2]) ) {
+                    echo Html::tag("p", "Водитель: {$result[2]} сек");
+                }
+            ?>
+    </div>
+</div>
 <?php
 echo Html::tag("h2", "Итого цена заказа: $totalCost");
 $this->registerJs("
