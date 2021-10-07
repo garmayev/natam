@@ -10,6 +10,8 @@ use yii\helpers\Html;
  * @var $orderProvider ActiveDataProvider
  */
 
+$this->title = Yii::t("app", "Orders");
+
 echo Html::a(Yii::t("app", "New Order"), ["order/create"], ["class" => ["btn", "btn-success"]]);
 
 echo \yii\grid\GridView::widget([

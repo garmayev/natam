@@ -10,6 +10,8 @@ use yii\widgets\ActiveForm;
  * @var $model Product|null
  */
 
+$this->title = Yii::t("app", "New Product");
+
 $form = ActiveForm::begin();
 echo $form->field($model, "title")->textInput(["placeholder" => $model->getAttributeLabel("title")])->label(false);
 echo $form->field($model, "description")->textarea(["rows" => 4, "placeholder" => $model->getAttributeLabel("description")])->label(false);

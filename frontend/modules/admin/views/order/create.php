@@ -13,6 +13,9 @@ use yii\widgets\ActiveForm;
  * @var $model Order
  * @var $client Client|null
  */
+
+$this->title = Yii::t("app", "New Order");
+
 $form = ActiveForm::begin();
 ?>
     <div class="panel">

@@ -27,10 +27,12 @@ echo GridView::widget([
 			"content" => function ($model) {
 				return Yii::$app->formatter->asDatetime($model->created_at);
 			}
-		], [
-			"attribute" => "last_login_at",
+		],
+		"staff.phone",
+		[
+			"attribute" => Yii::t("app", "Telegram logged"),
 			"content" => function ($model) {
-				return Yii::$app->formatter->asDatetime($model->last_login_at);
+				return Html::checkbox("logged", !is_null($model->staff->chat_id), ["disabled" => "disabled"] );
 			}
 		], [
 			"content" => function ($model) {
@@ -49,7 +51,7 @@ echo GridView::widget([
 				], "options" => [ "class" => "dropdown-menu"]]);
 				return Html::tag("div", $content, ["class" => ["btn-group"]]);
 			},
-		]
+		],
 	],
 ]);
 

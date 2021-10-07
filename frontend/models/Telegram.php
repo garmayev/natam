@@ -9,6 +9,7 @@ class Telegram extends \yii\base\Model
 	public $update_id;
 	public $message = null;
 	public $callback_query = null;
+	public $edited_message = null;
 
 	public function __construct($config = [])
 	{

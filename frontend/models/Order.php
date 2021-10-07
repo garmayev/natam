@@ -16,17 +16,20 @@ use yii\db\ActiveRecord;
  * @property int $status [int(11)]
  * @property int $created_at
  * @property int $updated_at [int(11)]
+ * @property int $notify_started_at [int(11)]
+ * @property int $boss_chat_id [int(11)]
  *
  * @property int $price
  *
  * @property Client $client
- * @property-read Product[] $products
+ * @property Product[] $products
  * @property OrderProduct $orderProduct
  * @property Updates[] $updates
- * @property int $notify_started_at [int(11)]
  */
 class Order extends ActiveRecord
 {
+	public $tmp_products;
+
 	const STATUS_NEW = 0;
 	const STATUS_PREPARE = 1;
 	const STATUS_DELIVERY = 2;
@@ -75,24 +78,9 @@ class Order extends ActiveRecord
 
 	private function sendSms()
 	{
-		$client = new \yii\httpclient\Client();
 		$link = "https://telegram.me/natam_trade_bot?start={$this->client->phone}";
 		$text = "Подпишитесь на нашего бота, перейдя по ссылке: $link";
-		$response = $client->createRequest()
-			->setMethod("GET")
-			->setData([
-				"method" => "push_msg",
-				"key" => "rRS612f6e0fc5a4d8e633c82af65b5b23a67ee072587ac10",
-				"phone" => $this->client->phone,
-				"text" => $text,
-				"sender_name" => "Natam Trade",
-				"format" => "json",
-			])
-			->setUrl("http://api.sms-prosto.ru/")
-			->send();
-		if ($response->isOk) {
-			Yii::error($response->content);
-		}
+		Sms::send($text, $this->client->phone);
 	}
 
 	public function getStatus($status = null)
@@ -144,5 +132,34 @@ class Order extends ActiveRecord
 	public function getUpdates()
 	{
 		return $this->hasMany(Updates::className(), ["order_id" => "id"])->orderBy(["created_at" => SORT_ASC]);
+	}
+
+	/**
+	 * @param Order $original
+	 */
+	public function deepClone()
+	{
+		$db = Yii::$app->db;
+		$transaction = $db->beginTransaction();
+		try {
+			$db->createCommand()->insert('order', [
+				"client_id" => $this->client_id,
+				'address' => $this->address,
+				'status' => self::STATUS_NEW,
+			])->execute();
+			$newOrderId = $db->getLastInsertID();
+			foreach ($this->orderProduct as $orderProduct) {
+				$db->createCommand()->insert('order_product', [
+					"product_id" => $orderProduct->product_id,
+					"product_count" => $orderProduct->product_count,
+					"order_id" => $newOrderId,
+				])->execute();
+			}
+		} catch (\Exception $e) {
+			$transaction->rollBack();
+			Yii::error($e);
+		}
+		$transaction->commit();
+		return Order::findOne($newOrderId);
 	}
 }

@@ -53,11 +53,13 @@ class SiteController extends Controller
 
     public function actionAbout()
     {
+		$this->view->title = Yii::t("app", "About company");
     	return $this->render("about");
     }
 
     public function actionContact()
     {
+		$this->view->title = Yii::t("app", "Contact");
     	return $this->render("contact");
     }
 

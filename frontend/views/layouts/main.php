@@ -14,8 +14,8 @@ use yii\bootstrap4\NavBar;
 use yii\helpers\Url;
 
 $menu = [
-    ["label" => "О компании", "url" => Url::to("/about")],
-	["label" => "Вакансии", "url" => Url::to("/vacancy/index")],
+    ["label" => Yii::t("app", "About company"), "url" => Url::to("/about")],
+	["label" => Yii::t("app", "Vacancy"), "url" => Url::to("/vacancy/index")],
 	["label" => "Технические газы", "url" => Url::to("/product/index")],
 	["label" => "Наши услуги", "url" => Url::to("/service/index")],
 	["label" => "Контакты", "url" => Url::to("/contact")],

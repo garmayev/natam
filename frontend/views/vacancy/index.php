@@ -11,19 +11,21 @@ use yii\widgets\ListView;
  * @var $vacancyProvider ActiveDataProvider
  */
 
-echo Html::beginTag("section", ["class" => "about"]);
+echo Html::beginTag("section", ["class" => "about", "style" => "padding-top: 25px; min-height: 60vh;"]);
 echo Html::beginTag("div", ["class" => "container"]);
 
 echo ListView::widget([
 	"dataProvider" => $vacancyProvider,
 	"summary" => "",
 	"itemView" => "_vacancy",
-	"itemOptions" => [
-		"class" => "vacancy_item"
-	],
 	"options" => [
-		"class" => "vacancy_inner"
-	]
+		"tag" => "div",
+		"class" => "news_slider"
+	],
+	"itemOptions" => [
+		"tag" => "div",
+		"class" => "news_item"
+	],
 ]);
 
 echo Html::endTag("div");

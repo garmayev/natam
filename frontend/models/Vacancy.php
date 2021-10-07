@@ -79,4 +79,14 @@ class Vacancy extends \yii\db\ActiveRecord
 			return $statuses[$status];
 		}
 	}
+
+	public function attributeLabels()
+	{
+		return [
+			"title" => \Yii::t("app", "Vacancy"),
+			"education" => \Yii::t("app", "Education"),
+			"experience" => \Yii::t("app", "Experience"),
+			"status" => \Yii::t("app", "Status"),
+		];
+	}
 }

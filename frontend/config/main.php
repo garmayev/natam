@@ -78,6 +78,9 @@ return [
 		],
 		'user' => [
 			'class' => 'dektrium\user\Module',
+			'modelMap' => [
+				'User' => \frontend\models\User::className(),
+			],
 			'controllerMap' => [
 				'settings' => [
 					'class' => \dektrium\user\controllers\SettingsController::className(),

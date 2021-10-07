@@ -9,7 +9,7 @@ class TicketController extends BaseController
 {
 	public function beforeAction($action)
 	{
-		$this->view->title = \Yii::t("app", "Ticket");
+		$this->view->title = \Yii::t("app", "Tickets");
 		return parent::beforeAction($action);
 	}
 

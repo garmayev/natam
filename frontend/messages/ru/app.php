@@ -1,5 +1,7 @@
 <?php
 return [
+	"About company" => "О компании",
+
 	"Title" => "Название",
 	"Description" => "Описание",
 	"Price" => "Цена",
@@ -54,4 +56,20 @@ return [
 	'Orders' => 'Заказы',
 	'Products' => 'Продукты',
 	'Users' => 'Пользователи',
+
+	'Failed! Service is not saved' => 'Ошибка! Услуга не сохранена',
+	'Complete' => 'Выполнено',
+	'New Product' => 'Новый продукт',
+	'Update Service' => 'Редактировать услугу',
+	'Contact' => 'Контакты',
+	'Education' => 'Образование',
+	'Experience' => 'Опыт работы',
+	'Settings' => 'Настройки',
+	'State' => 'Должность',
+	'Manager' => 'Менеджер',
+	'Store' => 'Кладовщик',
+	'Driver' => 'Водитель',
+	'Telegram logged' => 'Авторизация Telegram',
+	'Send new invite message' => 'Отправить пригласительное сообщение',
+	'Staff`s Phone' => 'Номер телефона сотрудника',
 ];

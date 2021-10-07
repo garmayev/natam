@@ -34,7 +34,15 @@ class Service extends ActiveRecord
 
 	public function upload()
 	{
-		return false;
+		if ($this->validate()) {
+			if ( !empty($this->file) ) {
+				$this->file->saveAs(\Yii::getAlias("frontend") . 'img/uploads/' . $this->file->baseName . '.' . $this->file->extension);
+				$this->thumbs = "img/uploads/{$this->file->baseName}.{$this->file->extension}";
+			}
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public function getParent()

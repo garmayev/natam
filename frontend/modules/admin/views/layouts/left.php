@@ -13,6 +13,20 @@ $menu = [
 		"url" => Url::to(["/admin/default/index"]),
 		"icon" => "dashboard",
 	], [
+		"label" => Yii::t("app", "Shop"),
+		"icon" => "desktop",
+		"items" => [
+			[
+				"label" => Yii::t("app", "Orders"),
+				"url" => Url::to(["/admin/order/index"]),
+				"icon" => "bell",
+			], [
+				"label" => Yii::t("app", "Products"),
+				"url" => Url::to(["/admin/product/index"]),
+				"icon" => "microchip",
+			],
+		],
+	], [
 		"label" => Yii::t("app", "Services"),
 		"url" => Url::to(["/admin/service/index"]),
 		"icon" => "file-code-o"
@@ -33,24 +47,14 @@ $menu = [
 		"url" => Url::to(["/admin/vacancy/index"]),
 		"icon" => "user",
 	], [
-        "label" => Yii::t("app", "Users"),
-        "url" => Url::to(["/admin/user/index"]),
-        "icon" => "user-o"
+		"label" => Yii::t("app", "Users"),
+		"url" => Url::to(["/admin/user/index"]),
+		"icon" => "user-o"
 	], [
-		"label" => Yii::t("app", "Shop"),
-		"icon" => "desktop",
-		"items" => [
-			[
-				"label" => Yii::t("app", "Orders"),
-				"url" => Url::to(["/admin/order/index"]),
-				"icon" => "bell",
-			], [
-				"label" => Yii::t("app", "Products"),
-				"url" => Url::to(["/admin/product/index"]),
-				"icon" => "microchip",
-			],
-		]
-	],
+		"label" => Yii::t("app", "Settings"),
+		"url" => Url::to(["/admin/settings/index"]),
+		"icon" => "cog"
+	]
 ]
 ?>
 <aside class="main-sidebar">
@@ -81,10 +85,8 @@ $menu = [
         <!-- /.search form -->
 
 		<?= dmstr\widgets\Menu::widget(
-			[
-				'options' => ['class' => 'sidebar-menu tree', 'data-widget' => 'tree'],
-				'items' => $menu,
-			]
+			['options' => ['class' => 'sidebar-menu tree', 'data-widget' => 'tree'],
+				'items' => $menu,]
 		) ?>
 
     </section>

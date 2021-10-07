@@ -13,6 +13,8 @@ use yii\helpers\Html;
  * @var $model Product
  */
 
+$this->title = Yii::t("app", "Products");
+
 echo Html::a(Yii::t("app", "Append Product"), ["/admin/product/create"], ["class" => ["btn", "btn-success"]]);
 
 echo GridView::widget([

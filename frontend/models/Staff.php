@@ -2,8 +2,6 @@
 
 namespace frontend\models;
 
-use dektrium\user\models\User;
-
 /**
  *
  * @property int $id [int(11)]
@@ -21,6 +19,21 @@ class Staff extends \yii\db\ActiveRecord
 	const STATE_STORE = 1;
 	const STATE_DRIVER = 2;
 
+	public function afterSave($insert, $changedAttributes)
+	{
+		if ( $insert ) {
+			if ( isset($this->phone) ) $this->sendLink();
+		}
+		parent::afterSave($insert, $changedAttributes);
+	}
+
+	public function sendLink()
+	{
+		$link = "https://telegram.me/natam_trade_bot?start={$this->phone}";
+		$text = "Подпишитесь на нашего бота, перейдя по ссылке: $link";
+		Sms::send($text, $this->phone);
+	}
+
 	public function rules()
 	{
 		return [
@@ -30,6 +43,27 @@ class Staff extends \yii\db\ActiveRecord
 			[["user_id"], "exist", "targetClass" => User::className(), "targetAttribute" => "id"],
 			[["state"], "default", "value" => self::STATE_DRIVER],
 		];
+	}
+
+	public function attributeLabels()
+	{
+		return [
+			"state" => \Yii::t("app", "State"),
+			"phone" => \Yii::t("app", "Staff`s Phone"),
+		];
+	}
+
+	public static function stateLabels($state = null)
+	{
+		$states = [
+			self::STATE_MANAGER => \Yii::t("app", "Manager"),
+			self::STATE_STORE => \Yii::t("app", "Store"),
+			self::STATE_DRIVER => \Yii::t("app", "Driver"),
+		];
+		if ( isset($state) ) {
+			return $states[$state];
+		}
+		return $states;
 	}
 
 	public function getStateLabel($state = null)
@@ -42,7 +76,10 @@ class Staff extends \yii\db\ActiveRecord
 		if ( isset($state) ) {
 			return $states[$state];
 		}
-		return $states[$this->state];
+		if ( !is_null($this->state) ) {
+			return $states[$this->state];
+		}
+		return $states;
 	}
 
 	public function getUser()

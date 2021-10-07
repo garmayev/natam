@@ -8,7 +8,7 @@ use yii\helpers\Html;
  * @var $this View
  */
 ?>
-<section class="about">
+<section class="about" style="padding-top: 25px; min-height: 60vh;">
     <div class="container">
         <div class="about_inner">
             <div class="about_content">

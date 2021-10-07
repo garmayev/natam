@@ -10,6 +10,8 @@ use yii\helpers\Html;
  * @var $model Order
  */
 
+$this->title = Yii::t("app", "Order content");
+
 echo Html::a("Изменить заказ", ["order/update", "id" => $model->id], ["class" => ["btn", "btn-success"], "style" => "margin: 15px 0;"]);
 $totalCost = 0;
 ?>
@@ -76,7 +78,6 @@ $totalCost = 0;
                 $result = [0, 0, 0, 0, 0];
                 $updates = \frontend\models\Updates::find()->where(["order_id" => $model->id])->orderBy(["staff_id" => SORT_ASC])->all();
                 foreach ( $updates as $update ) {
-                    Yii::error($update->attributes);
                     $result[$update->staff_id] += $update->per_time;
                 }
 

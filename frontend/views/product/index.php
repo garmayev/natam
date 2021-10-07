@@ -10,7 +10,7 @@ use yii\widgets\ListView;
  * @var $this View
  * @var $productProvider ActiveDataProvider
  */
-echo Html::beginTag("div", ["class" => "product"]);
+echo Html::beginTag("div", ["class" => "product", "style" => "padding-top: 25px; min-height: 60vh;"]);
 echo Html::beginTag("div", ["class" => "container"]);
 echo ListView::widget([
 	"dataProvider" => $productProvider,

@@ -91,7 +91,7 @@ echo Html::tag("td", $staff->getStateLabel());
 echo Html::endTag("tr");
 
 echo Html::beginTag("tr");
-echo Html::tag("td", Yii::t("user", "Telegram logged"));
+echo Html::tag("td", Yii::t("app", "Telegram logged"));
 echo Html::tag("td", Html::checkbox("telegram-logged", isset($staff->chat_id), ["class" => "disabled", "disabled" => "disabled"]));
 echo Html::endTag("tr");
 

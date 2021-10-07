@@ -2,6 +2,7 @@
 
 namespace frontend\behaviors;
 
+use frontend\models\Client;
 use frontend\models\Order;
 use frontend\models\OrderProduct;
 use frontend\models\Staff;
@@ -24,13 +25,30 @@ class UpdateBehavior extends \yii\base\Behavior
 
 	public function saveProducts()
 	{
+		/**
+		 * @var $owner Order
+		 * @var $item OrderProduct
+		 */
+		$owner = $this->owner;
 		$post = \Yii::$app->request->post();
 		if ( isset($post["Order"]) && isset($post["Order"]["product"]) ) {
 			for ($i = 0; $i < count($post["Order"]["product"]["id"]); $i++) {
 				$op = new OrderProduct([
-					"order_id" => $this->owner->id,
+					"order_id" => $owner->id,
 					"product_id" => $post["Order"]["product"]["id"][$i],
 					"product_count" => $post["Order"]["product"]["count"][$i],
+				]);
+				$op->save();
+			}
+		}
+
+		$tmp = $owner->tmp_products;
+		if ( !empty($tmp) ) {
+			foreach ( $tmp as $item ) {
+				$op = new OrderProduct([
+					"order_id" => $owner->id,
+					"product_id" => $item->product_id,
+					"product_count" => $item->product_count,
 				]);
 				$op->save();
 			}
@@ -119,11 +137,11 @@ class UpdateBehavior extends \yii\base\Behavior
 		// Отправка сообщения в Telegram
 		$response = (Telegram::sendMessage([
 			"chat_id" => $staff->chat_id,
-			"text" => $this->generateHeader() . $this->generateProductList(),
+			"text" => $this->generateHeader() . $this->generateClientInfo() . "Адрес доставки: {$owner->address}\n" . $this->generateProductList(),
 			"reply_markup" => json_encode([
 				"inline_keyboard" => [
 					[
-						["text" => "Complete", "callback_data" => "/order_complete id={$owner->id}"],
+						["text" => \Yii::t("app", "Complete"), "callback_data" => "/order_complete id={$owner->id}"],
 					]
 				]
 			])
@@ -197,5 +215,16 @@ class UpdateBehavior extends \yii\base\Behavior
 		}
 		$text .= "Общая стоимость заказа: {$total_price}";
 		return $text;
+	}
+
+	private function generateClientInfo()
+	{
+		/**
+		 * @var Client $client
+		 * @var Order $order
+		 */
+		$order = $this->owner;
+		$client = $order->client;
+		return "Информация о клиенте:\n\t\tФИО: {$client->name}\n\t\tКонтактный номер: {$client->phone}\n";
 	}
 }

@@ -8,6 +8,7 @@ use frontend\models\OrderProduct;
 use frontend\models\Staff;
 use frontend\models\Telegram;
 use frontend\models\Updates;
+use frontend\models\User;
 use Yii;
 
 /**
@@ -25,7 +26,6 @@ class TelegramController extends \yii\rest\Controller
 			$command = array_shift($args);
 			switch ($command) {
 				case "/start":
-					\Yii::error(count($args));
 					if ( count($args) > 0 ) {
 						$client = Client::findOne(["phone" => $args[0]]);
 					} else {
@@ -44,10 +44,23 @@ class TelegramController extends \yii\rest\Controller
 						if ( Telegram::sendMessage(["chat_id" => $client->chat_id, "text" => $text, "reply_markup" => json_encode($markup)]) ) {
 							return ["ok" => true];
 						}
+					} else {
+						$staff = Staff::find()->where(["phone" => $args[0]])->orWhere(["chat_id" => $telegram->message["from"]["id"]])->one();
+						if ($staff) {
+							if (is_null($staff->chat_id)) {
+								$staff->chat_id = $telegram->message["from"]["id"];
+								$staff->save();
+							}
+							Telegram::sendMessage([
+								"chat_id" => $staff->chat_id,
+								"text" => "В этот бот вам будут приходить новые заявки с сайта " . Yii::$app->name,
+							]);
+						}
 					}
 					break;
 			}
-		} else {
+		} else if ( isset($telegram->callback_query) ) {
+
 			$text = $telegram->callback_query["data"];
 			$args = explode(" ", $text);
 			$command = array_shift($args);
@@ -73,7 +86,6 @@ class TelegramController extends \yii\rest\Controller
 				case "/order":
 					$order = Order::findOne($args[0]);
 					$client = Client::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
-					\Yii::error($client);
 					$text = "Заказ #$order->id\nАдрес доставки: $order->address\nДата создания заказа: ".\Yii::$app->formatter->asDate($order->created_at, "php: d M Y H:i")."\nСодержимое заказа:\n";
 					foreach ($order->products as $product) {
 						$text .= "\t$product->title\n\t\t$product->value\n\t\t$product->price\n";
@@ -96,17 +108,10 @@ class TelegramController extends \yii\rest\Controller
 					break;
 				case "/reply":
 					$order = Order::findOne($args[0]);
-					$copy = new Order();
-					$copy->client_id = $order->client_id;
-					$copy->address = $order->address;
+					$copy = $order->deepClone();
+					$client = $copy->client;
+					$copy->created_at = time();
 					$copy->save();
-					foreach ($order->products as $product)
-					{
-						$orderProduct = new OrderProduct(["order_id" => $copy->id, "product_id" => $product->id, "product_count" => $order->getCount($product->id)]);
-						$orderProduct->save();
-					}
-					$copy->save();
-					$client = Client::findOne($order->client_id);
 					$text = "Список ваших заказов";
 					$text .= (count($client->orders) === 0) ? " пуст" : ":";
 					$markup = ["inline_keyboard" => []];

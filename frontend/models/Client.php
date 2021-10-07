@@ -56,6 +56,20 @@ class Client extends \yii\db\ActiveRecord
 		return Client::findOne(["phone" => $mixed]);
 	}
 
+	public static function findByChatId($mixed)
+	{
+		return Client::findOne(["chat_id" => $mixed]);
+	}
+
+	public static function findByPhoneOrChatId($mixed)
+	{
+		$client = self::findByPhone($mixed);
+		if ( !isset($client) ) {
+			return self::findByChatId($mixed);
+		}
+		return $client;
+	}
+
 	public function invite()
 	{
 

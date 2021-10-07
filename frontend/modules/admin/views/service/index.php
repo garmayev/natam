@@ -27,6 +27,9 @@ echo GridView::widget([
 			"content" => function ($model) {
 				return Html::img($model->thumbs, ["width" => "200px"]);
 			}
+		],
+		[
+			"class" => \yii\grid\ActionColumn::className(),
 		]
 	],
 ]);
