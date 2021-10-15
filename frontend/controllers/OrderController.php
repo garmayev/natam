@@ -22,15 +22,15 @@ class OrderController extends \yii\web\Controller
 				$client = new Client();
 				if ( !$client->load($post) || !$client->save() ) {
 					Yii::error($client->getErrorSummary(true));
-					Yii::$app->session->setFlash("error", "Failed! ".json_encode($client->getErrorSummary(true)));
+					Yii::$app->session->setFlash("error", "Failed! Client info is not saved!");
 				}
 			}
 			$order->client_id = $client->id;
 			if ( $order->load($post) && $order->save() ) {
-				Yii::$app->session->setFlash("success", "Order was created! Manager was calling you");
+				Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
 				return $this->redirect("/");
 			} else {
-				Yii::$app->session->setFlash("error", "Failed! Order was not created!");
+				Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
 				Yii::error($order->getErrorSummary(true));
 			}
 		}

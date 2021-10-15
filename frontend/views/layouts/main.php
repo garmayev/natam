@@ -41,7 +41,11 @@ $this->beginPage();
 </head>
 <body class="home">
 <?php
+Yii::$app->session->setFlash('success', Yii::t("app", "Order was created! Manager was calling you"));
 $this->beginBody();
+if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
+    echo Html::tag("div", $success, ["class" => 'alert']);
+}
 echo $this->render('_header', ["menu" => $menu]);
 echo $content;
 echo $this->render("_footer", ["menu" => $menu]);
