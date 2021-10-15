@@ -1,5 +1,5 @@
-console.log(window.location.hostname);
-if ( (window.location.href !== `https://${window.location.hostname}/`) ) {
+//console.log(window.location);
+if ( (window.location.pathname !== `/`) ) {
 //    (window.location.href !== `http://${window.location.hostname}/`)) {
     $("body").removeClass("home");
     $(".recall").on("click", (e) => {
@@ -19,6 +19,16 @@ if ( (window.location.href !== `https://${window.location.hostname}/`) ) {
         });
         $(".form_tab > button:first-child").trigger("click");
     });
+}
+
+if ( $('.alert').html() !== '' ) {
+    setTimeout(function () {
+	$('.alert').animate({
+	    opacity: 0,
+	}, 1000, function () {
+		$(this).hide();
+	})
+    }, 5000)
 }
 
 let productSelect = $('[name=\'Order[product][id][]\']').parent().clone();
