@@ -156,7 +156,7 @@ $this->title = Yii::$app->name;
         </div>
     </section>
     <!-- Популярные продукты -->
-    <section class="product">
+    <section class="product" id="product">
         <div class="container">
             <div class="product_top">
 				<?= Html::tag("h2", "ОФОРМИТЬ ЗАКАЗ", ["class" => "title",  "data-aos" => "fade-up"]) ?>
@@ -219,7 +219,7 @@ $this->title = Yii::$app->name;
                 </p>
                 <div class="buy_inner_content" data-aos="fade-right">
                     <a href="+71234567890" class="buy_tel"
-                    >+7 123 456 78 90</a
+                    >+7 3012 20 40 56</a
                     >
                     <a href="#" class="btn blue recall">
                         <img src="/img/phone.svg" alt="phone"/>

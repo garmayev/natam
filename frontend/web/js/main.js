@@ -44,7 +44,7 @@ $(document).ready(function () {
         $(".nav").toggleClass("active");
         $(".shadow").toggleClass("active");
     });
-    $(".product_more").on("click", function () {
+    $(".product_more, .product_img > img").on("click", function () {
         $(this).closest(".product_item").toggleClass("active");
     });
 

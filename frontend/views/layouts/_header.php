@@ -61,15 +61,21 @@ use yii\widgets\Menu;
 			</div>
             <?php
                 $this->registerJs("$('.header_inner .blue').on('click', (e) => {
-                e.preventDefault();
-                $('html, body').animate({
-                    scrollTop: $('#form').offset().top
-                });
-                $('.form_tab > button:last-child').trigger('click');})");
+		    if ( window.location.href === window.location.hostname ) {
+	            e.preventDefault();
+        	        $('html, body').animate({
+                	    scrollTop: $('#form').offset().top
+	                });
+        	        $('.form_tab > button:last-child').trigger('click');
+		    } else {
+			window.location.href = '/#product';
+		    }
+		})
+		");
             ?>
 			<div class="header_info" data-aos="fade-left">
 				<a href="tel:+71234567890" class="phone">
-					+7 123 456 78 90
+					+7 3012 20 40 56
 				</a>
 				<a href="#" class="btn recall">
 					<img src="/img/phone.svg" alt="phone" />
