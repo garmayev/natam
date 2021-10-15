@@ -1,6 +1,6 @@
-// console.log(window.location.hostname);
-if ( (window.location.href !== `https://${window.location.hostname}/`) ||
-    (window.location.href !== `http://${window.location.hostname}/`)) {
+console.log(window.location.hostname);
+if ( (window.location.href !== `https://${window.location.hostname}/`) ) {
+//    (window.location.href !== `http://${window.location.hostname}/`)) {
     $("body").removeClass("home");
     $(".recall").on("click", (e) => {
         e.preventDefault();
