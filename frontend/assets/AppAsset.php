@@ -15,10 +15,11 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/normalize.css',
-	    'https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap',
+	    '//fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap',
 	    'css/slick.css',
 	    'css/style.css',
 	    'css/programmer.css',
+	    '//unpkg.com/aos@2.3.1/dist/aos.css',
 	    ['https://fonts.googleapis.com', 'rel' => 'preconnected'],
 	    ['https://fonts.gstatic.com', 'rel' => 'preconnected', 'crossorigin' => true],
     ];
@@ -27,6 +28,7 @@ class AppAsset extends AssetBundle
 	    'js/jquery.maskedinput.min.js',
 	    'js/programmer.js',
 	    'js/main.js',
+	    '//unpkg.com/aos@2.3.1/dist/aos.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

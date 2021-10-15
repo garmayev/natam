@@ -159,7 +159,7 @@ $this->title = Yii::$app->name;
     <section class="product">
         <div class="container">
             <div class="product_top">
-				<?= Html::tag("h2", "ОФОРМИТЬ ЗАКАЗ", ["class" => "title"]) ?>
+				<?= Html::tag("h2", "ОФОРМИТЬ ЗАКАЗ", ["class" => "title",  "data-aos" => "fade-up"]) ?>
 				<?= Html::a("", Url::to("#"), ["class" => "more"]) ?>
             </div>
 			<?= ListView::widget([
@@ -172,7 +172,8 @@ $this->title = Yii::$app->name;
 				],
 				"itemOptions" => [
 					"tag" => "div",
-					"class" => "product_item"
+					"class" => "product_item",
+					"data-aos" => "zoom-in"
 				],
 				"emptyText" => "Пока ничего не добавлено"
 			]) ?>
@@ -204,7 +205,7 @@ $this->title = Yii::$app->name;
     <section class="buy">
         <div class="container">
             <div class="buy_inner">
-                <h2 class="title white">
+                <h2 class="title white" data-aos="fade-right">
                     ПОКУПАЕМ Б/У <br/>
                     ГАЗОВЫЕ БАЛЛОНЫ
                 </h2>
@@ -216,7 +217,7 @@ $this->title = Yii::$app->name;
                     где будет текст. Это пример текста, создан для того,
                     чтобы было понятно, где будет текст.
                 </p>
-                <div class="buy_inner_content">
+                <div class="buy_inner_content" data-aos="fade-right">
                     <a href="+71234567890" class="buy_tel"
                     >+7 123 456 78 90</a
                     >
@@ -225,14 +226,14 @@ $this->title = Yii::$app->name;
                         ЗАКАЗАТЬ ЗВОНОК
                     </a>
                 </div>
-                <img src="/img/gaz.png" class="gaz" alt="gas"/>
+                <img src="/img/gaz.png" class="gaz" alt="gas" data-aos="fade-left"/>
             </div>
         </div>
     </section>
     <section class="news">
         <div class="container">
             <div class="news_top">
-				<?= Html::tag("h2", "НОВОСТИ", ["class" => "title"]) ?>
+				<?= Html::tag("h2", "НОВОСТИ", ["class" => "title",  "data-aos" => "fade-up"]) ?>
 				<?= Html::a("СМОТРЕТЬ ВСЕ", Url::to("/post/index"), ["class" => "more"]) ?>
             </div>
 			<?= ListView::widget([

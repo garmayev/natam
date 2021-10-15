@@ -12,7 +12,7 @@ use yii\widgets\Menu;
 	<div class="container">
 		<div class="header_inner">
 			<div class="header_left">
-				<div class="header_navigation">
+				<div class="header_navigation" data-aos="fade-down">
 					<div class="nav_toggle">
 						<span class="nav_toggle-item"></span>
 					</div>
@@ -33,7 +33,7 @@ use yii\widgets\Menu;
                         ]) ?>
 					</nav>
 				</div>
-				<div class="main_inner">
+				<div class="main_inner" data-aos="fade-up">
 					<h1 class="main_title">
 						ПРОДАЖА И ПОСТАВКА ТЕХНИЧЕСКИХ ГАЗОВ
 					</h1>
@@ -67,7 +67,7 @@ use yii\widgets\Menu;
                 });
                 $('.form_tab > button:last-child').trigger('click');})");
             ?>
-			<div class="header_info">
+			<div class="header_info" data-aos="fade-left">
 				<a href="tel:+71234567890" class="phone">
 					+7 123 456 78 90
 				</a>

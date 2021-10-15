@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    AOS.init();
     $(".news_slider").slick({
         dots: false,
         infinite: true,
@@ -9,6 +10,26 @@ $(document).ready(function () {
                 breakpoint: 1000,
                 settings: {
                     slidesToShow: 2,
+                },
+            },
+            {
+                breakpoint: 630,
+                settings: {
+                    slidesToShow: 1,
+                },
+            },
+        ],
+    });
+    $(".about_slider").slick({
+        dots: false,
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        responsive: [
+            {
+                breakpoint: 1000,
+                settings: {
+                    slidesToShow: 1,
                 },
             },
             {
