@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\Html;
 use yii\web\View;
 use yii\helpers\Url;
 
@@ -67,9 +68,13 @@ $menu = [
             </div>
             <div class="pull-left info">
                 <?php
-                    $employee = \garmayev\staff\models\Employee::findOne(["user_id" => Yii::$app->user->id]);
+                $employee = \garmayev\staff\models\Employee::findOne(["user_id" => Yii::$app->user->id]);
+                if ( $employee !== null ) {
+	                echo Html::tag("p", "{$employee->name} {$employee->family}");
+                } else {
+	                echo Html::tag("p", Yii::$app->user->identity->username);
+                }
                 ?>
-                <p><?= "{$employee->name} {$employee->family}" ?></p>
 
                 <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>

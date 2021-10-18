@@ -88,7 +88,11 @@ $orders = Order::find()->all();
                                  alt="User Image"/>
                             <?php
                                 $employee = \garmayev\staff\models\Employee::findOne(["user_id" => Yii::$app->user->id]);
-                                echo Html::tag("p", "{$employee->name} {$employee->family}".Html::tag("small", Yii::$app->formatter->asDate(Yii::$app->user->identity->created_at)))
+                                if ( $employee !== null ) {
+	                                echo Html::tag("p", "{$employee->name} {$employee->family}" . Html::tag("small", Yii::$app->formatter->asDate(Yii::$app->user->identity->created_at)));
+                                } else {
+                                    echo Html::tag("p", Yii::$app->user->identity->username . Html::tag("small", Yii::$app->formatter->asDate(Yii::$app->user->identity->created_at)));
+                                }
                             ?>
                         </li>
                         <!-- Menu Footer-->
