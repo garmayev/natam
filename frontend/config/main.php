@@ -21,7 +21,8 @@ return [
     	'view' => [
     		'theme' => [
     			'pathMap' => [
-    				'@dektrium/user/views' => '@app/views/user'
+    				'@dektrium/user/views' => '@app/views/user',
+				    '@garmayev/staff/views' => '@app/modules/admin/views/layouts/main',
 			    ]
 		    ]
 	    ],
@@ -97,6 +98,12 @@ return [
 				]
 			]
 		],
+		'staff' => [
+			'class' => 'garmayev\staff\Module',
+			'user_class' => 'frontend\models\User',
+			'urlPrefix' => 'staff',
+			'layout' => '@app/modules/admin/views/layouts/main',
+		]
 	],
     'params' => $params,
 ];

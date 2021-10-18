@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e874f3acae2eb9728cc99f172eced06a",
+    "content-hash": "afae9a8851671a1c2eed3665054c0a75",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -642,6 +642,54 @@
                 "source": "https://github.com/FortAwesome/Font-Awesome/tree/v4.7.0"
             },
             "time": "2016-10-24T15:52:54+00:00"
+        },
+        {
+            "name": "garmayev/yii2-staff",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:garmayev/yii2-staff.git",
+                "reference": "c0eaafdc4993ecf99f419d3beea6d70d142ead9f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/garmayev/yii2-staff/zipball/c0eaafdc4993ecf99f419d3beea6d70d142ead9f",
+                "reference": "c0eaafdc4993ecf99f419d3beea6d70d142ead9f",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "~2.0.0"
+            },
+            "default-branch": true,
+            "type": "yii2-extension",
+            "extra": {
+                "bootstrap": "garmayev\\staff\\Bootstrap"
+            },
+            "autoload": {
+                "psr-4": {
+                    "garmayev\\staff\\": ""
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "garmayev",
+                    "email": "garmayev@yandex.ru"
+                }
+            ],
+            "description": "Staff",
+            "keywords": [
+                "extension",
+                "staff",
+                "yii2"
+            ],
+            "support": {
+                "source": "https://github.com/garmayev/yii2-staff/tree/master",
+                "issues": "https://github.com/garmayev/yii2-staff/issues"
+            },
+            "time": "2021-10-13T09:00:39+00:00"
         },
         {
             "name": "kartik-v/yii2-mpdf",
@@ -6350,7 +6398,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "kartik-v/yii2-mpdf": 20
+        "kartik-v/yii2-mpdf": 20,
+        "garmayev/yii2-staff": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

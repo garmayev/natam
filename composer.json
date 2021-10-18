@@ -22,7 +22,8 @@
         "kartik-v/yii2-mpdf": "dev-master",
         "dmstr/yii2-adminlte-asset": "^2.1",
         "la-haute-societe/yii2-save-relations-behavior": "^1.7",
-        "ext-json": "*"
+        "ext-json": "*",
+        "garmayev/yii2-staff": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
@@ -45,6 +46,9 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
+        }, {
+            "type": "vcs",
+            "url": "https://github.com/garmayev/yii2-staff"
         }
     ]
 }

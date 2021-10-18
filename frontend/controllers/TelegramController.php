@@ -9,6 +9,7 @@ use frontend\models\Staff;
 use frontend\models\Telegram;
 use frontend\models\Updates;
 use frontend\models\User;
+use garmayev\staff\models\Employee;
 use Yii;
 
 /**
@@ -45,7 +46,7 @@ class TelegramController extends \yii\rest\Controller
 							return ["ok" => true];
 						}
 					} else {
-						$staff = Staff::find()->where(["phone" => $args[0]])->orWhere(["chat_id" => $telegram->message["from"]["id"]])->one();
+						$staff = Employee::find()->where(["phone" => $args[0]])->orWhere(["chat_id" => $telegram->message["from"]["id"]])->one();
 						if ($staff) {
 							if (is_null($staff->chat_id)) {
 								$staff->chat_id = $telegram->message["from"]["id"];
@@ -125,7 +126,7 @@ class TelegramController extends \yii\rest\Controller
 				case "/order_complete":
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["id"]);
-					$staff = Staff::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
+					$staff = Employee::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
 					if ( $staff->state === $order->status ) {
 						$order->status++;
 						$order->save();

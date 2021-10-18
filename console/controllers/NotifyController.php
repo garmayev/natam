@@ -5,10 +5,10 @@ namespace console\controllers;
 use console\models\Alert;
 use frontend\models\Order;
 use frontend\models\OrderProduct;
-use frontend\models\Staff;
 use frontend\models\Telegram;
 use frontend\models\Updates;
 use frontend\modules\admin\models\Settings;
+use garmayev\staff\models\Employee;
 use yii\httpclient\Client;
 
 class NotifyController extends \yii\console\Controller
@@ -56,7 +56,7 @@ class NotifyController extends \yii\console\Controller
 		if (empty($order)) {
 			return "\tОтправка сообщения не удалась: Неизвестный номер заказа #$order_id\n";
 		}
-		$staff = Staff::find()->where(["state" => $order->status])->orderBy(["last_message_at" => SORT_ASC])->one();
+		$staff = Employee::find()->where(["state_id" => $order->status])->orderBy(["last_message_at" => SORT_ASC])->one();
 		if (empty($staff)) {
 			return "\tОтправка сообщения не удалась: Нет требуемых кадров на этапе '{$order->getStatus($order->status)}'\n";
 		} else if (is_null($staff->chat_id)) {
@@ -120,12 +120,12 @@ class NotifyController extends \yii\console\Controller
 	 * Создание обновления в БД
 	 *
 	 * @param Order $order
-	 * @param Staff $staff
+	 * @param Employee $staff
 	 * @param $response
 	 *
 	 * @return void
 	 */
-	private function order_update(Order $order, Staff $staff, $response)
+	private function order_update(Order $order, Employee $staff, $response)
 	{
 		$body = $response->getData();
 		if (is_null($order->notify_started_at)) {
@@ -155,7 +155,7 @@ class NotifyController extends \yii\console\Controller
 		if (empty($order)) {
 			return "\tБлокировка не удалась: Неизвестный номер заказа #$order_id\n";
 		}
-		$staff = Staff::find()->where(["state" => $order->status])->orderBy(["last_message_at" => SORT_DESC])->one();
+		$staff = Employee::find()->where(["state" => $order->status])->orderBy(["last_message_at" => SORT_DESC])->one();
 		if (empty($staff)) {
 			$this->alert($order_id);
 			return "\tБлокировка не удалась: Нет требуемых кадров\n";

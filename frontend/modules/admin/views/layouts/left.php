@@ -48,7 +48,7 @@ $menu = [
 		"icon" => "user",
 	], [
 		"label" => Yii::t("app", "Users"),
-		"url" => Url::to(["/admin/user/index"]),
+		"url" => Url::to(["/staff/employee/index"]),
 		"icon" => "user-o"
 	], [
 		"label" => Yii::t("app", "Settings"),
