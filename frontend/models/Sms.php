@@ -19,12 +19,8 @@ class Sms extends \yii\base\Model
 			->setData([
 				"phone" => "+{$phone}",
 				"text" => $text,
-				"sender" => "Natam Trade",
 			])
 			->send();
 		Yii::error($response->getContent());
-		if ($response->isOk) {
-			Yii::error($response->getData());
-		}
 	}
 }

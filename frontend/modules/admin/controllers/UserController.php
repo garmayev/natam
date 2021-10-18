@@ -2,6 +2,7 @@
 
 namespace frontend\modules\admin\controllers;
 
+use frontend\models\Sms;
 use frontend\models\Staff;
 use frontend\models\User;
 use yii\data\ActiveDataProvider;
@@ -81,5 +82,12 @@ class UserController extends BaseController
 			$model->delete();
 		}
 		return $this->redirect('/admin/user/index');
+	}
+
+	public function actionInvite($id)
+	{
+		$user = User::findOne($id);
+		Sms::send("Подпишитесь на нашего бота, перейдя по ссылке:\nhttps://telegram.me/natam_trade_bot?start={$user->staff->phone}", "+{$user->staff->phone}");
+		return $this->redirect("index");
 	}
 }

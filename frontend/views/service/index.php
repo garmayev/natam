@@ -11,7 +11,7 @@ use yii\widgets\ListView;
  * @var $serviceProvider ActiveDataProvider
  */
 ?>
-<section class="about">
+<section class="about" style="padding-top: 20px">
     <div class="container-fluid">
         <div class="services_inner">
 			<?php

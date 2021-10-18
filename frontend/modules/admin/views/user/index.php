@@ -32,23 +32,31 @@ echo GridView::widget([
 		[
 			"attribute" => Yii::t("app", "Telegram logged"),
 			"content" => function ($model) {
-				return Html::checkbox("logged", !is_null($model->staff->chat_id), ["disabled" => "disabled"] );
+				if ( isset($model->staff->phone) ) {
+					if ( isset($model->staff->chat_id) ) {
+						return Html::tag("span", "", ["class" => ["glyphicon", "glyphicon-ok"]]);
+					} else {
+						return Html::a(Yii::t("app", "Send new invite message"), Url::to(["/admin/user/invite", "id" => $model->id]), ["class" => ["btn", "btn-default"]]);
+					}
+				}
 			}
 		], [
 			"content" => function ($model) {
 				$content = Html::button(Html::tag("i", "", ["class" => ["fa", "fa-cog"], "style" => "margin-right: 10px;"]).Html::tag("span", "", ["class" => "caret"]), ["class" => ["btn", "btn-default", "dropdown-toggle"], "data-toggle" => "dropdown", "aria-haspopup" => "true", "aria-expanded" => "false"]);
-				$content .= Menu::widget(["items" => [
-					[
-						"label" => Yii::t("app", "View"),
-						"url" => Url::to(["/admin/user/view", "id" => $model->id]),
-					], [
-						"label" => Yii::t("app", "Update"),
-						"url" => Url::to(["/admin/user/update", "id" => $model->id]),
-					], [
-						"label" => Yii::t("app", "Delete"),
-						"url" => Url::to(["/admin/user/delete", "id" => $model->id]),
-					]
-				], "options" => [ "class" => "dropdown-menu"]]);
+				$items = [[
+					"label" => Yii::t("app", "View"),
+					"url" => Url::to(["/admin/user/view", "id" => $model->id]),
+				], [
+					"label" => Yii::t("app", "Update"),
+					"url" => Url::to(["/admin/user/update", "id" => $model->id]),
+				], [
+					"label" => Yii::t("app", "Delete"),
+					"url" => Url::to(["/admin/user/delete", "id" => $model->id]),
+				]];
+				if ( isset($model->staff->phone) ) {
+					array_splice($items, 1, 0, [["label" => Yii::t("app", "Send new invite message"), "url" => Url::to(["/admin/user/invite"])]]);
+				}
+				$content .= Menu::widget(["items" => $items, "options" => [ "class" => "dropdown-menu"]]);
 				return Html::tag("div", $content, ["class" => ["btn-group"]]);
 			},
 		],

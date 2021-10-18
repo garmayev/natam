@@ -25,9 +25,7 @@ AppAsset::register($this);
 $this->beginPage();
 
 /**
- * @todo Модели "Заявки" и "Заказы"
  * @todo Доделать раздел вакансии
- * @todo Админка
  */
 ?>
 <!DOCTYPE html>
