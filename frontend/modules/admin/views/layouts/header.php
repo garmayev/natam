@@ -86,20 +86,19 @@ $orders = Order::find()->all();
                         <li class="user-header">
                             <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle"
                                  alt="User Image"/>
-
-                            <p>
-                                <?= Yii::$app->user->identity->username ?>
-                                <small>Member since Nov. 2012</small>
-                            </p>
+                            <?php
+                                $employee = \garmayev\staff\models\Employee::findOne(["user_id" => Yii::$app->user->id]);
+                                echo Html::tag("p", "{$employee->name} {$employee->family}".Html::tag("small", Yii::$app->formatter->asDate(Yii::$app->user->identity->created_at)))
+                            ?>
                         </li>
                         <!-- Menu Footer-->
                         <li class="user-footer">
                             <div class="pull-left">
-                                <?= Html::a("Profile", ["/user/settings/profile"], ["class" => ["btn", "btn-default", "btn-flat"]]) ?>
+                                <?= Html::a(Yii::t("app", "Profile"), ["/user/settings/profile"], ["class" => ["btn", "btn-default", "btn-flat"]]) ?>
                             </div>
                             <div class="pull-right">
                                 <?= Html::a(
-                                    'Sign out',
+                                    Yii::t("user", 'Logout'),
                                     ['/user/security/logout'],
                                     ['data-method' => 'post', 'class' => 'btn btn-default btn-flat']
                                 ) ?>
