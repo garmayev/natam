@@ -66,6 +66,22 @@
     padding: 10px 5px;
 }
 
-.success {
-
+.alert {
+    position: fixed;
+    width: 30%;
+    min-height: 50px;
+    left: 35%;
+    top: 40%;
+    display: flex;
+    justify-content: space-around;
+    background: #000;
+    color: #fff;
+    padding: 20px;
+    z-index: 999;
+    box-shadow: 12px 6px 15px 10px rgba(0, 0, 255, .2);
+    border-radius: 5px;
+    text-align: center;
+    animation: cssAnimation 1.5s 5s forwards;
+    visibility: visible;
+    opacity: 1;
 }
