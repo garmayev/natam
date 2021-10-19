@@ -5,6 +5,7 @@ namespace frontend\modules\admin\controllers;
 use frontend\models\Vacancy;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\web\UploadedFile;
 
 class VacancyController extends BaseController
 {
@@ -27,7 +28,8 @@ class VacancyController extends BaseController
 	{
 		$model = new Vacancy();
 		if ( Yii::$app->request->isPost ) {
-			if ( $model->load(Yii::$app->request->post()) && $model->save() ) {
+			$model->file = UploadedFile::getInstance($model, "file");
+			if ( $model->load(Yii::$app->request->post()) && $model->upload() && $model->save() ) {
 				return $this->redirect(["/admin/vacancy/index"]);
 			}
 		}
@@ -40,7 +42,8 @@ class VacancyController extends BaseController
 	{
 		$model = Vacancy::findOne($id);
 		if ( Yii::$app->request->isPost ) {
-			if ( $model->load(Yii::$app->request->post()) && $model->save() ) {
+			$model->file = UploadedFile::getInstance($model, "file");
+			if ( $model->load(Yii::$app->request->post()) && $model->upload() && $model->save() ) {
 				return $this->redirect("/admin/vacancy/index");
 			}
 		}

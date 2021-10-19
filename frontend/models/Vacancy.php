@@ -2,6 +2,8 @@
 
 namespace frontend\models;
 
+use Yii;
+
 /**
  *
  * @property int $id [int(11)]
@@ -9,6 +11,7 @@ namespace frontend\models;
  * @property int $education [int(11)]
  * @property int $experience [int(11)]
  * @property int $status [int(11)]
+ * @property string $thumbs [varchar(256)]
  */
 class Vacancy extends \yii\db\ActiveRecord
 {
@@ -22,6 +25,8 @@ class Vacancy extends \yii\db\ActiveRecord
 
 	const STATUS_OPEN = 0;
 	const STATUS_CLOSE = 1;
+
+	public $file;
 
 	public static function tableName()
 	{
@@ -38,6 +43,26 @@ class Vacancy extends \yii\db\ActiveRecord
 			[["experience"], "default", "value" => self::EXPERIENCE_SMALL],
 			[["status"], "default", "value" => self::STATUS_OPEN],
 		];
+	}
+
+	public function upload()
+	{
+		if ( $this->validate() )
+		{
+			if ( !empty($this->file) ) {
+				$path = "/img/uploads/{$this->file->baseName}.{$this->file->extension}";
+				if (!empty($this->thumbs)) {
+					if (file_exists(\Yii::getAlias("@webroot") . $this->thumbs)) {
+						unlink(\Yii::getAlias("@webroot") . $this->thumbs);
+					}
+				}
+				$this->file->saveAs(\Yii::getAlias("@webroot") . $path);
+				$this->thumbs = $path;
+			}
+		} else {
+			return false;
+		}
+		return true;
 	}
 
 	public function getExperienceLabel($exp = null)
