@@ -43,6 +43,7 @@ $this->title = Yii::$app->name;
                     <div class="form_item">
 						<?= Html::activeTextInput($client, "name", ["placeholder" => $client->getAttributeLabel("name")]) ?>
 						<?= Html::activeTextInput($client, "phone", ["placeholder" => $client->getAttributeLabel("phone")]) ?>
+                        <?= Html::hiddenInput("Ticket[phone]", 0) ?>
                     </div>
                     <div class="form_item">
                         <div class="form_btn">

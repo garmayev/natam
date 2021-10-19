@@ -45,6 +45,15 @@ class TicketController extends BaseController
 		]);
 	}
 
+	public function actionDelete($id)
+	{
+		$model = Ticket::findOne($id);
+		if ( $model ) {
+			$model->delete();
+		}
+		return $this->redirect(["index"]);
+	}
+
 	public function actionConvert($client_id, $id)
 	{
 		\Yii::$app->session->set("isConvert", true);
