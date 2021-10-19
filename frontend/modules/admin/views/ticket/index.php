@@ -19,7 +19,7 @@ echo \yii\grid\GridView::widget([
 		"client.phone",
 		[
 			"attribute" => "status",
-			"label" => "Status",
+			"label" => Yii::t("app", "Status"),
 			"format" => "raw",
 			"content" => function ($data) {
 				if ($data === Ticket::STATUS_OPEN) {
@@ -31,6 +31,7 @@ echo \yii\grid\GridView::widget([
 		"comment",
 		[
 			"attribute" => "service_id",
+			"label" => Yii::t("app", "Services"),
 			"content" => function ($data) {
 				if ( !empty($data->service_id) ) {
 					$service = \frontend\models\Service::findOne($data->service_id);
