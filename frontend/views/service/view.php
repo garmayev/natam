@@ -57,10 +57,10 @@ $this->registerCss(".about_info::before { display: none; }");
 		.modal.active .modal-body {
 			z-index: 999;
 			width: 60%;
-			min-height: 80vh;
+			min-height: 250px;
 			background: rgba(255, 255, 255, 1);
 			left: 20%;
-			top: 10%;
+			top: calc((100vh - 250px) / 2);
 			position: absolute;
 			margin: 0 auto;
 			border: 3px solid #023250;
