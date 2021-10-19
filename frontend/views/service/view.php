@@ -91,10 +91,7 @@ $this->registerCss(".about_info::before { display: none; }");
 		}
     </style>
 <?php
-echo Html::beginTag("section", ["class" => [
-	"modal",
-	"active"
-]]);
+echo Html::beginTag("section", ["class" => ["modal"]]);
 echo Html::beginTag("div", ["class" => "modal-body"]);
 echo Html::tag("div", "X", ["class" => ["modal-close"]]);
 ?>
