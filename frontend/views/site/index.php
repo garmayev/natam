@@ -219,7 +219,7 @@ $this->title = Yii::$app->name;
                     чтобы было понятно, где будет текст.
                 </p>
                 <div class="buy_inner_content" data-aos="fade-right">
-                    <a href="+71234567890" class="buy_tel"
+                    <a href="tel:71234567890" class="buy_tel"
                     >+7 3012 20 40 56</a
                     >
                     <a href="#" class="btn blue recall">
