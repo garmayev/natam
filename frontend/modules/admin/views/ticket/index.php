@@ -30,6 +30,16 @@ echo \yii\grid\GridView::widget([
 		],
 		"comment",
 		[
+			"attribute" => "service_id",
+			"content" => function ($data) {
+				if ( !empty($data->service_id) ) {
+					$service = \frontend\models\Service::findOne($data->service_id);
+					return $service->title;
+				} else {
+					return "Общие вопросы";
+				}
+			}
+		], [
 			'class' => \yii\grid\ActionColumn::className(),
 			'headerOptions' => ["width" => '80'],
 			'template' => '{view} {update} {delete}'
