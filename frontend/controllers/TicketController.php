@@ -26,6 +26,7 @@ class TicketController extends \yii\web\Controller
 				}
 			}
 			$ticket->client_id = $client->id;
+			$ticket->service_id = $post["Ticket"]["service_id"];
 			if ( $ticket->save() )
 			{
 				\Yii::$app->session->setFlash("success", \Yii::t("app", "Your ticket is successfully created! Manager was calling you"));
