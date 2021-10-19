@@ -40,7 +40,6 @@ $this->beginPage();
 <body class="home">
 <?php
 $this->beginBody();
-Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
 if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
     echo Html::tag("div", $success, ["class" => 'alert']);
 }
