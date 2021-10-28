@@ -63,16 +63,16 @@ $(document).ready(function () {
     let num;
     $(".plus").on("click", function () {
         num = parseInt($(this).prev().val());
-
+        console.log(num);
         $(this)
-            .next()
+            .prev()
             .val(num + 1);
     });
     $(".minus").on("click", function () {
         num = parseInt($(this).next().val());
         if (num > 1) {
             $(this)
-                .prev()
+                .next()
                 .val(num - 1);
         }
     });
