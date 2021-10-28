@@ -132,6 +132,11 @@ class TelegramController extends \yii\rest\Controller
 						$order->save();
 					}
 					break;
+				case "/order_hold":
+					parse_str($args[0], $argument);
+					$order = Order::findOne($argument["id"]);
+					$order->status = Order::STATUS_HOLD;
+					break;
 			}
 		}
 		return ["ok" => false];

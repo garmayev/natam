@@ -22,10 +22,9 @@ class NotifyController extends \yii\console\Controller
 
 	public function actionIndex()
 	{
-//		var_dump(Employee::getDb()); die;
 		$now = time();
 		echo "Выбор всех открытых заказов\n";
-		$orders = Order::find()->where(["<>", "status", Order::STATUS_COMPLETE])->andWhere(["<>", "status", Order::STATUS_CANCEL])->all();
+		$orders = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
 		echo "Открытых заказов: " . count($orders) . "\n";
 		foreach ($orders as $order) {
 			$update = Updates::find()->where(["order_id" => $order->id])->orderBy(["created_at" => SORT_DESC, "order_status" => SORT_ASC])->one();
@@ -75,6 +74,7 @@ class NotifyController extends \yii\console\Controller
 		if (($order->notify_started_at !== $staff->user_id)) {
 			echo "\t\tОтправка сообщения другому сотруднику\n";
 			$text = $this->generateHeader($order);
+			$text .= $this->generateClientInfo($order);
 			$text .= $this->generateProductList($order);
 			$keyboard = json_encode($this->generateKeyboard($order));
 			$response = Telegram::sendMessage(["chat_id" => $staff->chat_id, "text" => $text, "reply_markup" => $keyboard, "parse_mode" => "markdown"]);
@@ -210,6 +210,14 @@ class NotifyController extends \yii\console\Controller
 		return $text;
 	}
 
+	private function generateClientInfo($order)
+	{
+		/**
+		 * @var $order Order
+		 */
+		return "Информация о клиенте:\n\tФИО: {$order->client->name}\n\tКонтактный номер: {$order->client->phone}\n\n";
+	}
+
 	/**
 	 * Подготовка списка продуктов в заказе для текстового сообщения в Telegram
 	 *
@@ -228,7 +236,7 @@ class NotifyController extends \yii\console\Controller
 			$text .= "\t{$product->title}\n" .
 				"\t\tОбъем: {$product->value}\n" .
 				"\t\tКоличество: {$order_product->product_count}\n" .
-				"\t\tЦена: {$product->price}";
+				"\t\tЦена: {$product->price}\n\n";
 			$total_price += $order_product->product_count * $product->price;
 		}
 		$text .= "Общая стоимость заказа: {$total_price}";
@@ -244,8 +252,8 @@ class NotifyController extends \yii\console\Controller
 	private function generateKeyboard($order)
 	{
 		return ["inline_keyboard" => [[
-			["text" => "Complete", "callback_data" => "/order_complete id={$order->id}"],
-//			["text" => "Cancel", "callback_data" => "/order_cancel id={$order->id}"]
+			["text" => "Выполнено", "callback_data" => "/order_complete id={$order->id}"],
+			["text" => "Отложить", "callback_data" => "/order_hold id={$order->id}"]
 		]]];
 	}
 

@@ -35,6 +35,7 @@ class Order extends ActiveRecord
 	const STATUS_DELIVERY = 3;
 	const STATUS_COMPLETE = 4;
 	const STATUS_CANCEL = 5;
+	const STATUS_HOLD = 6;
 
 	public static function tableName()
 	{
@@ -91,6 +92,7 @@ class Order extends ActiveRecord
 			self::STATUS_DELIVERY => "В процессе доставки",
 			self::STATUS_COMPLETE => "Выполнен",
 			self::STATUS_CANCEL => "Отменен",
+			self::STATUS_HOLD => "Отложен",
 		];
 		if (is_null($status)) {
 			return $statuses;

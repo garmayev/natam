@@ -21,7 +21,7 @@ class OrderController extends BaseController
 	{
 		return $this->render("index", [
 			"orderProvider" => new ActiveDataProvider([
-				"query" => Order::find()->where(["<", "status", Order::STATUS_COMPLETE]),
+				"query" => Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->andWhere(["<>", "status", Order::STATUS_HOLD]),
 				"sort" => [
 					"attributes" => [
 						"id",
