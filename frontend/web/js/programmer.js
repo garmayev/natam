@@ -27,6 +27,12 @@ $(".main_inner > .blue").on("click", () => {
     });
 })
 
+$(".product .blue").on("click", () => {
+    $("html, body").animate({
+        scrollTop: $("#form").offset().top
+    });
+});
+
 if ( $('.alert').html() !== '' ) {
     setTimeout(function () {
 	$('.alert').animate({

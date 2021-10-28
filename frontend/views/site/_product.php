@@ -19,9 +19,9 @@ use yii\helpers\Html;
     <?= Html::tag("p", "$model->price".Html::tag("span", "руб."), ["class" => "product_price"]) ?>
     <div class="product_order">
         <div class="product_count">
-            <button class="plus">+</button>
-            <input type="text" value="1"/>
             <button class="minus">-</button>
+            <input type="text" value="1"/>
+            <button class="plus">+</button>
         </div>
         <a href="#" class="btn blue">заказать</a>
     </div>
