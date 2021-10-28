@@ -14,6 +14,7 @@ $form = ActiveForm::begin();
 echo $form->field($model, "title")->textInput(["placeholder" => $model->getAttributeLabel("title")])->label(false);
 echo $form->field($model, "education")->dropDownList($model->getEducationLabel(), ["prompt" => $model->getAttributeLabel("education")])->label(false);
 echo $form->field($model, "experience")->dropDownList($model->getExperienceLabel(), ["prompt" => $model->getAttributeLabel("experience")])->label(false);
+echo $form->field($model, "file")->fileInput()->label(false);
 
 echo Html::submitButton(Yii::t("app", "Save"), ["class" => ["btn", "btn-success"]]);
 echo Html::a(Yii::t("app", "Cancel"), ["/admin/vacancy/index"], ["class" => ["btn", "btn-danger"]]);
