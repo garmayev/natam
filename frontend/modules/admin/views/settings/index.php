@@ -50,7 +50,7 @@ echo Html::endTag("div");
 //if ( isset($model->getContent()["notify"]["alert"][0]["chat_id"]) ) {
 echo Html::beginTag("div", ["class" => ["form-group"]]);
 echo Html::label("Адресат тревоги", "Settings[notify][alert][0][chat_id]");
-echo Html::dropDownList("Settings[notify][alert][0][chat_id]", (isset($model->getContent()["notify"]["alert"][0]["chat_id"])) ? $model->getContent()["notify"]["alert"][0]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
+echo Html::dropDownList("Settings[notify][alert][0][chat_id]", (isset($model->getContent()["notify"]["alert"][0]["chat_id"])) ? $model->getContent()["notify"]["alert"][0]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->andWhere(["state_id" => 0])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
 echo Html::endTag("div");
 //}
 
@@ -64,7 +64,7 @@ echo Html::endTag("div");
 //if (isset($model->getContent()["notify"]["alert"][1]["chat_id"])) {
 	echo Html::beginTag("div", ["class" => ["form-group"]]);
 	echo Html::label("Адресат тревоги", "Settings[notify][alert][1][chat_id]");
-	echo Html::dropDownList("Settings[notify][alert][1][chat_id]", (isset($model->getContent()["notify"]["alert"][1]["chat_id"])) ? $model->getContent()["notify"]["alert"][1]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
+	echo Html::dropDownList("Settings[notify][alert][1][chat_id]", (isset($model->getContent()["notify"]["alert"][1]["chat_id"])) ? $model->getContent()["notify"]["alert"][1]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->andWhere(["state_id" => 0])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
 	echo Html::endTag("div");
 
 //}
@@ -79,7 +79,7 @@ echo Html::endTag("div");
 //if (isset($model->getContent()["notify"]["alert"][2]["chat_id"])) {
 	echo Html::beginTag("div", ["class" => ["form-group"]]);
 	echo Html::label("Алресат тревоги", "Settings[notify][alert][2][chat_id]");
-	echo Html::dropDownList("Settings[notify][alert][2][chat_id]", (isset($model->getContent()["notify"]["alert"][2]["chat_id"])) ? $model->getContent()["notify"]["alert"][2]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
+	echo Html::dropDownList("Settings[notify][alert][2][chat_id]", (isset($model->getContent()["notify"]["alert"][2]["chat_id"])) ? $model->getContent()["notify"]["alert"][2]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->andWhere(["state_id" => 0])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
 	echo Html::endTag("div");
 //}
 
