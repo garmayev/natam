@@ -753,9 +753,9 @@ main {
   left: 0;
   width: 15px;
   height: 15px;
-  border: 1px solid #009bdd;
-  border-radius: 4px;
-  background-color: #4c4c4c;
+  /*border: 1px solid #009bdd;*/
+  /*border-radius: 4px;*/
+  /*background-color: #4c4c4c;*/
 }
 
 .form_inner form .form_policy label::after {
