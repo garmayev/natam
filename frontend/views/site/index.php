@@ -20,6 +20,8 @@ use yii\widgets\ListView;
  * @var $serviceProvider ActiveDataProvider
  */
 
+// var_dump(Yii::$app->getAlias('@webroot'));
+
 $this->title = Yii::$app->name;
 ?>
 <main>
@@ -43,7 +45,7 @@ $this->title = Yii::$app->name;
                     <div class="form_item">
 						<?= Html::activeTextInput($client, "name", ["placeholder" => $client->getAttributeLabel("name")]) ?>
 						<?= Html::activeTextInput($client, "phone", ["placeholder" => $client->getAttributeLabel("phone")]) ?>
-                        <?= Html::hiddenInput("Ticket[phone]", 0) ?>
+                        <?= Html::hiddenInput("Ticket[service_id]", 0) ?>
                     </div>
                     <div class="form_item">
                         <div class="form_btn">

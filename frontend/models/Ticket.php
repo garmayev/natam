@@ -71,7 +71,8 @@ class Ticket extends \yii\db\ActiveRecord
 	{
 		$client = new \yii\httpclient\Client();
 		$text = "Клиент {$this->client->name} заказал звонок на номер {$this->client->phone}\n";
-		if ( $this->service_id !== 0 ) {
+//		var_dump($this->service_id !== 0 && $this->service_id !== "0"); die;
+		if ( ($this->service_id !== 0) && ($this->service_id !== "0") ) {
 			$service = Service::findOne($this->service_id);
 			$text .= "Услуга, заинтересовавшая клиента: ".$service->title;
 		}

@@ -22,6 +22,7 @@ class NotifyController extends \yii\console\Controller
 
 	public function actionIndex()
 	{
+//		var_dump(Employee::getDb()); die;
 		$now = time();
 		echo "Выбор всех открытых заказов\n";
 		$orders = Order::find()->where(["<>", "status", Order::STATUS_COMPLETE])->andWhere(["<>", "status", Order::STATUS_CANCEL])->all();
@@ -155,7 +156,7 @@ class NotifyController extends \yii\console\Controller
 		if (empty($order)) {
 			return "\tБлокировка не удалась: Неизвестный номер заказа #$order_id\n";
 		}
-		$staff = Employee::find()->where(["state" => $order->status])->orderBy(["last_message_at" => SORT_DESC])->one();
+		$staff = Employee::find()->where(["state_id" => $order->status])->orderBy(["last_message_at" => SORT_DESC])->one();
 		if (empty($staff)) {
 			$this->alert($order_id);
 			return "\tБлокировка не удалась: Нет требуемых кадров\n";

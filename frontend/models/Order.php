@@ -30,11 +30,11 @@ class Order extends ActiveRecord
 {
 	public $tmp_products;
 
-	const STATUS_NEW = 0;
-	const STATUS_PREPARE = 1;
-	const STATUS_DELIVERY = 2;
-	const STATUS_COMPLETE = 3;
-	const STATUS_CANCEL = 4;
+	const STATUS_NEW = 1;
+	const STATUS_PREPARE = 2;
+	const STATUS_DELIVERY = 3;
+	const STATUS_COMPLETE = 4;
+	const STATUS_CANCEL = 5;
 
 	public static function tableName()
 	{

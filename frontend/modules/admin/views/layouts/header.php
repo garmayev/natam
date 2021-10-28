@@ -66,7 +66,9 @@ $orders = Order::find()->all();
                                 <?php
                                     foreach ($orders as $order)
                                     {
+					if ( isset($order->client) ) {
                                         $message = "<i class=\"fa fa-shopping-cart text-aqua\"></i> Заказ #{$order->id}<p>{$order->client->name}</p><small>Общая стоимость: {$order->price}</small>";
+					}
                                         echo Html::tag("li", Html::a($message, ["/admin/order/view", "id" => $order->id]));
                                     }
                                 ?>
