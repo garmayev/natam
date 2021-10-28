@@ -21,6 +21,12 @@ if ( (window.location.pathname !== `/`) ) {
     });
 }
 
+$(".main_inner > .blue").on("click", () => {
+    $("html, body").animate({
+        scrollTop: $("#product").offset().top
+    });
+})
+
 if ( $('.alert').html() !== '' ) {
     setTimeout(function () {
 	$('.alert').animate({
