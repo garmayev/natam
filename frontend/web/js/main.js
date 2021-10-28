@@ -62,14 +62,14 @@ $(document).ready(function () {
 
     let num;
     $(".plus").on("click", function () {
-        num = parseInt($(this).next().val());
+        num = parseInt($(this).prev().val());
 
         $(this)
             .next()
             .val(num + 1);
     });
     $(".minus").on("click", function () {
-        num = parseInt($(this).prev().val());
+        num = parseInt($(this).next().val());
         if (num > 1) {
             $(this)
                 .prev()
