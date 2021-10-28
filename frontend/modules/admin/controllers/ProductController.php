@@ -40,6 +40,8 @@ class ProductController extends BaseController
 			$model->file = UploadedFile::getInstance($model, "file");
 			if ( $model->load(Yii::$app->request->post()) && $model->upload() && $model->save() ) {
 				return $this->redirect(["/admin/product/index"]);
+			} else {
+				Yii::error($model->getErrorSummary(true));
 			}
 		}
 		return $this->render("create", [
@@ -55,6 +57,8 @@ class ProductController extends BaseController
 			$model->file = UploadedFile::getInstance($model, "file");
 			if ( $model->load(Yii::$app->request->post()) && $model->upload() && $model->save() ) {
 				return $this->redirect(["/admin/product/index"]);
+			} else {
+				Yii::error($model->getErrorSummary(true));
 			}
 		}
 		return $this->render("create", [

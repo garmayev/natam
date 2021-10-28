@@ -29,7 +29,7 @@ echo GridView::widget([
 			"attribute" => "thumbs",
 			"format" => "html",
 			"content" => function ($model) {
-				return Html::img($model->thumbs);
+				return Html::img($model->thumbs, ["width" => "150px"]);
 			}
 		], [
 			'class' => \yii\grid\ActionColumn::className(),
