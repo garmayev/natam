@@ -47,9 +47,11 @@ class Product extends ActiveRecord
 	public function upload()
 	{
 		if ( $this->validate() ) {
-			$path = "/img/uploads/{$this->file->baseName}.{$this->file->extension}";
-			$this->file->saveAs(Yii::getAlias("@webroot").$path);
-			$this->thumbs = $path;
+			if ( isset($this->file->basName) ) {
+				$path = "/img/uploads/{$this->file->baseName}.{$this->file->extension}";
+				$this->file->saveAs(Yii::getAlias("@webroot") . $path);
+				$this->thumbs = $path;
+			}
 		}
 		return true;
 	}
