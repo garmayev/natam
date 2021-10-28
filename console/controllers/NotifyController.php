@@ -57,7 +57,16 @@ class NotifyController extends \yii\console\Controller
 		if (empty($order)) {
 			return "\tОтправка сообщения не удалась: Неизвестный номер заказа #$order_id\n";
 		}
-		$staff = Employee::find()->where(["state_id" => $order->status])->orderBy(["last_message_at" => SORT_ASC])->one();
+		$staffs = Employee::find()->where(["state_id" => $order->status])->orderBy(["last_message_at" => SORT_ASC])->all();
+		foreach ($staffs as $item) {
+			if ( isset($item->chat_id) ) {
+				$staff = $item;
+				echo "\tЗаказ будет передан сотруднику {$staff->family}\n";
+				break;
+			}
+//			print_r($item);
+//			next($staffs);
+		}
 		if (empty($staff)) {
 			return "\tОтправка сообщения не удалась: Нет требуемых кадров на этапе '{$order->getStatus($order->status)}'\n";
 		} else if (is_null($staff->chat_id)) {

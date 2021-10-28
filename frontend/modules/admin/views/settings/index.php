@@ -47,12 +47,12 @@ echo Html::textInput("Settings[notify][alert][0][time]", $model->getContent()["n
 echo Html::endTag("div");
 
 
-if ( isset($model->getContent()["notify"]["alert"][0]["chat_id"]) ) {
-    echo Html::beginTag("div", ["class" => ["form-group"]]);
-    echo Html::label("Адресат тревоги", "Settings[notify][alert][0][chat_id]");
-    echo Html::dropDownList("Settings[notify][alert][0][chat_id]", $model->getContent()["notify"]["alert"][0]["chat_id"], ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
-    echo Html::endTag("div");
-}
+//if ( isset($model->getContent()["notify"]["alert"][0]["chat_id"]) ) {
+echo Html::beginTag("div", ["class" => ["form-group"]]);
+echo Html::label("Адресат тревоги", "Settings[notify][alert][0][chat_id]");
+echo Html::dropDownList("Settings[notify][alert][0][chat_id]", (isset($model->getContent()["notify"]["alert"][0]["chat_id"])) ? $model->getContent()["notify"]["alert"][0]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
+echo Html::endTag("div");
+//}
 
 echo Html::tag("hr");
 
@@ -61,13 +61,13 @@ echo Html::label("Время тревоги для второго этапа", "
 echo Html::textInput("Settings[notify][alert][1][time]", $model->getContent()["notify"]["alert"][1]["time"], ["class" => "form-control"]);
 echo Html::endTag("div");
 
-if ( isset($model->getContent()["notify"]["alert"][1]["chat_id"]) ) {
-echo Html::beginTag("div", ["class" => ["form-group"]]);
-echo Html::label("Адресат тревоги", "Settings[notify][alert][1][chat_id]");
-echo Html::dropDownList("Settings[notify][alert][1][chat_id]", $model->getContent()["notify"]["alert"][1]["chat_id"], ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
-echo Html::endTag("div");
+//if (isset($model->getContent()["notify"]["alert"][1]["chat_id"])) {
+	echo Html::beginTag("div", ["class" => ["form-group"]]);
+	echo Html::label("Адресат тревоги", "Settings[notify][alert][1][chat_id]");
+	echo Html::dropDownList("Settings[notify][alert][1][chat_id]", (isset($model->getContent()["notify"]["alert"][1]["chat_id"])) ? $model->getContent()["notify"]["alert"][1]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
+	echo Html::endTag("div");
 
-}
+//}
 echo Html::tag("hr");
 
 
@@ -76,12 +76,12 @@ echo Html::label("Время тревоги для третьего этапа",
 echo Html::textInput("Settings[notify][alert][2][time]", $model->getContent()["notify"]["alert"][2]["time"], ["class" => "form-control"]);
 echo Html::endTag("div");
 
-if ( isset($model->getContent()["notify"]["alert"][2]["chat_id"]) ) {
-echo Html::beginTag("div", ["class" => ["form-group"]]);
-echo Html::label("Алресат тревоги", "Settings[notify][alert][2][chat_id]");
-echo Html::dropDownList("Settings[notify][alert][2][chat_id]", $model->getContent()["notify"]["alert"][2]["chat_id"], ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
-echo Html::endTag("div");
-}
+//if (isset($model->getContent()["notify"]["alert"][2]["chat_id"])) {
+	echo Html::beginTag("div", ["class" => ["form-group"]]);
+	echo Html::label("Алресат тревоги", "Settings[notify][alert][2][chat_id]");
+	echo Html::dropDownList("Settings[notify][alert][2][chat_id]", (isset($model->getContent()["notify"]["alert"][2]["chat_id"])) ? $model->getContent()["notify"]["alert"][2]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
+	echo Html::endTag("div");
+//}
 
 echo Html::endTag("div");
 echo Html::endTag("div");
