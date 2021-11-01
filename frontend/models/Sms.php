@@ -14,11 +14,11 @@ class Sms extends \yii\base\Model
 		$client = new \yii\httpclient\Client();
 		$response = $client->createRequest()
 			->setMethod("GET")
-			->setUrl("https://api.prostor-sms.ru/messages/v2/send")
-			->addHeaders(["Authorization" => "Basic ".base64_encode("ak141747:914042")])
+			->setUrl("https://sms.ru/sms/send")
 			->setData([
-				"phone" => "+{$phone}",
-				"text" => $text,
+				"api_id" => "F1F520FA-F7CA-4EC7-44C6-71B9D7B07372",
+				"to" => $phone,
+				"msg" => $text,
 			])
 			->send();
 		Yii::error($response->getContent());
