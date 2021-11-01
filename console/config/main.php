@@ -31,6 +31,10 @@ return [
                     'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
+	            [
+					'class' => \frontend\log\TelegramTarget::class,
+		            'levels' => ['error', 'warning'],
+	            ]
             ],
         ],
     ],
