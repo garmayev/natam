@@ -19,6 +19,7 @@ class Sms extends \yii\base\Model
 				"api_id" => "F1F520FA-F7CA-4EC7-44C6-71B9D7B07372",
 				"to" => $phone,
 				"msg" => $text,
+				"json" => 1,
 			])
 			->send();
 		Yii::error($response->getContent());
