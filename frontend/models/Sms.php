@@ -23,7 +23,12 @@ class Sms extends \yii\base\Model
 			])
 			->send();
 		if (!$response->isOk) {
-			Yii::error($response);
+			Yii::error($response->getContent());
+		} else {
+			$result = json_decode($response->getContent(), true);
+			if ( $result["status"] !== "OK" ) {
+				Yii::error($response->getContent());
+			}
 		}
 	}
 }
