@@ -83,11 +83,11 @@ class NotifyController extends \yii\console\Controller
 				$staff->last_message_at = time();
 				$staff->save();
 				$this->order_update($order, $staff, $response);
-				return 0;
+				// return 0;
 			} else {
 				echo "\t\tПри отправке соощения произошли ошибки!\nСмотрите файл console/runtime/logs/app.log\n";
 				\Yii::error($response->getData());
-				return 1;
+				// return 1;
 			}
 		} else {
 			echo "\t\tОтправка сообщения Начальству\n";
@@ -215,7 +215,14 @@ class NotifyController extends \yii\console\Controller
 		/**
 		 * @var $order Order
 		 */
-		return "Информация о клиенте:\n\tФИО: {$order->client->name}\n\tКонтактный номер: {$order->client->phone}\n\n";
+		$text = "Информация о клиенте\n";
+		if (isset($order->client->name)) {
+			$text .= "\tФИО: {$order->client->name}\n";
+		}
+		if (isset($order->client->phone)) {
+			$text .= "Контактный номер: {$order->client->phone}\n\n";
+		}
+		return $text;
 	}
 
 	/**

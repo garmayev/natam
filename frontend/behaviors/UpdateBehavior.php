@@ -70,7 +70,7 @@ class UpdateBehavior extends \yii\base\Behavior
 		 * @var $owner Order
 		 */
 		$owner = $this->owner;
-		$staff = Staff::find()->where(["state" => $this->owner->{$this->attribute_name}])->orderBy(["last_message_at" => SORT_ASC])->one();
+		$staff = Eployee::find()->where(["state_id" => $this->owner->{$this->attribute_name}])->orderBy(["last_message_at" => SORT_ASC])->one();
 		$owner->notify_started_at = $staff->user_id;
 	}
 
@@ -124,7 +124,7 @@ class UpdateBehavior extends \yii\base\Behavior
 		 * @var Order $owner
 		 */
 		// Поиск сотрудника, которому не отправлялось сообщение
-		$staff = Staff::find()->where(["state" => $this->owner->{$this->attribute_name}])->orderBy(["last_message_at" => SORT_ASC])->one();
+		$staff = Employee::find()->where(["state_id" => $this->owner->{$this->attribute_name}])->orderBy(["last_message_at" => SORT_ASC])->one();
 		$owner = $this->owner;
 
 		// Создание записи в БД (таблица Updates) о наличии изменения заказа

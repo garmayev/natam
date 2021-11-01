@@ -10,6 +10,7 @@ class Telegram extends \yii\base\Model
 	public $message = null;
 	public $callback_query = null;
 	public $edited_message = null;
+	public $my_chat_member = null;
 
 	public function __construct($config = [])
 	{
