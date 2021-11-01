@@ -33,7 +33,8 @@ return [
                 ],
 	            [
 					'class' => \frontend\log\TelegramTarget::class,
-		            'levels' => ['error', 'warning'],
+		            'levels' => ['error'],
+		            'logVars' => [],
 	            ]
             ],
         ],

@@ -260,9 +260,4 @@ class NotifyController extends \yii\console\Controller
 			["text" => "Отложить", "callback_data" => "/order_hold id={$order->id}"]
 		]]];
 	}
-
-	public function actionTest()
-	{
-		print_r($this->alert(139));
-	}
 }
