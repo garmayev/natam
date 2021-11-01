@@ -22,6 +22,8 @@ class Sms extends \yii\base\Model
 				"json" => 1,
 			])
 			->send();
-		Yii::error($response->getContent());
+		if (!$response->isOk) {
+			Yii::error($response);
+		}
 	}
 }
