@@ -27,17 +27,15 @@ class NotifyController extends \yii\console\Controller
 		$orders = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
 		echo "Открытых заказов: " . count($orders) . "\n";
 		foreach ($orders as $order) {
-			$update = Updates::find()->where(["order_id" => $order->id])->orderBy(["created_at" => SORT_DESC, "order_status" => SORT_ASC])->one();
+			$update = Updates::find()->where(["order_id" => $order->id])->orderBy(["created_at" => SORT_ASC, "order_status" => SORT_ASC])->one();
 			if (isset($update)) {
 				echo "Заказ #{$order->id} был кому-то отправлен ранее\n";
 				if (($now - $update->created_at) > \Yii::$app->params["notify"]["limit"][$order->status]) {
 					echo "Сотрудник не ответил вовремя\n";
 					echo $this->lockMessage($order->id);
-					echo $this->next($order->id);
 				}
-			} else {
-				echo $this->next($order->id, true);
 			}
+			echo $this->next($order->id);
 		}
 		return 0;
 	}
@@ -58,7 +56,7 @@ class NotifyController extends \yii\console\Controller
 		}
 		$staffs = Employee::find()->where(["state_id" => $order->status])->orderBy(["last_message_at" => SORT_ASC])->all();
 		foreach ($staffs as $item) {
-			if ( isset($item->chat_id) ) {
+			if (isset($item->chat_id)) {
 				$staff = $item;
 				echo "\tЗаказ будет передан сотруднику {$staff->family}\n";
 				break;
@@ -71,7 +69,7 @@ class NotifyController extends \yii\console\Controller
 		} else if (is_null($staff->chat_id)) {
 			return "\tСотрудник '{$staff->user->username}' не установил соединения с Telegram-каналом\n";
 		}
-		if (($order->notify_started_at !== $staff->user_id)) {
+		if (($order->notify_started_at !== $staff->id)) {
 			echo "\t\tОтправка сообщения другому сотруднику\n";
 			$text = $this->generateHeader($order);
 			$text .= $this->generateClientInfo($order);
@@ -107,22 +105,19 @@ class NotifyController extends \yii\console\Controller
 		$order = Order::findOne($order_id);
 		$time = (!is_null($order->updated_at)) ? $order->updated_at : $order->created_at;
 		$boss = Alert::findChat(time() - $time);
-//		var_dump($boss);
-		if ( is_null($boss) ) {
-			return ;
+		if (is_null($boss)) {
+			return 0;
 		}
-		if ( empty($order->boss_chat_id) || ( !is_null($boss) && ($order->boss_chat_id !== $boss["chat_id"])) ) {
-			$response = Telegram::sendMessage(["chat_id" => $boss["chat_id"], "text" => "Заказ #{$order->id} никто не обработал со стадии {$order->getStatus($order->status)}"]);
-			if ($response->isOk) {
-				echo "\t\tОтправка сообщения начальству прошла успешно\n";
-				$order->boss_chat_id = $boss["chat_id"];
-				$order->save();
-				return 0;
-			} else {
-				echo "\t\tОтправка сообщения не удалась!\nСмотрите файл console/runtime/logs/app.log\n";
-				\Yii::error($response->getData());
-				return 1;
-			}
+		$response = Telegram::sendMessage(["chat_id" => $boss["chat_id"], "text" => "Заказ #{$order->id} никто не обработал со стадии {$order->getStatus($order->status)}"]);
+		if ($response->isOk) {
+			echo "\t\tОтправка сообщения начальству прошла успешно\n";
+			$order->boss_chat_id = $boss["chat_id"];
+			$order->save();
+			return 0;
+		} else {
+			echo "\t\tОтправка сообщения не удалась!\nСмотрите файл console/runtime/logs/app.log\n";
+			\Yii::error($response->getData());
+			return 1;
 		}
 	}
 
@@ -176,6 +171,8 @@ class NotifyController extends \yii\console\Controller
 		if (isset($update)) {
 			$response = Telegram::editMessage(["chat_id" => $staff->chat_id, "text" => "Заказ #{$order->id} был переадресован вашему коллеге или начальству", "message_id" => $update->message_id]);
 			if ($response->isOk) {
+				$update->updated_at = time();
+				$update->save();
 				return "Блокировка прошла успешно\n";
 			} else {
 				\Yii::error($response->getData());
@@ -257,9 +254,8 @@ class NotifyController extends \yii\console\Controller
 		]]];
 	}
 
-	public function actionAlert()
+	public function actionTest()
 	{
-		$order = Order::findOne(135);
-		$order->deepClone();
+		print_r($this->alert(139));
 	}
 }

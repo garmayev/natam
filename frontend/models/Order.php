@@ -50,9 +50,9 @@ class Order extends ActiveRecord
 				'attributes' => [
 					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
 				],
-			], [
-				'class' => UpdateBehavior::className(),
-				'attribute_name' => 'status',
+//			], [
+//				'class' => UpdateBehavior::className(),
+//				'attribute_name' => 'status',
 			]
 		];
 	}
