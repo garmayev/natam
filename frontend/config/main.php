@@ -44,6 +44,9 @@ return [
 		            'class' => \frontend\log\TelegramTarget::class,
 		            'levels' => ['error'],
 		            'logVars' => [],
+		            'except' => [
+			            'yii\web\HttpException:404',
+		            ],
 	            ]
             ],
         ],
