@@ -24,9 +24,6 @@ $menu = [
 AppAsset::register($this);
 $this->beginPage();
 
-/**
- * @todo Доделать раздел вакансии
- */
 ?>
 <!DOCTYPE html>
 <html lang="<?= Yii::$app->language ?>" class="h-100">

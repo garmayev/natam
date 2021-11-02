@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use garmayev\staff\models\Employee;
 use yii\db\ActiveRecord;
 
 /**
@@ -16,7 +17,7 @@ use yii\db\ActiveRecord;
  * @property int $order_status [int(11)]
  * @property int $staff_id [int(11)]
  *
- * @property Staff $staff
+ * @property Employee $staff
  * @property Order $order
  */
 class Updates extends ActiveRecord
@@ -40,7 +41,7 @@ class Updates extends ActiveRecord
 	}
 
 	public function getStaff() {
-		return $this->hasOne(Staff::className(), ["id" => "staff_id"]);
+		return $this->hasOne(Employee::className(), ["id" => "staff_id"]);
 	}
 
 	public function getOrder()

@@ -10,6 +10,11 @@ namespace frontend\modules\admin\models;
  */
 class Settings extends \yii\db\ActiveRecord
 {
+	public function init()
+	{
+		parent::init();
+	}
+
 	/**
 	 * Установка атрибута content в закодированном виде (для сохранения)
 	 *
