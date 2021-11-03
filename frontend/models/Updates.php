@@ -15,13 +15,19 @@ use yii\db\ActiveRecord;
  * @property int $message_id [int(11)]
  * @property int $message_timestamp [int(11)]
  * @property int $order_status [int(11)]
- * @property int $staff_id [int(11)]
+ * @property int $employee_id [int(11)]
+ * @property string $type
+ * @property int $boss_id
  *
- * @property Employee $staff
+ * @property Employee $employee
  * @property Order $order
+ * @property Employee $chef
  */
 class Updates extends ActiveRecord
 {
+	const TYPE_EMPLOYEE = "employee";
+	const TYPE_CHEF = "chef";
+
 	public function behaviors()
 	{
 		return [
@@ -40,12 +46,17 @@ class Updates extends ActiveRecord
 		return "{{%updates}}";
 	}
 
-	public function getStaff() {
-		return $this->hasOne(Employee::className(), ["id" => "staff_id"]);
+	public function getEmployee() {
+		return $this->hasOne(Employee::className(), ["id" => "employee_id"]);
 	}
 
 	public function getOrder()
 	{
 		return $this->hasOne(Order::className(), ["id" => "order_id"]);
+	}
+
+	public function getChef()
+	{
+		return $this->hasOne(Employee::className(), ["id" => "boss_id"]);
 	}
 }

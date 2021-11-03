@@ -78,20 +78,22 @@ class NotifiesController extends \yii\console\Controller
 		 * Вариант 1: В таблице updates ввести поле, наподобие type = enum('chef', 'employee')
 		 *              По умолчанию значение равно employee. После отправки сообщения начальству 0 chef
 		 */
-		/**
-		 * TODO: 3. Исправить поле staff_id на employee_id
-		 */
 		$now = time();
 		$update = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->orderBy("created_at DESC")->one();
 		if ( isset($update) ) {
-			$this->logMessage .= "\tИнформация о заказе #{$order->id} уже отправлялась пользователю {$update->staff->getFullname()}\n";
-			echo "\tИнформация о заказе #{$order->id} уже отправлялась пользователю {$update->staff->getFullname()}\n";
+			$this->logMessage .= "\tИнформация о заказе #{$order->id} уже отправлялась пользователю {$update->employee->getFullname()}\n";
+			echo "\tИнформация о заказе #{$order->id} уже отправлялась пользователю {$update->employee->getFullname()}\n";
 			$this->currentUpdate = $update;
 			$chef = Helper::searchChef($this->currentUpdate, $this->settings);
-			if ( $chef )
-				return self::CHECK_CHEF;
-			if ( $update->created_at + $this->settings["limit"][$order->status - 1] > $now ) {
+			if ( isset($update->chef) && !isset($chef) && $update->chef->chat_id === $chef ) {
+				$this->logMessage .= "\tПересылка не требуется\n";
+				echo "\tПересылка не требуется\n";
 				return self::CHECK_NONE;
+			}
+			if ( $update->created_at + $this->settings["limit"][$order->status - 1] < $now ) {
+				$this->logMessage .= "\tТребуется уведомление начальства о задержке на этапе {$order->getStatus($order->status)}\n";
+				echo "\tТребуется уведомление начальства о задержке на этапе {$order->getStatus($order->status)}\n";
+				return self::CHECK_CHEF;
 			}
 			$this->logMessage .= "\tНеобходима пересылка другому сотруднику\n";
 			echo "\tНеобходима пересылка другому сотруднику\n";
@@ -116,6 +118,7 @@ class NotifiesController extends \yii\console\Controller
 		{
 			if ( isset($employee->chat_id) ) {
 				$this->logMessage .= "Отправка уведомления пользователю #{$employee->getFullname()}\n";
+				echo "Отправка уведомления пользователю #{$employee->getFullname()}\n";
 				$this->currentEmployee = $employee;
 				if ( isset($this->currentUpdate) ) {
 					$order->notify_started_at = $employee->id;
@@ -221,16 +224,16 @@ class NotifiesController extends \yii\console\Controller
 	 */
 	private function closeUpdate()
 	{
-		$this->logMessage .= "Изменение сообщения для пользователя {$this->currentUpdate->staff->getFullname()}\n";
+		$this->logMessage .= "Изменение сообщения для пользователя {$this->currentUpdate->employee->getFullname()}\n";
 		$this->currentUpdate->updated_at = time();
 		$this->currentUpdate->save();
 		$response = Telegram::editMessage([
-			"chat_id" => $this->currentUpdate->staff->chat_id,
+			"chat_id" => $this->currentUpdate->employee->chat_id,
 			"text" => "Информация о заказе #{$this->currentUpdate->order_id} была отправлена другому пользователю",
 			"message_id" => $this->currentUpdate->message_id]);
 		if ( $response->isOk && !$response->getData()["ok"] ) {
 			Helper::error([
-				"Ошибка при изменении сообщения для пользователя {$this->currentUpdate->staff->getFullname()}",
+				"Ошибка при изменении сообщения для пользователя {$this->currentUpdate->employee->getFullname()}",
 				$response->getData()
 			], true);
 		}
@@ -249,7 +252,7 @@ class NotifiesController extends \yii\console\Controller
 		$update = new Updates([
 			"order_id" => $order->id,
 			"order_status" => $order->status,
-			"staff_id" => $this->currentEmployee->id,
+			"employee_id" => $this->currentEmployee->id,
 			"message_id" => $result["result"]["message_id"],
 			"message_timestamp" => $result["result"]["date"],
 		]);
