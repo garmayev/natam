@@ -59,7 +59,7 @@ class NotifiesController extends \yii\console\Controller
 					break;
 			}
 		}
-		Helper::error($this->logMessage);
+//		Helper::error($this->logMessage);
 	}
 
 	/**
@@ -80,12 +80,12 @@ class NotifiesController extends \yii\console\Controller
 		 */
 		$now = time();
 		$update = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->orderBy("created_at DESC")->one();
-//		print_r($update->attributes);
 		if ( isset($update) ) {
-			$this->logMessage .= "\tИнформация о заказе #{$order->id} уже отправлялась пользователю {$update->employee->getFullname()}\n";
-			echo "\tИнформация о заказе #{$order->id} уже отправлялась пользователю {$update->employee->getFullname()}\n";
 			$this->currentUpdate = $update;
-			if ( (isset($order->updated_at) ? $order->updated_at : $order->created_at) + $this->settings["limit"][$order->status - 1] < $now ) {
+			$order_time = isset($order->updated_at) ? $order->updated_at : $order->created_at;
+			if ( ($order_time + $this->settings["limit"][$order->status - 1]) > $now ) {
+				$this->logMessage .= "\tПересылка не требуется\n";
+				echo "\tПересылка не требуется\n";
 				return self::CHECK_NONE;
 			}
 			$chef = Helper::searchChef($this->currentUpdate, $this->settings);
@@ -94,10 +94,15 @@ class NotifiesController extends \yii\console\Controller
 				echo "\tПересылка не требуется\n";
 				return self::CHECK_NONE;
 			}
-			if ( $order->created_at + $this->settings["limit"][$order->status - 1] < $now ) {
-				$this->logMessage .= "\tТребуется уведомление начальства о задержке на этапе {$order->getStatus($order->status)}\n";
-				echo "\tТребуется уведомление начальства о задержке на этапе {$order->getStatus($order->status)}\n";
-				return self::CHECK_CHEF;
+			if ( $update->created_at + $this->settings["limit"][$order->status - 1] < $now ) {
+//				var_dump($chef);
+//				var_dump($order->boss_chat_id);
+//				var_dump($chef === $order->boss_chat_id."");
+				if ( $order->boss_chat_id."" !== $chef ) {
+					$this->logMessage .= "\tТребуется уведомление начальства о задержке заказа #{$order->id} на этапе \"{$order->getStatus($order->status)}\"\n";
+					echo "\tТребуется уведомление начальства о задержке заказа #{$order->id} на этапе \"{$order->getStatus($order->status)}\"\n";
+					return self::CHECK_CHEF;
+				}
 			}
 			$this->logMessage .= "\tНеобходима пересылка другому сотруднику\n";
 			echo "\tНеобходима пересылка другому сотруднику\n";
@@ -207,17 +212,18 @@ class NotifiesController extends \yii\console\Controller
 	 */
 	public function sendMessage($args)
 	{
-		$response = Telegram::sendMessage($args);
-		if ( isset($this->currentUpdate) ) {
-			$this->closeUpdate();
-			if ( $response->isOk && !$response->getData()["ok"] ) {
-				Helper::error([
-					"Ошибка при изменении сообщения для пользователя {$this->currentEmployee->getFullname()}",
-					$response->getData()
-				], true);
-			}
-		}
-		return $response;
+//		\Yii::error($args);
+//		$response = Telegram::sendMessage($args);
+//		if ( isset($this->currentUpdate) ) {
+//			$this->closeUpdate();
+//			if ( $response->isOk && !$response->getData()["ok"] ) {
+//				Helper::error([
+//					"Ошибка при изменении сообщения для пользователя {$this->currentEmployee->getFullname()}",
+//					$response->getData()
+//				], true);
+//			}
+//		}
+//		return $response;
 	}
 
 	/**
@@ -231,16 +237,16 @@ class NotifiesController extends \yii\console\Controller
 		$this->logMessage .= "Изменение сообщения для пользователя {$this->currentUpdate->employee->getFullname()}\n";
 		$this->currentUpdate->updated_at = time();
 		$this->currentUpdate->save();
-		$response = Telegram::editMessage([
-			"chat_id" => $this->currentUpdate->employee->chat_id,
-			"text" => "Информация о заказе #{$this->currentUpdate->order_id} была отправлена другому пользователю",
-			"message_id" => $this->currentUpdate->message_id]);
-		if ( $response->isOk && !$response->getData()["ok"] ) {
-			Helper::error([
-				"Ошибка при изменении сообщения для пользователя {$this->currentUpdate->employee->getFullname()}",
-				$response->getData()
-			], true);
-		}
+//		$response = Telegram::editMessage([
+//			"chat_id" => $this->currentUpdate->employee->chat_id,
+//			"text" => "Информация о заказе #{$this->currentUpdate->order_id} была отправлена другому пользователю",
+//			"message_id" => $this->currentUpdate->message_id]);
+//		if ( $response->isOk && !$response->getData()["ok"] ) {
+//			Helper::error([
+//				"Ошибка при изменении сообщения для пользователя {$this->currentUpdate->employee->getFullname()}",
+//				$response->getData()
+//			], true);
+//		}
 	}
 
 	/**
