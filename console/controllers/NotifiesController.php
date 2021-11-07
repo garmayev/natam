@@ -158,7 +158,7 @@ class NotifiesController extends \yii\console\Controller
 			if ($order->notify_started_at !== $employee->id) {
 				return $employee;
 			} else {
-				$this->toChef($order);
+//				$this->toChef($order);
 			}
 		}
 		return null;
@@ -360,6 +360,6 @@ class NotifiesController extends \yii\console\Controller
 
 	public function actionTest()
 	{
-		var_dump( $this->check(Order::findOne(139)) );
+		var_dump( $this->searchEmployee(Order::findOne(139)) );
 	}
 }

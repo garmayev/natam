@@ -38,6 +38,13 @@ return [
 	            ]
             ],
         ],
+	    'db' => [
+		    'class' => 'yii\db\Connection',
+		    'dsn' => 'mysql:host=localhost;dbname=natam',
+		    'username' => 'garmayev',
+		    'password' => 'rhbcnbyfgfrekjdf',
+		    'charset' => 'utf8',
+	    ],
     ],
 	'modules' => [
 		'user' => [
