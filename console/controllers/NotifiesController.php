@@ -80,17 +80,21 @@ class NotifiesController extends \yii\console\Controller
 		 */
 		$now = time();
 		$update = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->orderBy("created_at DESC")->one();
+//		print_r($update->attributes);
 		if ( isset($update) ) {
 			$this->logMessage .= "\tИнформация о заказе #{$order->id} уже отправлялась пользователю {$update->employee->getFullname()}\n";
 			echo "\tИнформация о заказе #{$order->id} уже отправлялась пользователю {$update->employee->getFullname()}\n";
 			$this->currentUpdate = $update;
+			if ( (isset($order->updated_at) ? $order->updated_at : $order->created_at) + $this->settings["limit"][$order->status - 1] < $now ) {
+				return self::CHECK_NONE;
+			}
 			$chef = Helper::searchChef($this->currentUpdate, $this->settings);
 			if ( isset($update->chef) && !isset($chef) && $update->chef->chat_id === $chef ) {
 				$this->logMessage .= "\tПересылка не требуется\n";
 				echo "\tПересылка не требуется\n";
 				return self::CHECK_NONE;
 			}
-			if ( $update->created_at + $this->settings["limit"][$order->status - 1] < $now ) {
+			if ( $order->created_at + $this->settings["limit"][$order->status - 1] < $now ) {
 				$this->logMessage .= "\tТребуется уведомление начальства о задержке на этапе {$order->getStatus($order->status)}\n";
 				echo "\tТребуется уведомление начальства о задержке на этапе {$order->getStatus($order->status)}\n";
 				return self::CHECK_CHEF;
@@ -153,12 +157,12 @@ class NotifiesController extends \yii\console\Controller
 		/**
 		 * @var $employee Employee
 		 */
-		$employee = Employee::find()->where(["state_id" => $order->status])->orderBy("last_message_at ASC")->one();
+		$employee = Employee::find()->where(["state_id" => $order->status])->orderBy("last_message_at DESC")->one();
 		if ( $employee ) {
 			if ($order->notify_started_at !== $employee->id) {
 				return $employee;
 			} else {
-//				$this->toChef($order);
+				$this->toChef($order);
 			}
 		}
 		return null;
@@ -360,6 +364,6 @@ class NotifiesController extends \yii\console\Controller
 
 	public function actionTest()
 	{
-		var_dump( $this->searchEmployee(Order::findOne(139)) );
+		var_dump( $this->check(Order::findOne(139)) );
 	}
 }
