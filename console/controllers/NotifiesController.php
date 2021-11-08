@@ -191,18 +191,20 @@ class NotifiesController extends \yii\console\Controller
 	 */
 	private function closeUpdate()
 	{
-		$this->logMessage .= "Изменение сообщения для пользователя {$this->currentUpdate->employee->getFullname()}\n";
-		$this->currentUpdate->updated_at = time();
-		$this->currentUpdate->save();
-		$response = Telegram::editMessage([
-			"chat_id" => $this->currentUpdate->employee->chat_id,
-			"text" => "Информация о заказе #{$this->currentUpdate->order_id} была отправлена другому пользователю",
-			"message_id" => $this->currentUpdate->message_id]);
-		if ($response->isOk && !$response->getData()["ok"]) {
-			Helper::error([
-				"Ошибка при изменении сообщения для пользователя {$this->currentUpdate->employee->getFullname()}",
-				$response->getData()
-			], true);
+		if (isset($this->currentUpdate)) {
+			$this->logMessage .= "Изменение сообщения для пользователя {$this->currentUpdate->employee->getFullname()}\n";
+			$this->currentUpdate->updated_at = time();
+			$this->currentUpdate->save();
+			$response = Telegram::editMessage([
+				"chat_id" => $this->currentUpdate->employee->chat_id,
+				"text" => "Информация о заказе #{$this->currentUpdate->order_id} была отправлена другому пользователю",
+				"message_id" => $this->currentUpdate->message_id]);
+			if ($response->isOk && !$response->getData()["ok"]) {
+				Helper::error([
+					"Ошибка при изменении сообщения для пользователя {$this->currentUpdate->employee->getFullname()}",
+					$response->getData()
+				], true);
+			}
 		}
 	}
 
