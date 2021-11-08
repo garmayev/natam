@@ -121,9 +121,9 @@ $this->title = Yii::$app->name;
                     <div class="form_item">
 						<?= Html::activeTextInput($client, "name", ["placeholder" => $client->getAttributeLabel("name")]) ?>
 						<?= Html::activeTextInput($client, "phone", ["placeholder" => $client->getAttributeLabel("phone")]) ?>
-						<?= Html::activeTextInput($client, "email", ["placeholder" => $client->getAttributeLabel("email")]) ?>
 						<?= Html::activeTextInput($client, "company", ["placeholder" => $client->getAttributeLabel("company")]) ?>
 						<?= Html::activeTextInput($order, "address", ["placeholder" => $order->getAttributeLabel("address")]) ?>
+						<?= Html::activeTextInput($order, "comment", ["placeholder" => $order->getAttributeLabel("comment")]) ?>
                     </div>
                     <div class="form_item">
 						<?php

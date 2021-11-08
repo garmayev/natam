@@ -309,6 +309,8 @@ class NotifiesController extends \yii\console\Controller
 				"\t\tЦена: {$product->price}\n\n";
 			$total_price += $order_product->product_count * $product->price;
 		}
+		if ( !is_null($order->comment) )
+		$text .= "Комментарий: {$order->comment}";
 		$text .= "Общая стоимость заказа: {$total_price}";
 		return $text;
 	}
