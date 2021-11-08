@@ -2,7 +2,10 @@
 
 namespace frontend\models;
 
+use console\helper\Helper;
 use frontend\behaviors\UpdateBehavior;
+use frontend\modules\admin\models\Settings;
+use garmayev\staff\models\Employee;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -163,5 +166,41 @@ class Order extends ActiveRecord
 		}
 		$transaction->commit();
 		return Order::findOne($newOrderId);
+	}
+
+	public function checkAlerts()
+	{
+		$settings = (Settings::findOne(["name" => "notify"]))->getContent()["notify"];
+		$modified_time = (isset($this->updated_at)) ? $this->updated_at : $this->created_at;
+		$now = time();
+		for ($i = 0; $i < count($settings["alert"]) - 1; $i ++) {
+			$current = $settings["alert"][$i];
+			$next = $settings["alert"][$i + 1];
+			if ( (($now - $modified_time) > $current["time"]) && (($now - $modified_time) < $next["time"]) ) {
+				return $current["chat_id"];
+			}
+		}
+		if ( $now - $modified_time > $settings["alert"][count($settings)]["time"] ) {
+			return $settings["alert"][count($settings)];
+		} else {
+			return null;
+		}
+	}
+
+	public function checkEmployee()
+	{
+		$settings = (Settings::findOne(["name" => "notify"]))->getContent()["notify"];
+		$updates = Updates::find()->where(["order_id" => $this->id])->orderBy(["created_at" => SORT_ASC])->one();
+		if ( isset($updates) ) {
+			if ( time() - $updates->created_at > $settings["limit"][$this->status - 1] ) {
+				$employee = Employee::find()->where(["state_id" => $this->status])->orderBy(["last_message_at" => SORT_ASC])->one();
+				if ( $this->notify_started_at !== $employee->id ) {
+					return $employee;
+				}
+			}
+			return null;
+		} else {
+			return Employee::find()->where(["state_id" => $this->status])->orderBy(["last_message_at" => SORT_ASC])->one();
+		}
 	}
 }
