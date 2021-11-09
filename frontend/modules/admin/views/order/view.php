@@ -76,7 +76,7 @@ $totalCost = 0;
 
             <?php
                 $result = [0, 0, 0, 0, 0];
-                $updates = \frontend\models\Updates::find()->where(["order_id" => $model->id])->orderBy(["staff_id" => SORT_ASC])->all();
+                $updates = \frontend\models\Updates::find()->where(["order_id" => $model->id])->orderBy(["employee_id" => SORT_ASC])->all();
                 foreach ( $updates as $update ) {
 		    if ( $update->per_time !== null )
                     $result[$update->staff_id] += $update->per_time;

@@ -26,7 +26,7 @@ $this->registerCss(".about_info::before { display: none; }");
 					<?= Html::img($model->thumbs) ?>
                 </div>
             </div>
-            <a href="#" class="btn ticket">Заказать услугу</a>
+            <a href="#" class="btn ticket" style="margin: 0 auto; width: 250px;">Заказать услугу</a>
         </div>
     </section>
     <script>

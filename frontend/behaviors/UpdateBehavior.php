@@ -30,27 +30,29 @@ class UpdateBehavior extends \yii\base\Behavior
 		 * @var $item OrderProduct
 		 */
 		$owner = $this->owner;
-		$post = \Yii::$app->request->post();
-		if ( isset($post["Order"]) && isset($post["Order"]["product"]) ) {
-			for ($i = 0; $i < count($post["Order"]["product"]["id"]); $i++) {
-				$op = new OrderProduct([
-					"order_id" => $owner->id,
-					"product_id" => $post["Order"]["product"]["id"][$i],
-					"product_count" => $post["Order"]["product"]["count"][$i],
-				]);
-				$op->save();
+		if ( count($_POST) > 0 ) {
+			$post = \Yii::$app->request->post();
+			if (isset($post["Order"]) && isset($post["Order"]["product"])) {
+				for ($i = 0; $i < count($post["Order"]["product"]["id"]); $i++) {
+					$op = new OrderProduct([
+						"order_id" => $owner->id,
+						"product_id" => $post["Order"]["product"]["id"][$i],
+						"product_count" => $post["Order"]["product"]["count"][$i],
+					]);
+					$op->save();
+				}
 			}
-		}
 
-		$tmp = $owner->tmp_products;
-		if ( !empty($tmp) ) {
-			foreach ( $tmp as $item ) {
-				$op = new OrderProduct([
-					"order_id" => $owner->id,
-					"product_id" => $item->product_id,
-					"product_count" => $item->product_count,
-				]);
-				$op->save();
+			$tmp = $owner->tmp_products;
+			if (!empty($tmp)) {
+				foreach ($tmp as $item) {
+					$op = new OrderProduct([
+						"order_id" => $owner->id,
+						"product_id" => $item->product_id,
+						"product_count" => $item->product_count,
+					]);
+					$op->save();
+				}
 			}
 		}
 	}
@@ -58,10 +60,10 @@ class UpdateBehavior extends \yii\base\Behavior
 	public function afterInsert($event)
 	{
 		$this->saveProducts();
-		$sendMessage = $this->sendNewMessage();
-		if (!$sendMessage["ok"]) {
-			\Yii::error($sendMessage["message"]);
-		}
+//		$sendMessage = $this->sendNewMessage();
+//		if (!$sendMessage["ok"]) {
+//			\Yii::error($sendMessage["message"]);
+//		}
 	}
 
 	public function beforeInsert($event)
@@ -69,23 +71,24 @@ class UpdateBehavior extends \yii\base\Behavior
 		/**
 		 * @var $owner Order
 		 */
-		$owner = $this->owner;
-		$staff = Eployee::find()->where(["state_id" => $this->owner->{$this->attribute_name}])->orderBy(["last_message_at" => SORT_ASC])->one();
-		$owner->notify_started_at = $staff->user_id;
+//		$owner = $this->owner;
+//		$staff = Eployee::find()->where(["state_id" => $this->owner->{$this->attribute_name}])->orderBy(["last_message_at" => SORT_ASC])->one();
+//		$owner->notify_started_at = $staff->user_id;
 	}
 
 	public function beforeUpdate($event)
 	{
+		$this->saveProducts();
 		if ( isset($this->owner->getDirtyAttributes()["status"]) ) $this->owner->updated_at = time();
 		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
-			$disable = $this->disablePreviousMessage($event);
-			if (!$disable["ok"]) {
-				\Yii::error($disable["message"]);
-			}
-			$sendMessage = $this->sendNewMessage();
-			if (!$sendMessage["ok"]) {
-				\Yii::error($sendMessage["message"]);
-			}
+//			$disable = $this->disablePreviousMessage($event);
+//			if (!$disable["ok"]) {
+//				\Yii::error($disable["message"]);
+//			}
+//			$sendMessage = $this->sendNewMessage();
+//			if (!$sendMessage["ok"]) {
+//				\Yii::error($sendMessage["message"]);
+//			}
 		}
 	}
 

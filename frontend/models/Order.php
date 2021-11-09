@@ -6,6 +6,7 @@ use console\helper\Helper;
 use frontend\behaviors\UpdateBehavior;
 use frontend\modules\admin\models\Settings;
 use garmayev\staff\models\Employee;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -53,9 +54,23 @@ class Order extends ActiveRecord
 				'attributes' => [
 					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
 				],
+			], [
+				'class' => UpdateBehavior::className(),
+				'attribute_name' => 'status',
 //			], [
-//				'class' => UpdateBehavior::className(),
-//				'attribute_name' => 'status',
+//				'class' => SaveRelationsBehavior::class,
+//				'relations' => [
+//					'products' => [
+//						'extraColumns' => function ($model) {
+//							/**
+//							 * @var Product $model
+//							 */
+//							return [
+//								'product_count' => $this->orderProduct->product_count
+//							];
+//						}
+//					]
+//				]
 			]
 		];
 	}
