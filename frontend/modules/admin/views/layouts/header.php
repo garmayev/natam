@@ -42,10 +42,12 @@ $orders = Order::find()->all();
                                 <?php
                                     foreach ($tickets as $ticket) {
 //                                        Yii::error($ticket->client->name);
+					if (isset($ticket->client)) {
                                         $message = "<div class='pull-left'><img src='{$directoryAsset}/img/user3-128x128.jpg'></div>
 <h4>{$ticket->client->name}</h4>
 <p>{$ticket->client->phone}</p>";
                                         echo Html::tag("li", Html::a($message, ["/admin/ticket/view", "id" => $ticket->id]));
+					}
                                     }
                                 ?>
                             </ul>

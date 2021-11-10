@@ -60,7 +60,7 @@ class NotifiesController extends \yii\console\Controller
 					break;
 			}
 		}
-//		Helper::error($this->logMessage);
+		Helper::error($this->logMessage);
 	}
 
 	/**
@@ -99,14 +99,12 @@ class NotifiesController extends \yii\console\Controller
 					$this->currentUpdate = $update;
 					$this->closeUpdate();
 				}
-				$this->logMessage .= "Отправка уведомления пользователю {$employee->getFullname()}\n";
-				echo "Отправка уведомления пользователю {$employee->getFullname()}\n";
+				$this->logMessage .= "Отправка уведомления по поводу заказа #{$order->id} пользователю {$employee->getFullname()}\n";
+				echo "Отправка уведомления по поводу заказа #{$order->id} пользователю {$employee->getFullname()}\n";
 				$this->currentEmployee = $employee;
 				if (!isset($this->currentUpdate)) {
 					$order->notify_started_at = $employee->id;
 					$order->save();
-				} else {
-
 				}
 				$response = $this->sendMessage([
 					"chat_id" => $employee->chat_id,
@@ -195,10 +193,11 @@ class NotifiesController extends \yii\console\Controller
 			$this->logMessage .= "Изменение сообщения для пользователя {$this->currentUpdate->employee->getFullname()}\n";
 			$this->currentUpdate->updated_at = time();
 			$this->currentUpdate->save();
-			$response = Telegram::editMessage([
+			$response = Telegram::sendMessage([
 				"chat_id" => $this->currentUpdate->employee->chat_id,
 				"text" => "Информация о заказе #{$this->currentUpdate->order_id} была отправлена другому пользователю",
-				"message_id" => $this->currentUpdate->message_id]);
+//				"message_id" => $this->currentUpdate->message_id
+			]);
 			if ($response->isOk && !$response->getData()["ok"]) {
 				Helper::error([
 					"Ошибка при изменении сообщения для пользователя {$this->currentUpdate->employee->getFullname()}",
@@ -310,7 +309,8 @@ class NotifiesController extends \yii\console\Controller
 			$total_price += $order_product->product_count * $product->price;
 		}
 		if ( !is_null($order->comment) )
-		$text .= "Комментарий: {$order->comment}";
+		$text .= "Адрес доставки: {$order->address}\n";
+		$text .= "Комментарий: {$order->comment}\n";
 		$text .= "Общая стоимость заказа: {$total_price}";
 		return $text;
 	}
