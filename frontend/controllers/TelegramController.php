@@ -52,16 +52,18 @@ class TelegramController extends \yii\rest\Controller
 							return ["ok" => true];
 						}
 					} else {
-						$staff = Employee::find()->where(["phone" => $args[0]])->orWhere(["chat_id" => $telegram->message["from"]["id"]])->one();
-						if ($staff) {
-							if (is_null($staff->chat_id)) {
-								$staff->chat_id = $telegram->message["from"]["id"];
-								$staff->save();
+						if (isset($args[0])) {
+							$staff = Employee::find()->where(["phone" => $args[0]])->orWhere(["chat_id" => $telegram->message["from"]["id"]])->one();
+							if ($staff) {
+								if (is_null($staff->chat_id)) {
+									$staff->chat_id = $telegram->message["from"]["id"];
+									$staff->save();
+								}
+								Telegram::sendMessage([
+									"chat_id" => $staff->chat_id,
+									"text" => "В этот бот вам будут приходить новые заявки с сайта " . Yii::$app->name,
+								]);
 							}
-							Telegram::sendMessage([
-								"chat_id" => $staff->chat_id,
-								"text" => "В этот бот вам будут приходить новые заявки с сайта " . Yii::$app->name,
-							]);
 						}
 					}
 					break;
@@ -133,15 +135,26 @@ class TelegramController extends \yii\rest\Controller
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["id"]);
 					$staff = Employee::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
-					if ( $staff->state === $order->status ) {
+					if ( isset($staff) && isset($order) && ($staff->state_id == $order->status) ) {
 						$order->status++;
-						$order->save();
+						if ( $order->save() ) {
+							$update = Updates::find()->where(["message_id" => $telegram->callback_query["message"]["message_id"]])->one();
+							if ( isset($update) ) {
+								$update->updated_at = time();
+								$update->save();
+								Telegram::editMessage(["chat_id" => $telegram->callback_query["from"]["id"], "text" => "Статус заказа #{$order->id} был изменен", "message_id" => $telegram->callback_query["message"]["message_id"]]);
+							}
+							return ["ok" => true];
+						};
 					}
 					break;
 				case "/order_hold":
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["id"]);
 					$order->status = Order::STATUS_HOLD;
+					if ( $order->save() ) {
+						return ["ok" => true];
+					}
 					break;
 			}
 		}
