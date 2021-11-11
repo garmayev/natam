@@ -41,7 +41,7 @@ class NotifiesController extends \yii\console\Controller
 
 	public function actionIndex()
 	{
-		$orders = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
+		$orders = Order::find()->where(["<", "status", Order::STATUS_DELIVERY])->all();
 		$this->logMessage .= "Открытых заказов: " . count($orders) . "\n";
 		echo "Открытых заказов: " . count($orders) . "\n";
 		foreach ($orders as $order) {
@@ -52,11 +52,11 @@ class NotifiesController extends \yii\console\Controller
 					break;
 				case self::CHECK_NEXT:
 					$this->notify($order);
-					$this->closeUpdate();
+					// $this->closeUpdate();
 					break;
 				case self::CHECK_CHEF:
 					$this->toChef($order);
-					$this->closeUpdate();
+					// $this->closeUpdate();
 					break;
 			}
 		}
@@ -95,10 +95,10 @@ class NotifiesController extends \yii\console\Controller
 		if (isset($employee)) {
 			if (isset($employee->chat_id)) {
 				$update = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->andWhere(["updated_at" => null])->orderBy("created_at DESC")->one();
-				if ( isset($update) ) {
-					$this->currentUpdate = $update;
-					$this->closeUpdate();
-				}
+				// if ( isset($update) ) {
+				//	$this->currentUpdate = $update;
+				//	$this->closeUpdate();
+				// }
 				$this->logMessage .= "Отправка уведомления по поводу заказа #{$order->id} пользователю {$employee->getFullname()}\n";
 				echo "Отправка уведомления по поводу заказа #{$order->id} пользователю {$employee->getFullname()}\n";
 				$this->currentEmployee = $employee;
@@ -170,7 +170,7 @@ class NotifiesController extends \yii\console\Controller
 	{
 		$response = Telegram::sendMessage($args);
 		if (isset($this->currentUpdate)) {
-			$this->closeUpdate();
+			// $this->closeUpdate();
 			if ($response->isOk && !$response->getData()["ok"]) {
 				Helper::error([
 					"Ошибка при изменении сообщения для пользователя {$this->currentEmployee->getFullname()}",
@@ -251,16 +251,16 @@ class NotifiesController extends \yii\console\Controller
 		$text = "";
 		switch ($order->status) {
 			// Новый заказ (заказ отправляется менеджерам)
-			case 0:
+			case 1:
 				$text .= "Новый заказ #{$order->id}\n\n";
 				break;
 			// Подготовлен для отправки (заказ отправляется кладовщикам)
-			case 1:
+			case 2:
 				$text .= "Заказ #{$order->id} одобрен\n\n";
 				break;
 			// В процессе доставки (заказ отправляется водителям)
-			case 2:
-				$text .= "Заказ #{$order->id} ожидаеь доставки\n\n";
+			case 3:
+				$text .= "Заказ #{$order->id} ожидает доставки\n\n";
 				break;
 		}
 		return $text;
@@ -323,6 +323,20 @@ class NotifiesController extends \yii\console\Controller
 	 */
 	private function generateKeyboard($order)
 	{
+		if ( $order->status === Order::STATUS_NEW ) {
+			return ["inline_keyboard" => [[
+				["text" => "Кладовщику", "callback_data" => "/order_complete id={$order->id}"],
+				["text" => "Отложить", "callback_data" => "/order_hold id={$order->id}"]
+			]]];
+		}
+		if ( $order->status === Order::STATUS_PREPARE ) {
+			$drivers = Employee::find()->where(["state_id" => 3])->orderBy(['id' => SORT_ASC])->limit(5)->all();
+			$buttons = [];
+			foreach ($drivers as $driver) {
+				$buttons[] = [["text" => $driver->getFullname(), "callback_data" => "/order_driver order_id={$order->id}&driver_id={$driver->id}"]];
+			}
+			return ["inline_keyboard" => $buttons];
+		}
 		return ["inline_keyboard" => [[
 			["text" => "Выполнено", "callback_data" => "/order_complete id={$order->id}"],
 			["text" => "Отложить", "callback_data" => "/order_hold id={$order->id}"]
