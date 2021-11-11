@@ -17,6 +17,7 @@ echo $form->field($model, "title")->textInput(["placeholder" => $model->getAttri
 echo $form->field($model, "description")->textarea(["rows" => 4, "placeholder" => $model->getAttributeLabel("description")])->label(false);
 echo $form->field($model, "price")->textInput(["placeholder" => $model->getAttributeLabel("price")])->label(false);
 echo $form->field($model, "value")->textInput(["placeholder" => $model->getAttributeLabel("value")])->label(false);
+echo $form->field($model, "isset")->dropDownList([\Yii::t("natam", "Isset"), \Yii::t("natam", "Empty")])->label(false);
 echo $form->field($model, "file")->fileInput();
 
 echo Html::submitButton(Yii::t("app", "Save"), ["class" => ["btn", "btn-success"]]);

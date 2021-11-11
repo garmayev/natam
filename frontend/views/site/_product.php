@@ -25,5 +25,5 @@ use yii\helpers\Html;
         </div>
         <a href="#" class="btn blue">заказать</a>
     </div>
-    <span class="product_info">Есть в наличии</span>
+    <?= ($model->isset == 0) ? Html::tag("span", \Yii::t("natam", "Isset"), ["class" => "product_info"]) : Html::tag("span", \Yii::t("natam", "Empty"), ["class" => "product_info_empty"]) ?>
 </div>

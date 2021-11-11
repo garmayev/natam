@@ -68,7 +68,6 @@
 
 .alert {
     position: fixed;
-<<<<<<< HEAD
     width: 30%;
     min-height: 50px;
     left: 35%;
@@ -86,16 +85,9 @@
     visibility: visible;
     opacity: 1;
 }
-=======
-    width: 350px;
-    height: 80px;
-    top: calc((100vh - 80px) / 2);
-    left: calc((100vw - 350px) / 2);
-    z-index: 999;
-    background: #000;
-    color: #fff;
-    border-radius: 10px;
-    padding: 20px;
-    text-align: center;
+.product_info_empty {
+    color: red;
+    font-size: 13px;
+    font-weight: 400;
+    font-family: "Roboto";
 }
->>>>>>> 9979d353766b94593ec682d9f32bbb55e36fef88

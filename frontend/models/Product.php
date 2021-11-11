@@ -13,6 +13,7 @@ use yii\db\ActiveRecord;
  * @property int $price [int(11)]
  * @property float $value [float]
  * @property string $thumbs [varchar(255)]
+ * @property int $isset [int(11)]
  */
 class Product extends ActiveRecord
 {
@@ -29,7 +30,8 @@ class Product extends ActiveRecord
 			[["title", "description", "price", "value"], "required"],
 			[["title", "description", "thumbs"], "string"],
 			[["price"], "integer"],
-			[["price"], "double"]
+			[["price"], "double"],
+			[["isset"], "integer"]
 		];
 	}
 
@@ -41,6 +43,7 @@ class Product extends ActiveRecord
 			"price" => Yii::t("natam", "Price"),
 			"value" => Yii::t("natam", "Value"),
 			"thumbs" => Yii::t("natam", "Picture"),
+			"isset" => Yii::t("natam", "Isset"),
 		];
 	}
 

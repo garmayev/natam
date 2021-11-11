@@ -32,6 +32,12 @@ echo GridView::widget([
 				return Html::img($model->thumbs, ["width" => "150px"]);
 			}
 		], [
+			"attribute" => "isset",
+			"format" => "html",
+			"content" => function ($model) {
+				return ($model->isset == 0) ? Html::tag("span", "", ["class" => ["fa", "fa-check"]]) : Html::tag("span", "", ["class" => ["fa", "fa-times"]]);
+			}
+		], [
 			'class' => \yii\grid\ActionColumn::className(),
 			'headerOptions' => [
 				"width" => "80px"
