@@ -137,8 +137,8 @@ $this->title = Yii::$app->name;
                     </div>
                     <div class="form_item">
 						<?php
-						echo Html::beginTag("div", ["class" => "form_select"]);
-						echo Html::dropDownList("Order[product][count][]", null, [1 => "1", 2 => "2", 3 => "3", 4 => "4", 5 => "5", 6 => "6"], ["prompt" => "Количество"]);
+						echo Html::beginTag("div");
+						echo Html::textInput("Order[product][count][]", null);
 						echo Html::endTag("div");
 						?>
                         <div class="form_btn">

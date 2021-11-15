@@ -51,15 +51,35 @@ $('.add_product').on('click', (e) => {
     productCount.clone().insertBefore($('.form_btn')[1]);
 });
 $("[name='Client[phone]']").mask("+7(999)999 9999");
+
+function getSelectedProductItem(id)
+{
+    let product_item = $("select");
+    for (let i = 0; i < product_item.length; i++) {
+        if ( $(product_item[i]).val() === id ) {
+            let item = product_item[i];
+            // console.log($($(item).closest(".form_item").next().find("[type=text]")[i]));
+            return {"item": $(item), "count": $($(item).closest(".form_item").next().find("[type=text]")[i])};
+        }
+    }
+    return undefined;
+}
+
 $(".product_order > .btn").on("click", (e) => {
     e.preventDefault();
     let product_id = $(e.currentTarget).closest(".product_item").attr("data-key");
     let count = $($(e.currentTarget).siblings()).find("[type=text]").val();
-    let product_item = $("[name='Order[product][id][]']");
-    let product_count = $("[name='Order[product][count][]']");
-    $(product_item[product_item.length - 1]).val(product_id);
-    $(product_count[product_count.length - 1]).val(count);
-    console.log(product_count.length);
+    let selected = getSelectedProductItem(product_id);
+    let product_item;
+    if ( selected !== undefined ) {
+        // product_item = selected.item;
+        selected.count.val( parseInt(selected.count.val()) + parseInt(count) );
+    } else {
+        product_item = $("[name='Order[product][id][]']");
+        let product_count = $("[name='Order[product][count][]']");
+        $(".add_product").trigger("click");
+        $(product_item[product_item.length - 1]).val(product_id);
+        $(product_count[product_count.length - 1]).val(count);
+    }
     $(".form_tab > button:last-child").trigger("click");
-    $(".add_product").trigger("click");
 })
