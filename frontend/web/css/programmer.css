@@ -99,3 +99,13 @@
     .header_inner .header_navigation {
     }
 }
+
+.btn {
+    user-select: none;
+}
+.btn.disabled {
+    pointer-events: none;
+    background: #cccccc;
+    box-shadow: 0 -11px 13px #999 inset, 0 3px 6px rgb(0 0 0 / 16%);
+    cursor: not-allowed;
+}

@@ -45,6 +45,7 @@ if ( $('.alert').html() !== '' ) {
 
 let productSelect = $('[name=\'Order[product][id][]\']').parent().clone();
 let productCount = $('[name=\'Order[product][count][]\']').parent().clone();
+
 $('.add_product').on('click', (e) => {
     e.preventDefault();
     productSelect.clone().insertBefore($(e.currentTarget));
@@ -67,19 +68,22 @@ function getSelectedProductItem(id)
 
 $(".product_order > .btn").on("click", (e) => {
     e.preventDefault();
-    let product_id = $(e.currentTarget).closest(".product_item").attr("data-key");
-    let count = $($(e.currentTarget).siblings()).find("[type=text]").val();
-    let selected = getSelectedProductItem(product_id);
-    let product_item;
-    if ( selected !== undefined ) {
-        // product_item = selected.item;
-        selected.count.val( parseInt(selected.count.val()) + parseInt(count) );
-    } else {
-        product_item = $("[name='Order[product][id][]']");
-        let product_count = $("[name='Order[product][count][]']");
-        $(".add_product").trigger("click");
-        $(product_item[product_item.length - 1]).val(product_id);
-        $(product_count[product_count.length - 1]).val(count);
+    console.log($(this).hasClass("disabled"));
+    if ( !$(this).hasClass("disabled") ) {
+        let product_id = $(e.currentTarget).closest(".product_item").attr("data-key");
+        let count = $($(e.currentTarget).siblings()).find("[type=text]").val();
+        let selected = getSelectedProductItem(product_id);
+        let product_item;
+        if (selected !== undefined) {
+            // product_item = selected.item;
+            selected.count.val(parseInt(selected.count.val()) + parseInt(count));
+        } else {
+            product_item = $("[name='Order[product][id][]']");
+            let product_count = $("[name='Order[product][count][]']");
+            $(".add_product").trigger("click");
+            $(product_item[product_item.length - 1]).val(product_id);
+            $(product_count[product_count.length - 1]).val(count);
+        }
+        $(".form_tab > button:last-child").trigger("click");
     }
-    $(".form_tab > button:last-child").trigger("click");
 })

@@ -23,7 +23,8 @@ use yii\helpers\Html;
             <input type="text" value="1"/>
             <button class="plus">+</button>
         </div>
-        <a href="#" class="btn blue">заказать</a>
+        <?= Html::a("Заказать", "#", ["class" => ["btn", ($model->isset == 0) ? "blue" : "disabled"]]) ?>
+<!--        <a href="#" class="btn blue">заказать</a>-->
     </div>
     <?= ($model->isset == 0) ? Html::tag("span", \Yii::t("natam", "Isset"), ["class" => "product_info"]) : Html::tag("span", \Yii::t("natam", "Empty"), ["class" => "product_info_empty"]) ?>
 </div>
