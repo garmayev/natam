@@ -82,6 +82,12 @@ class NotifiesController extends \yii\console\Controller
 		return self::CHECK_NONE;
 	}
 
+	private function isAlreadySent(Order $order, Employee $employee)
+	{
+		$update = Updates::find()->where(["order_id" => $order->id])->andWhere(["employee_id" => $employee->id])->one();
+		return isset($update);
+	}
+
 	/**
 	 * Подготовка к отправке уведомления
 	 *
@@ -106,14 +112,16 @@ class NotifiesController extends \yii\console\Controller
 					$order->notify_started_at = $employee->id;
 					$order->save();
 				}
-				$response = $this->sendMessage([
-					"chat_id" => $employee->chat_id,
-					"text" => $this->generateTextMessage($order),
-					"reply_markup" => json_encode($this->generateKeyboard($order))
-				]);
-				$this->newUpdate($order, $response);
-				$employee->last_message_at = time();
-				$employee->save();
+				if ( !$this->isAlreadySent($order, $employee) ) {
+					$response = $this->sendMessage([
+						"chat_id" => $employee->chat_id,
+						"text" => $this->generateTextMessage($order),
+						"reply_markup" => json_encode($this->generateKeyboard($order))
+					]);
+					$this->newUpdate($order, $response);
+					$employee->last_message_at = time();
+					$employee->save();
+				}
 			}
 		} else {
 			$this->logMessage .= "\tНе удалось найти сотрудника\n";
@@ -154,7 +162,7 @@ class NotifiesController extends \yii\console\Controller
 			$order->boss_chat_id = $chef;
 			$order->save();
 		} else {
-			$this->logMessage .= "Сообщение начальнику уже было отправлено!";
+			$this->logMessage .= "Сообщение начальнику уже было отправлено!\n";
 		}
 	}
 
