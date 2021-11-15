@@ -91,3 +91,11 @@
     font-weight: 400;
     font-family: "Roboto";
 }
+
+@media (max-width: 820px){
+    .home .header_info .header_price {
+	display: none;
+    }
+    .header_inner .header_navigation {
+    }
+}

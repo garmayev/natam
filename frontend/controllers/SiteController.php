@@ -43,7 +43,7 @@ class SiteController extends Controller
         		"query" => Post::find()
 	        ]),
 	        "productProvider" => new ActiveDataProvider([
-	        	"query" => Product::find()
+	        	"query" => Product::find()->where(["visible" => 1])
 	        ]),
 	        "serviceProvider" => new ActiveDataProvider([
 	        	"query" => Service::find()->where(["parent_id" => null])

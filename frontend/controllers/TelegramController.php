@@ -119,6 +119,7 @@ class TelegramController extends \yii\rest\Controller
 					$copy = $order->deepClone();
 					$client = $copy->client;
 					$copy->created_at = time();
+					$copy->status = Order::STATUS_NEW;
 					$copy->save();
 					// $text = "Список ваших заказов";
 					// $text .= (count($client->orders) === 0) ? " пуст" : ":";
@@ -135,31 +136,20 @@ class TelegramController extends \yii\rest\Controller
 					$order = Order::findOne($argument["id"]);
 					$staff = Employee::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
 					if ( isset($staff) && isset($order) && ($staff->state_id == $order->status) ) {
-						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->andWhere(["updated_at" => null])->all();
+						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 						foreach ($updates as $update) {
 							Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
 							$update->delete();
 						}
 						$order->status++;
 						$order->save();
-						// if ($staff->state_id == $order->status) {
-						// 	$order->status++;
-						// 	if ( $order->save() ) {
-						// 		$update = Updates::find()->where(["message_id" => $telegram->callback_query["message"]["message_id"]])->one();
-						// 		if ( isset($update) ) {
-						// 			$update->updated_at = time();
-						// 			$update->save();
-						// 		}
-						// 		return ["ok" => true];
-						// 	};
-						// }
 					}
 					break;
 				case "/order_driver":
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["order_id"]);
 					$driver = Employee::findOne($argument["driver_id"]);
-					$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->andWhere(["updated_at" => null])->all();
+					$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 					foreach ($updates as $update) {
 						Telegram::editMessage([
 							"chat_id" => $update->employee->chat_id,
@@ -197,20 +187,20 @@ class TelegramController extends \yii\rest\Controller
 				case "/order_hold":
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["id"]);
-					$order->status = Order::STATUS_HOLD;
-					if ( $order->save() ) {
-						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->andWhere(["updated_at" => null])->all();
+					if ( isset($order) ) {
+						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 						foreach ($updates as $update) {
 							Telegram::editMessage([
 								"message_id" => $update->message_id,
 								"text" => "Заказ #$order->id отложен\nАдрес доставки: $order->address\nДата создания заказа: ".\Yii::$app->formatter->asDate($order->created_at, "php: d M Y H:i")."\nСодержимое заказа:\n", 
 								"chat_id" => $update->employee->chat_id,
 								"reply_markup" => json_encode(["inline_keyboard" => [
-									[["text" => "Кладовщику", "callback_data" => "/order_restore id={$order->id}"]];
+									[["text" => "Кладовщику", "callback_data" => "/order_restore id={$order->id}"]]
 								]]),
 							]);
 							$update->delete();
 						}
+						$order->status = Order::STATUS_HOLD;
 						return ["ok" => true];
 					}
 					break;
@@ -219,7 +209,7 @@ class TelegramController extends \yii\rest\Controller
 					$order = Order::findOne($argument["id"]);
 					$staff = Employee::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
 					if ( isset($staff) && isset($order) && ($staff->state_id == $order->status) ) {
-						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->andWhere(["updated_at" => null])->all();
+						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 						foreach ($updates as $update) {
 							Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
 							$update->delete();

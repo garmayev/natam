@@ -8,6 +8,7 @@ use yii\helpers\Url;
 use yii\widgets\Menu;
 
 ?>
+<div class="shadow"></div>
 <header class="header">
 	<div class="container">
 		<div class="header_inner">
@@ -74,7 +75,7 @@ use yii\widgets\Menu;
 		");
             ?>
 			<div class="header_info" data-aos="fade-left">
-				<a href="tel:+71234567890" class="phone">
+				<a href="tel:+73012204056" class="phone">
 					+7 3012 20 40 56
 				</a>
 				<a href="#" class="btn recall">

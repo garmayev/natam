@@ -21,21 +21,23 @@ class Telegram extends \yii\base\Model
 	public static function sendMessage($args)
 	{
 		$client = new \yii\httpclient\Client();
-		return $client->createRequest()
+		$response = $client->createRequest()
 			->setMethod("POST")
 			->setUrl("https://api.telegram.org/bot".\Yii::$app->params["telegram"]["bot_id"]."/sendMessage")
 			->setData($args)
 			->send();
+		return $response;
 	}
 
 	public static function editMessage($args)
 	{
 		$client = new \yii\httpclient\Client();
-		return $client->createRequest()
+		$response = $client->createRequest()
 			->setMethod("POST")
 			->setUrl("https://api.telegram.org/bot".\Yii::$app->params["telegram"]["bot_id"]."/editMessageText")
 			->setData($args)
 			->send();
+		return $response;
 	}
 
 	public static function deleteMessage($args)
