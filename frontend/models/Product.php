@@ -32,6 +32,7 @@ class Product extends ActiveRecord
 			[["title", "description", "thumbs"], "string"],
 			[["price", "isset", "visible"], "integer"],
 			[["price"], "double"],
+			[["isset"], "default", "value" => 0],
 			[["visible"], "default", "value" => 1],
 		];
 	}
