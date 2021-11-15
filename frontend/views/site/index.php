@@ -128,7 +128,7 @@ $this->title = Yii::$app->name;
                     <div class="form_item">
 						<?php
 						echo Html::beginTag("div", ["class" => "form_select"]);
-						echo Html::dropDownList("Order[product][id][]", null, ArrayHelper::map(Product::find()->all(), "id", "title"), ["prompt" => "Товары"]);
+						echo Html::dropDownList("Order[product][id][]", null, ArrayHelper::map(Product::find()->where(["isset" => 0])->all(), "id", "title"), ["prompt" => "Товары"]);
 						echo Html::endTag("div");
 						?>
                         <a href="#" class="btn blue add_product">
