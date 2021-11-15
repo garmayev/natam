@@ -159,6 +159,9 @@ class TelegramController extends \yii\rest\Controller
 						$update->delete();
 					}
 
+					$order->status = Order::STATUS_DELIVERY;
+					$order->save();
+
 					$text = "Заказ #$order->id\nАдрес доставки: $order->address\nДата создания заказа: ".\Yii::$app->formatter->asDate($order->created_at, "php: d M Y H:i")."\nСодержимое заказа:\n";
 					foreach ($order->products as $product) {
 						$text .= "\t$product->title\n\t\t$product->value\n\t\t$product->price\n";
@@ -198,9 +201,9 @@ class TelegramController extends \yii\rest\Controller
 									[["text" => "Кладовщику", "callback_data" => "/order_restore id={$order->id}"]]
 								]]),
 							]);
-							$update->delete();
 						}
 						$order->status = Order::STATUS_HOLD;
+						$order->save();
 						return ["ok" => true];
 					}
 					break;
