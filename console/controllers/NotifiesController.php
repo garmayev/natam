@@ -105,14 +105,14 @@ class NotifiesController extends \yii\console\Controller
 				//	$this->currentUpdate = $update;
 				//	$this->closeUpdate();
 				// }
-				$this->logMessage .= "Отправка уведомления по поводу заказа #{$order->id} пользователю {$employee->getFullname()}\n";
-				echo "Отправка уведомления по поводу заказа #{$order->id} пользователю {$employee->getFullname()}\n";
-				$this->currentEmployee = $employee;
-				if (!isset($this->currentUpdate)) {
-					$order->notify_started_at = $employee->id;
-					$order->save();
-				}
-				if ( !$this->isAlreadySent($order, $employee) ) {
+				if (!$this->isAlreadySent($order, $employee)) {
+					$this->logMessage .= "Отправка уведомления по поводу заказа #{$order->id} пользователю {$employee->getFullname()}\n";
+					echo "Отправка уведомления по поводу заказа #{$order->id} пользователю {$employee->getFullname()}\n";
+					$this->currentEmployee = $employee;
+					if (!isset($this->currentUpdate)) {
+						$order->notify_started_at = $employee->id;
+						$order->save();
+					}
 					$response = $this->sendMessage([
 						"chat_id" => $employee->chat_id,
 						"text" => $this->generateTextMessage($order),
@@ -152,11 +152,11 @@ class NotifiesController extends \yii\console\Controller
 		}
 		echo $text;
 		$update = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->andWhere(["updated_at" => null])->orderBy("created_at DESC")->one();
-		if ( isset($update) ) {
+		if (isset($update)) {
 			$this->currentUpdate = $update;
 			$this->closeUpdate();
 		}
-		if ($order->boss_chat_id."" !== $chef) {
+		if ($order->boss_chat_id . "" !== $chef) {
 			$this->logMessage .= $text;
 			$this->sendMessage(["chat_id" => $chef, "text" => $text]);
 			$order->boss_chat_id = $chef;
@@ -316,8 +316,8 @@ class NotifiesController extends \yii\console\Controller
 				"\t\tЦена: {$product->price}\n\n";
 			$total_price += $order_product->product_count * $product->price;
 		}
-		if ( !is_null($order->comment) )
-		$text .= "Адрес доставки: {$order->address}\n";
+		if (!is_null($order->comment))
+			$text .= "Адрес доставки: {$order->address}\n";
 		$text .= "Комментарий: {$order->comment}\n";
 		$text .= "Общая стоимость заказа: {$total_price}";
 		return $text;
@@ -331,13 +331,13 @@ class NotifiesController extends \yii\console\Controller
 	 */
 	private function generateKeyboard($order)
 	{
-		if ( $order->status === Order::STATUS_NEW ) {
+		if ($order->status === Order::STATUS_NEW) {
 			return ["inline_keyboard" => [[
 				["text" => "Кладовщику", "callback_data" => "/order_complete id={$order->id}"],
 				["text" => "Отложить", "callback_data" => "/order_hold id={$order->id}"]
 			]]];
 		}
-		if ( $order->status === Order::STATUS_PREPARE ) {
+		if ($order->status === Order::STATUS_PREPARE) {
 			$drivers = Employee::find()->where(["state_id" => 3])->orderBy(['id' => SORT_ASC])->limit(5)->all();
 			$buttons = [];
 			foreach ($drivers as $driver) {
