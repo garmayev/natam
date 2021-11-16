@@ -205,7 +205,7 @@ class Order extends ActiveRecord
 	public function checkEmployee()
 	{
 		$settings = (Settings::findOne(["name" => "notify"]))->getContent()["notify"];
-		$updates = Updates::find()->where(["order_id" => $this->id])->orderBy(["created_at" => SORT_ASC])->one();
+		$updates = Updates::find()->where(["order_id" => $this->id])->andWhere(["order_status" => $this->status])->orderBy(["created_at" => SORT_ASC])->one();
 		if ( isset($updates) ) {
 			if ( time() - $updates->created_at > $settings["limit"][$this->status - 1] ) {
 				$employee = Employee::find()->where(["state_id" => $this->status])->orderBy(["last_message_at" => SORT_ASC])->one();

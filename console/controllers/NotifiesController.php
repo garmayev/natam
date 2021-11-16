@@ -41,7 +41,7 @@ class NotifiesController extends \yii\console\Controller
 
 	public function actionIndex()
 	{
-		$orders = Order::find()->where(["<", "status", Order::STATUS_DELIVERY])->all();
+		$orders = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
 		$this->logMessage .= "Открытых заказов: " . count($orders) . "\n";
 		echo "Открытых заказов: " . count($orders) . "\n";
 		foreach ($orders as $order) {
@@ -60,7 +60,7 @@ class NotifiesController extends \yii\console\Controller
 					break;
 			}
 		}
-		// Helper::error($this->logMessage);
+		Helper::error($this->logMessage);
 	}
 
 	/**
@@ -245,7 +245,7 @@ class NotifiesController extends \yii\console\Controller
 	 */
 	private function generateTextMessage($order)
 	{
-		return "{$this->generateHeader($order)}{$this->generateClientInfo($order)}{$this->generateProductList($order)}";
+		return "{$this->generateHeader($order)}{$this->generateClientInfo($order)}\nКомментарий: $order->comment\n{$this->generateProductList($order)}";
 	}
 
 	/**
@@ -347,13 +347,13 @@ class NotifiesController extends \yii\console\Controller
 		}
 		return ["inline_keyboard" => [[
 			["text" => "Выполнено", "callback_data" => "/order_complete id={$order->id}"],
-			["text" => "Отложить", "callback_data" => "/order_hold id={$order->id}"]
+//			["text" => "Отложить", "callback_data" => "/order_hold id={$order->id}"]
 		]]];
 	}
 
 	public function actionTest()
 	{
-		$order = Order::findOne(139);
+		$order = Order::findOne(146);
 		var_dump($this->check($order));
 	}
 }
