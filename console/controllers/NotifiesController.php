@@ -60,7 +60,7 @@ class NotifiesController extends \yii\console\Controller
 					break;
 			}
 		}
-		Helper::error($this->logMessage);
+//		Helper::error($this->logMessage);
 	}
 
 	/**
