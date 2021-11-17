@@ -60,7 +60,7 @@ class NotifiesController extends \yii\console\Controller
 					break;
 			}
 		}
-		Helper::error($this->logMessage);
+//		Helper::error($this->logMessage);
 	}
 
 	/**
@@ -224,16 +224,18 @@ class NotifiesController extends \yii\console\Controller
 	private function newUpdate($order, $response)
 	{
 		$result = $response->getData();
-		$this->logMessage .= "Создание сообщения пользователю {$this->currentEmployee->getFullname()}\n";
-		$update = new Updates([
-			"order_id" => $order->id,
-			"order_status" => $order->status,
-			"employee_id" => $this->currentEmployee->id,
-			"message_id" => $result["result"]["message_id"],
-			"message_timestamp" => $result["result"]["date"],
-		]);
-		if (!$update->save()) {
-			\Yii::error($update->getErrorSummary(true));
+		if ( isset($result["result"]) ) {
+			$this->logMessage .= "Создание сообщения пользователю {$this->currentEmployee->getFullname()}\n";
+			$update = new Updates([
+				"order_id" => $order->id,
+				"order_status" => $order->status,
+				"employee_id" => $this->currentEmployee->id,
+				"message_id" => $result["result"]["message_id"],
+				"message_timestamp" => $result["result"]["date"],
+			]);
+			if (!$update->save()) {
+				\Yii::error($update->getErrorSummary(true));
+			}
 		}
 	}
 
