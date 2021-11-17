@@ -230,7 +230,6 @@ class TelegramController extends \yii\rest\Controller
 									[["text" => "Кладовщику", "callback_data" => "/order_restore id={$order->id}"]]
 								]]),
 							]);
-							
 						}
 						$order->status = Order::STATUS_HOLD;
 						$order->save();
