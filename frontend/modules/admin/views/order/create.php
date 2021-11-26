@@ -1,8 +1,8 @@
 <?php
 
-use frontend\models\Client;
-use frontend\models\Order;
-use frontend\models\Product;
+use common\models\Client;
+use common\models\Order;
+use common\models\Product;
 use yii\helpers\ArrayHelper;
 use yii\web\View;
 use yii\helpers\Html;

@@ -1,10 +1,10 @@
 <?php
 
-namespace frontend\behaviors;
+namespace common\behaviors;
 
-use frontend\models\Client;
-use frontend\models\Order;
-use frontend\models\OrderProduct;
+use common\models\Client;
+use common\models\Order;
+use common\models\OrderProduct;
 use frontend\models\Staff;
 use frontend\models\Telegram;
 use frontend\models\Updates;

@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\models;
+namespace common\models;
 
 use yii\db\ActiveRecord;
 
@@ -36,7 +36,7 @@ class Service extends ActiveRecord
 	{
 		if ($this->validate()) {
 			if ( !empty($this->file) ) {
-				$this->file->saveAs(\Yii::getAlias("frontend") . 'img/uploads/' . $this->file->baseName . '.' . $this->file->extension);
+				$this->file->saveAs(\Yii::getAlias("common") . 'img/uploads/' . $this->file->baseName . '.' . $this->file->extension);
 				$this->thumbs = "img/uploads/{$this->file->baseName}.{$this->file->extension}";
 			}
 			return true;

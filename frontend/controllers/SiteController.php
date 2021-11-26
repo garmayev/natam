@@ -2,9 +2,10 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Post;
-use frontend\models\Product;
-use frontend\models\Service;
+use common\models\Category;
+use common\models\Post;
+use common\models\Product;
+use common\models\Service;
 use kartik\mpdf\Pdf;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -39,6 +40,9 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index', [
+			"categoryProvider" => new ActiveDataProvider([
+				"query" => Category::find()
+			]),
         	"postProvider" => new ActiveDataProvider([
         		"query" => Post::find()
 	        ]),

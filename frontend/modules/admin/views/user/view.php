@@ -1,7 +1,7 @@
 <?php
 
 use dektrium\user\models\User;
-use frontend\models\Staff;
+use common\models\Staff;
 use yii\web\View;
 use yii\helpers\Html;
 

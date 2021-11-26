@@ -1,7 +1,7 @@
 <?php
 
-use frontend\models\Order;
-use frontend\models\Ticket;
+use common\models\Order;
+use common\models\Ticket;
 use yii\helpers\Html;
 use yii\web\View;
 

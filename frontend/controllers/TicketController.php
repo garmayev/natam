@@ -2,8 +2,8 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Client;
-use frontend\models\Ticket;
+use common\models\Client;
+use common\models\Ticket;
 
 class TicketController extends \yii\web\Controller
 {

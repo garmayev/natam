@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Service;
+use common\models\Service;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
 use yii\helpers\Html;

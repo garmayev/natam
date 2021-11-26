@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Ticket;
+use common\models\Ticket;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
 use yii\helpers\Html;

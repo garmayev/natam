@@ -1,9 +1,10 @@
 <?php
 
-namespace frontend\models;
+namespace common\models;
 
 use console\helper\Helper;
-use frontend\behaviors\UpdateBehavior;
+use common\behaviors\UpdateBehavior;
+use frontend\models\Updates;
 use frontend\modules\admin\models\Settings;
 use garmayev\staff\models\Employee;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
@@ -22,6 +23,8 @@ use yii\db\ActiveRecord;
  * @property int $updated_at [int(11)]
  * @property int $notify_started_at [int(11)]
  * @property int $boss_chat_id [int(11)]
+ * @property int $delivery_date
+ * @property int $location_id
  *
  * @property int $price
  *
@@ -84,6 +87,7 @@ class Order extends ActiveRecord
 			[["client_id"], "exist", "targetClass" => Client::className(), "targetAttribute" => "id"],
 			[["status"], "default", "value" => self::STATUS_NEW],
 			[["notify_started_at"], "default", "value" => 0],
+			[["location_id"], "exist", "targetClass" => Location::class, "targetAttribute" => "id"],
 		];
 	}
 
@@ -152,6 +156,10 @@ class Order extends ActiveRecord
 	public function getUpdates()
 	{
 		return $this->hasMany(Updates::className(), ["order_id" => "id"])->orderBy(["created_at" => SORT_ASC]);
+	}
+
+	public function getLocation() {
+		return $this->hasOne(Location::class, ["id" => "location_id"]);
 	}
 
 	/**

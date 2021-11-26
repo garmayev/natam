@@ -82,37 +82,3 @@ use yii\widgets\Menu;
 <div style="text-align: center; padding: 5px 0; background: #054670; color: #fff;">
     <span class="copyright">Created by <a href="http://amgexpert.com/">AMGCompany</a></span>
 </div>
-
-<div id="modal">
-    <div class="modal_shadow">&nbsp;</div>
-    <div class="container-fluid">
-        <div class="form_inner">
-            <img class="journal" src="/img/journal.png" alt="journal">
-            <form class="form_block form_submit active">
-                <label>
-                    Наш менеджер свяжется с вами в ближайшее время
-                </label>
-                <div class="form_content">
-                    <div class="form_item">
-                        <input type="text" placeholder="Ваше ФИО">
-                        <input type="text" placeholder="+ 7 ( ____ ) - ___ - __ - __">
-                    </div>
-                    <div class="form_item">
-                        <div class="form_btn">
-                            <div class="form_policy">
-                                <input type="checkbox" id="form_policy">
-                                <label for="form_policy">
-                                    Даю согласие на обработку
-                                    персональных данных
-                                </label>
-                            </div>
-                            <button type="submit" class="btn blue">
-                                отправить
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>

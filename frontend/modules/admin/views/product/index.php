@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Product;
+use common\models\Product;
 use yii\data\ActiveDataProvider;
 use yii\grid\GridView;
 use yii\web\View;

@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Post;
+use common\models\Post;
 use yii\web\View;
 use yii\helpers\Html;
 

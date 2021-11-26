@@ -2,9 +2,9 @@
 
 namespace frontend\modules\admin\controllers;
 
-use frontend\models\Client;
-use frontend\models\Order;
-use frontend\models\Ticket;
+use common\models\Client;
+use common\models\Order;
+use common\models\Ticket;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\Response;

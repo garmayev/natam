@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Vacancy;
+use common\models\Vacancy;
 use yii\web\View;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;

@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Vacancy;
+use common\models\Vacancy;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
 use yii\helpers\Html;

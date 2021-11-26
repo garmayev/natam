@@ -2,7 +2,7 @@
 
 namespace frontend\modules\admin\controllers;
 
-use frontend\modules\admin\models\Speak;
+use common\modules\admin\models\Speak;
 
 class TrackerController extends BaseController
 {

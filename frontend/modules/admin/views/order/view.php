@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Order;
+use common\models\Order;
 use yii\web\View;
 use yii\helpers\Html;
 

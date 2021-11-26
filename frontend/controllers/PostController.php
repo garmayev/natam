@@ -2,7 +2,7 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Post;
+use common\models\Post;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 

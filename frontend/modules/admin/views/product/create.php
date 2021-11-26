@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Product;
+use common\models\Product;
 use yii\web\View;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;

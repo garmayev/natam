@@ -2,13 +2,13 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Client;
-use frontend\models\Order;
-use frontend\models\OrderProduct;
+use common\models\Client;
+use common\models\Order;
+use common\models\OrderProduct;
 use frontend\models\Staff;
 use frontend\models\Telegram;
 use frontend\models\Updates;
-use frontend\models\User;
+use common\models\User;
 use garmayev\staff\models\Employee;
 use Yii;
 
@@ -191,20 +191,82 @@ class TelegramController extends \yii\rest\Controller
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["id"]);
 					if ( isset($order) ) {
+						Telegram::editMessage([
+							"message_id" => $telegram->callback_query["message"]["message_id"],
+							"chat_id" => $telegram->callback_query["from"]["id"],
+							"text" => "Выберите время для задержки",
+							"reply_markup" => json_encode([
+								"inline_keyboard" => [
+									[
+										[
+											"text" => "Отложить на 1 час",
+											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=3600",
+										]
+									], [
+										[
+											"text" => "Отложить на 3 час",
+											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=10800",
+										]
+									], [
+										[
+											"text" => "Отложить на 5 час",
+											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=18000",
+										]
+									], [
+										[
+											"text" => "Отложить на сутки",
+											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=86400",
+										]
+									],
+								]
+							]),
+						]);
+//						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
+//						foreach ($updates as $update) {
+//							Telegram::editMessage([
+//								"message_id" => $update->message_id,
+//								"text" => "Заказ #$order->id отложен\nАдрес доставки: $order->address\nДата создания заказа: ".\Yii::$app->formatter->asDate($order->created_at, "php: d M Y H:i")."\nСодержимое заказа:\n",
+//								"chat_id" => $update->employee->chat_id,
+//								"reply_markup" => json_encode(["inline_keyboard" => [
+//									[["text" => "Кладовщику", "callback_data" => "/order_restore id={$order->id}"]]
+//								]]),
+//							]);
+//						}
+//						$order->status = Order::STATUS_HOLD;
+//						$order->save();
+//						return ["ok" => true];
+					}
+					break;
+				case "/order_hold_by_time":
+					parse_str($args[0], $argument);
+					$order = Order::findOne($argument["id"]);
+					$seconds = $argument["sec"];
+					if ( isset($order) ) {
 						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
+						switch ($seconds) {
+							case 3600:
+								$text = "Заказ #$order->id отложен на 1 час\n";
+								break;
+							case 10800:
+								$text = "Заказ #$order->id отложен на 3 часа\n";
+								break;
+							case 18000:
+								$text = "Заказ #$order->id отложен на 5 часов\n";
+								break;
+							case 86400:
+								$text = "Заказ #$order->id отложен на сутки\n";
+								break;
+						}
 						foreach ($updates as $update) {
 							Telegram::editMessage([
 								"message_id" => $update->message_id,
-								"text" => "Заказ #$order->id отложен\nАдрес доставки: $order->address\nДата создания заказа: ".\Yii::$app->formatter->asDate($order->created_at, "php: d M Y H:i")."\nСодержимое заказа:\n", 
+								"text" => "{$text}Адрес доставки: $order->address\nДата создания заказа: ".\Yii::$app->formatter->asDate($order->created_at, "php: d M Y H:i")."\nСодержимое заказа:\n",
 								"chat_id" => $update->employee->chat_id,
 								"reply_markup" => json_encode(["inline_keyboard" => [
 									[["text" => "Кладовщику", "callback_data" => "/order_restore id={$order->id}"]]
 								]]),
 							]);
 						}
-						$order->status = Order::STATUS_HOLD;
-						$order->save();
-						return ["ok" => true];
 					}
 					break;
 				case "/order_restore":

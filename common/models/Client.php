@@ -1,8 +1,8 @@
 <?php
 
-namespace frontend\models;
+namespace common\models;
 
-use frontend\behaviors\PhoneNormalizeBehaviors;
+use common\behaviors\PhoneNormalizeBehaviors;
 use Yii;
 
 /**

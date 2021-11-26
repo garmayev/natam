@@ -2,8 +2,9 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Client;
-use frontend\models\Order;
+use common\models\Client;
+use common\models\Location;
+use common\models\Order;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
 use Yii;
 
@@ -25,15 +26,27 @@ class OrderController extends \yii\web\Controller
 					Yii::$app->session->setFlash("error", "Failed! Client info is not saved!");
 				}
 			}
-			$order->client_id = $client->id;
-			if ( $order->load($post) && $order->save() ) {
-				Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
-				return $this->redirect("/");
+			$location = new Location();
+//			var_dump($post["Location"]); die;
+			$location->title = $post["Location"]["title"];
+			$location->latitude = $post["Location"]["latitude"];
+			$location->longitude = $post["Location"]["longitude"];
+			if ( $location->load($post) && $location->save() ) {
+				$order->location_id = $location->id;
+				$order->client_id = $client->id;
+				$order->delivery_date = Yii::$app->formatter->asTimestamp($post["Order"]["delivery_date"]);
+				if ($order->load($post) && $order->save()) {
+					Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
+					return $this->redirect("/");
+				} else {
+					Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
+					Yii::error($order->getErrorSummary(true));
+				}
 			} else {
-				Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
-				Yii::error($order->getErrorSummary(true));
+				Yii::error($location->getErrorSummary(true));
 			}
 		}
+//		var_dump($order); die;
 		return $this->redirect("/");
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace frontend\modules\admin\controllers;
 
-use frontend\models\Order;
+use common\models\Order;
 
 /**
  * Default controller for the `admin` module

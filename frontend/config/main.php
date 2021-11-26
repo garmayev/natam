@@ -62,7 +62,7 @@ return [
             'showScriptName' => false,
             'rules' => [
             	'/' => 'site/index',
-	            '<action:\w+>/' => 'site/<action>',
+	            '<action:\w+>' => 'site/<action>',
 	            '<controller:\w+>/<action:\w+>' => '<controller>/<action>'
             ],
         ],
@@ -84,7 +84,19 @@ return [
 			    ]
 		    ],
 	    ],
-    ],
+	    'cart' => [
+		    'class' => 'devanych\cart\Cart',
+		    'storageClass' => 'devanych\cart\storage\DbSessionStorage',
+		    'calculatorClass' => 'devanych\cart\calculators\SimpleCalculator',
+		    'params' => [
+			    'key' => 'cart',
+			    'expire' => 604800,
+			    'productClass' => \common\models\Product::class,
+			    'productFieldId' => 'id',
+			    'productFieldPrice' => 'price',
+		    ],
+	    ],
+	],
 	'modules' => [
 		'admin' => [
 			'class' => 'frontend\modules\admin\Module',
@@ -92,7 +104,7 @@ return [
 		'user' => [
 			'class' => 'dektrium\user\Module',
 			'modelMap' => [
-				'User' => \frontend\models\User::className(),
+				'User' => \common\models\User::className(),
 			],
 			'controllerMap' => [
 				'settings' => [

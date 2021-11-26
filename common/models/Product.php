@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\models;
+namespace common\models;
 
 use Yii;
 use yii\db\ActiveRecord;
@@ -15,6 +15,9 @@ use yii\db\ActiveRecord;
  * @property string $thumbs [varchar(255)]
  * @property int $isset [int(11)]
  * @property int $visible [int(11)]
+ *
+ * @property-read int $uniqueId
+ * @property-read string $label
  */
 class Product extends ActiveRecord
 {
@@ -62,5 +65,23 @@ class Product extends ActiveRecord
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getPrice() : int
+	{
+		return $this->price;
+	}
+
+	public function getLabel()
+	{
+		return $this->title;
+	}
+
+	public function getUniqueId()
+	{
+		return $this->id;
 	}
 }

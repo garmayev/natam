@@ -76,4 +76,6 @@ return [
 	'Failed! Client info is not saved!' => 'Ошибка! Информация о клиенте не сохранена!',
 	'Order was created! Manager was calling you' => 'Заказ сохранен! Менеджер свяжется с вами в ближайшее время!',
 	'Profile' => 'Профиль',
+
+	'Delivery Date' => 'Дата доставки',
 ];

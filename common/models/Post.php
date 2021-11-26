@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\models;
+namespace common\models;
 
 use dektrium\user\models\User;
 use yii\db\ActiveRecord;
