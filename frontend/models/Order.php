@@ -57,20 +57,20 @@ class Order extends ActiveRecord
 			], [
 				'class' => UpdateBehavior::className(),
 				'attribute_name' => 'status',
-//			], [
-//				'class' => SaveRelationsBehavior::class,
-//				'relations' => [
-//					'products' => [
-//						'extraColumns' => function ($model) {
-//							/**
-//							 * @var Product $model
-//							 */
-//							return [
-//								'product_count' => $this->orderProduct->product_count
-//							];
-//						}
-//					]
-//				]
+			], [
+				'class' => SaveRelationsBehavior::class,
+				'relations' => [
+					'products' => [
+						'extraColumns' => function ($model) {
+							/**
+							 * @var Product $model
+							 */
+							return [
+								'product_count' => $this->orderProduct->product_count
+							];
+						}
+					]
+				]
 			]
 		];
 	}

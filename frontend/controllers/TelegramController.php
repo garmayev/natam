@@ -45,7 +45,7 @@ class TelegramController extends \yii\rest\Controller
 						$text = "Список ваших заказов";
 						$text .= (count($client->orders) === 0) ? " пуст" : ":";
 						$markup = ["inline_keyboard" => []];
-						foreach (Order::find()->where(["client_id" => $client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE])->all() as $order) {
+						foreach (Order::find()->where(["client_id" => $client->id])->all() as $order) {
 							$markup["inline_keyboard"][] = [["text" => "Заказ #$order->id", "callback_data" => "/order $order->id"]];
 						}
 						if ( Telegram::sendMessage(["chat_id" => $client->chat_id, "text" => $text, "reply_markup" => json_encode($markup)]) ) {
@@ -135,6 +135,8 @@ class TelegramController extends \yii\rest\Controller
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["id"]);
 					$staff = Employee::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
+// \Yii::error(json_encode($order));
+// \Yii::error(json_encode($staff));
 					if ( isset($staff) && isset($order) && ($staff->state_id == $order->status) ) {
 						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 						if ( count($updates) ) {
