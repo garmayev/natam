@@ -185,6 +185,8 @@ $this->registerCss("
 	            echo $form->field($model->location, "title")->hiddenInput()->label(false);
                 echo $form->field($model->location, "latitude")->hiddenInput()->label(false);
 	            echo $form->field($model->location, "longitude")->hiddenInput()->label(false);
+            } else {
+	            echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
             }
 
 //			echo Html::textInput("Order[address]", $model->address, ["id" => "order-address", "class" => "form-control", "placeholder" => Yii::t("app", "Address"), "style" => "margin-bottom: 15px;"]);
