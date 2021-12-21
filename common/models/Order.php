@@ -167,7 +167,8 @@ class Order extends ActiveRecord
 		return $this->hasMany(Updates::className(), ["order_id" => "id"])->orderBy(["created_at" => SORT_ASC]);
 	}
 
-	public function getLocation() {
+	public function getLocation()
+	{
 		return $this->hasOne(Location::class, ["id" => "location_id"]);
 	}
 
@@ -209,14 +210,14 @@ class Order extends ActiveRecord
 		$settings = (Settings::findOne(["name" => "notify"]))->getContent()["notify"];
 		$modified_time = (isset($this->updated_at)) ? $this->updated_at : $this->created_at;
 		$now = time();
-		for ($i = 0; $i < count($settings["alert"]) - 1; $i ++) {
+		for ($i = 0; $i < count($settings["alert"]) - 1; $i++) {
 			$current = $settings["alert"][$i];
 			$next = $settings["alert"][$i + 1];
-			if ( (($now - $modified_time) > $current["time"]) && (($now - $modified_time) < $next["time"]) ) {
+			if ((($now - $modified_time) > $current["time"]) && (($now - $modified_time) < $next["time"])) {
 				return $current["chat_id"];
 			}
 		}
-		if ( $now - $modified_time > $settings["alert"][count($settings)]["time"] ) {
+		if ($now - $modified_time > $settings["alert"][count($settings)]["time"]) {
 			return $settings["alert"][count($settings)];
 		} else {
 			return null;
@@ -227,10 +228,10 @@ class Order extends ActiveRecord
 	{
 		$settings = (Settings::findOne(["name" => "notify"]))->getContent()["notify"];
 		$updates = Updates::find()->where(["order_id" => $this->id])->orderBy(["created_at" => SORT_ASC])->one();
-		if ( isset($updates) ) {
-			if ( time() - $updates->created_at > $settings["limit"][$this->status - 1] ) {
+		if (isset($updates)) {
+			if (time() - $updates->created_at > $settings["limit"][$this->status - 1]) {
 				$employee = Employee::find()->where(["state_id" => $this->status])->orderBy(["last_message_at" => SORT_ASC])->one();
-				if ( $this->notify_started_at !== $employee->id ) {
+				if ($this->notify_started_at !== $employee->id) {
 					return $employee;
 				}
 			}
@@ -238,5 +239,56 @@ class Order extends ActiveRecord
 		} else {
 			return Employee::find()->where(["state_id" => $this->status])->orderBy(["last_message_at" => SORT_ASC])->one();
 		}
+	}
+
+	public function generateTelegramText()
+	{
+		$result = "Заказ #{$this->id}\n\n";
+		foreach ($this->products as $product) {
+			$result .= "$product->title ($product->value): {$this->getCount($product->id)} шт\n";
+		}
+		$result .= "\nАдрес доставки: {$this->address}\n\n";
+		$result .= "Дата доставки: " . Yii::$app->formatter->asDatetime($this->delivery_date);
+		$result .= "Общая стоимость: {$this->getPrice()}";
+		return $result;
+	}
+
+	public function generateTelegramKeyboard()
+	{
+		$keyboard = [];
+		switch ($this->status) {
+			case self::STATUS_NEW:
+				$keyboard[] =
+					[
+						[
+							"text" => "Передать заказ кладовщику",
+							"callback_data" => "/order_complete id={$this->id}"
+						]
+					];
+				break;
+			case self::STATUS_PREPARE:
+				$employees = Employee::find()->where(["state_id" => $this->status])->limit(5)->all();
+				foreach ($employees as $employee) {
+					$keyboard[] = [
+						[
+							"text" => "{$employee->family} {$employee->name}",
+							"callback_data" => "/order_driver order_id={$this->id}&driver_id={$employee->id}",
+						]
+					];
+				}
+				break;
+			case self::STATUS_DELIVERY:
+				$keyboard[] = [
+					[
+						"text" => "Выполнено",
+						"callback_data" => "/order_complete id={$this->id}"
+					], [
+						"text" => "Отказ",
+						"callback_data" => "/order_cancel id={$this->id}"
+					]
+				];
+				break;
+		}
+		return $keyboard;
 	}
 }

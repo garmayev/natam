@@ -21,6 +21,7 @@ class UpdateBehavior extends \yii\base\Behavior
 			ActiveRecord::EVENT_BEFORE_INSERT => "beforeInsert",
 			ActiveRecord::EVENT_AFTER_INSERT => 'afterInsert',
 			ActiveRecord::EVENT_BEFORE_UPDATE => "beforeUpdate",
+			ActiveRecord::EVENT_AFTER_UPDATE => "afterUpdate",
 		];
 	}
 
@@ -61,10 +62,6 @@ class UpdateBehavior extends \yii\base\Behavior
 	public function afterInsert($event)
 	{
 		$this->saveProducts();
-//		$sendMessage = $this->sendNewMessage();
-//		if (!$sendMessage["ok"]) {
-//			\Yii::error($sendMessage["message"]);
-//		}
 	}
 
 	public function beforeInsert($event)
@@ -72,24 +69,19 @@ class UpdateBehavior extends \yii\base\Behavior
 		/**
 		 * @var $owner Order
 		 */
-//		$owner = $this->owner;
-//		$staff = Eployee::find()->where(["state_id" => $this->owner->{$this->attribute_name}])->orderBy(["last_message_at" => SORT_ASC])->one();
-//		$owner->notify_started_at = $staff->user_id;
 	}
 
 	public function beforeUpdate($event)
 	{
 		$this->saveProducts();
-		if ( isset($this->owner->getDirtyAttributes()["status"]) ) $this->owner->updated_at = time();
+//		if ( isset($this->owner->getDirtyAttributes()["status"]) ) $this->owner->updated_at = time();
 		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
-//			$disable = $this->disablePreviousMessage($event);
-//			if (!$disable["ok"]) {
-//				\Yii::error($disable["message"]);
-//			}
-//			$sendMessage = $this->sendNewMessage();
-//			if (!$sendMessage["ok"]) {
-//				\Yii::error($sendMessage["message"]);
-//			}
+		}
+	}
+
+	public function afterUpdate()
+	{
+		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
 		}
 	}
 

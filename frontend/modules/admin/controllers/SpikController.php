@@ -91,13 +91,19 @@ class SpikController extends \yii\rest\Controller
 		}
 		$ids = [];
 		$units = $this->units();
-		if ( $units ) {
-			foreach ($units["Units"] as $unit) {
-				$ids[] = $unit["UnitId"];
-			}
+		if ( !isset($units) ) {
+			$sessionId = $this->authorization()["SessionId"];
+			\Yii::$app->session->set("session_id", $sessionId);
+			$units = $this->units();
 		}
-		$subscribtionId = $this->getSubscribtionId($ids)["SessionId"];
-		\Yii::$app->session->set("subscribtion_id", $subscribtionId);
+		foreach ($units["Units"] as $unit) {
+			$ids[] = $unit["UnitId"];
+		}
+		$subscribtionId = $this->getSubscribtionId($ids);
+		if ( $subscribtionId ) {
+			$subscribtionId = $subscribtionId["SessionId"];
+			\Yii::$app->session->set("subscribtion_id", $subscribtionId);
+		}
 		return $this->getOnlineData($subscribtionId)["OnlineDataCollection"]["DataCollection"];
 	}
 }
