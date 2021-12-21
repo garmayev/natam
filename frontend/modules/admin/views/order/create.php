@@ -70,6 +70,8 @@ if ( $model->location ) {
     if ( $model->location->latitude ) {
         $js .= ",latitude = ".$model->location->latitude.",longitude = ".$model->location->longitude;
     }
+} else {
+    $js .= ",latitude = undefined, longitude = undefined";
 }
 $js .= ";
 ymaps.ready(() => {
