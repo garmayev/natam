@@ -44,7 +44,7 @@ use yii\widgets\ActiveForm;
 					<?php
 					echo Html::beginTag("div");
 					echo Html::textInput("Order[product][count][]", null);
-					echo Html::endTag("div");
+					echo Html::endTag("div");r
 					?>
                     <div class="form_btn">
                         <div class="form_policy">

@@ -96,6 +96,13 @@ return [
 			    'productFieldPrice' => 'price',
 		    ],
 	    ],
+	    'formatter' => [
+//		    'defaultTimeZone' => 'Etc/Greenwich',
+		    'defaultTimeZone' => 'Asia/Irkutsk',
+		    'dateFormat'     => 'php:d-m-Y',
+		    'datetimeFormat' => 'php:d-m-Y в H:i:s',
+		    'timeFormat'     => 'php:H:i:s',
+	    ],
 	],
 	'modules' => [
 		'admin' => [
@@ -124,7 +131,7 @@ return [
 		],
 		'staff' => [
 			'class' => 'garmayev\staff\Module',
-			'user_class' => 'frontend\models\User',
+			'user_class' => '\common\models\User',
 			'urlPrefix' => 'staff',
 			'layout' => '@app/modules/admin/views/layouts/main',
 		]

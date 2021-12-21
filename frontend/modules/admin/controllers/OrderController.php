@@ -4,6 +4,7 @@ namespace frontend\modules\admin\controllers;
 
 use common\models\Client;
 use common\models\Order;
+use common\models\search\OrderSearch;
 use common\models\Ticket;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -19,18 +20,10 @@ class OrderController extends BaseController
 
 	public function actionIndex()
 	{
+		$order = new OrderSearch();
 		return $this->render("index", [
-			"orderProvider" => new ActiveDataProvider([
-				"query" => Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->andWhere(["<>", "status", Order::STATUS_HOLD]),
-				"sort" => [
-					"attributes" => [
-						"id",
-						"address",
-						"comment",
-						"status",
-					]
-				]
-			])
+			"orderProvider" => $order->search(Yii::$app->request->get()),
+			"searchModel" => $order,
 		]);
 	}
 
@@ -46,7 +39,7 @@ class OrderController extends BaseController
 	{
 		$order = new Order();
 		$post = Yii::$app->request->post();
-		if ( Yii::$app->session->get("isConvert") ) {
+		if (Yii::$app->session->get("isConvert")) {
 			$order->client_id = Yii::$app->session->get("client_id");
 			$client = Client::findOne(["id" => $order->client_id]);
 			$order->status = Order::STATUS_PREPARE;
@@ -55,18 +48,18 @@ class OrderController extends BaseController
 			Yii::$app->session->remove("client_id");
 			Yii::$app->session->remove("ticket_id");
 		}
-		if ( Yii::$app->request->isPost ) {
+		if (Yii::$app->request->isPost) {
 			$client = Client::findOne(["phone" => $post["Client"]["phone"]]);
-			if ( empty($client) ) {
+			if (empty($client)) {
 				$client = new Client();
-				if ( !$client->load($post) || !$client->save() ) {
+				if (!$client->load($post) || !$client->save()) {
 					Yii::error($client->getErrorSummary(true));
-					Yii::$app->session->setFlash("error", "Failed! ".json_encode($client->getErrorSummary(true)));
+					Yii::$app->session->setFlash("error", "Failed! " . json_encode($client->getErrorSummary(true)));
 				}
 			}
 			$order->client_id = $client->id;
 //			var_dump($order);
-			if ( $order->load($post) && $order->save() ) {
+			if ($order->load($post) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order was created! Manager was calling you");
 				return $this->redirect("/admin/order/index");
 			} else {
@@ -85,14 +78,12 @@ class OrderController extends BaseController
 	{
 		$client = null;
 		$order = Order::findOne($id);
-		if ( $client_id = Yii::$app->session->get("client_id") ) {
+		if ($client_id = Yii::$app->session->get("client_id")) {
 			$client = Client::findOne($client_id);
 			Yii::$app->session->remove("client_id");
 		}
-		if ( Yii::$app->request->isPost )
-		{
-			if ( $order->load(Yii::$app->request->post()) && $order->save() )
-			{
+		if (Yii::$app->request->isPost) {
+			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 				return $this->redirect(["/admin/order/view", "id" => $id]);
 			} else {
@@ -120,9 +111,9 @@ class OrderController extends BaseController
 	public function actionUpdateComment($comment, $id)
 	{
 		Yii::$app->response->format = Response::FORMAT_JSON;
-		if ( Yii::$app->request->isAjax ) {
+		if (Yii::$app->request->isAjax) {
 			$order = Order::findOne($id);
-			if ( $order ) {
+			if ($order) {
 				$order->comment = $comment;
 				if ($order->save()) {
 					return ["ok" => true];
@@ -136,9 +127,9 @@ class OrderController extends BaseController
 	public function actionUpdateStatus($status, $id)
 	{
 		Yii::$app->response->format = Response::FORMAT_JSON;
-		if ( Yii::$app->request->isAjax ) {
+		if (Yii::$app->request->isAjax) {
 			$order = Order::findOne($id);
-			if ( $order ) {
+			if ($order) {
 				$order->status = $status;
 				if ($order->save()) {
 					return ["ok" => true];
@@ -147,5 +138,22 @@ class OrderController extends BaseController
 			}
 			return ["ok" => false, "description" => "Order #{$id} is not found"];
 		}
+	}
+
+	public function actionGetList()
+	{
+		Yii::$app->response->format = Response::FORMAT_JSON;
+		$orders = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
+		$locations = $cart = [];
+		foreach ($orders as $order) {
+			foreach ($order->products as $product) {
+				$cart[] = [
+					"product" => $product,
+					"count" => $order->getCount($product->id)
+				];
+			}
+			$locations[] = ["id" => $order->id, "location" => $order->location, "order" => $order, "cart" => $cart, "cost" => $order->getPrice()];
+		}
+		return $locations;
 	}
 }

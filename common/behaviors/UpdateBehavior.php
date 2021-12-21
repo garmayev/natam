@@ -8,6 +8,7 @@ use common\models\OrderProduct;
 use frontend\models\Staff;
 use frontend\models\Telegram;
 use frontend\models\Updates;
+use garmayev\staff\models\Employee;
 use yii\db\ActiveRecord;
 
 class UpdateBehavior extends \yii\base\Behavior

@@ -121,15 +121,6 @@ class TelegramController extends \yii\rest\Controller
 					$copy->created_at = time();
 					$copy->status = Order::STATUS_NEW;
 					$copy->save();
-					// $text = "Список ваших заказов";
-					// $text .= (count($client->orders) === 0) ? " пуст" : ":";
-					// $markup = ["inline_keyboard" => []];
-					// foreach (Order::find()->where(["client_id" => $client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE])->all() as $order) {
-					// 	$markup["inline_keyboard"][] = [["text" => "Заказ #$order->id", "callback_data" => "/order $order->id"]];
-					// }
-					// if ( Telegram::editMessage(["chat_id" => $client->chat_id, "text" => $text, "reply_markup" => json_encode($markup), "message_id" => $telegram->callback_query["message"]["message_id"]]) ) {
-					// 	return ["ok" => true];
-					// }
 					break;
 				case "/order_complete":
 					parse_str($args[0], $argument);

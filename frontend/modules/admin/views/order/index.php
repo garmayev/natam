@@ -1,5 +1,6 @@
 <?php
 
+use common\models\search\OrderSearch;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
 use yii\helpers\Html;
@@ -8,15 +9,19 @@ use yii\helpers\Html;
 /**
  * @var $this View
  * @var $orderProvider ActiveDataProvider
+ * @var $searchModel OrderSearch
  */
 
 $this->title = Yii::t("app", "Orders");
 
-echo Html::a(Yii::t("app", "New Order"), ["order/create"], ["class" => ["btn", "btn-success"]]);
+echo Html::a(Yii::t("app", "New Order"), ["order/create"], ["class" => ["btn", "btn-success"], "style" => "margin-right: 10px;"]);
+
+echo $this->render("_search", ["model" => $searchModel]);
 
 echo \yii\grid\GridView::widget([
 	"dataProvider" => $orderProvider,
 	"summary" => "",
+//	"filterModel" => $searchModel,
 	"columns" => [
 		[
 			"attribute" => "id",
@@ -32,8 +37,14 @@ echo \yii\grid\GridView::widget([
 			"enableSorting" => true,
 			"headerOptions" => ["style" => "width: 10%;"]
 		], [
-			"attribute" => "address",
+			"attribute" => "location.title",
+			"label" => Yii::t("app", "Address"),
 			"format" => "html",
+			"enableSorting" => true,
+			"content" => function ($model, $key) {
+				if ( $model->location ) return $model->location->title;
+				return null;
+			}
 		], [
 			"attribute" => "comment",
 			"format" => "html",
@@ -53,8 +64,12 @@ echo \yii\grid\GridView::widget([
 			"content" => function($model, $key) {
 				return Yii::$app->formatter->asDatetime($model->created_at, "php:d M Y H;i");
 			}
-		],
-		[
+		], [
+			"attribute" => "delivery_date",
+			"content" => function($model) {
+				return Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i");
+			}
+		], [
 			'class' => \yii\grid\ActionColumn::className(),
 			'headerOptions' => ["width" => '80'],
 			'template' => '{view} {update} {delete}'

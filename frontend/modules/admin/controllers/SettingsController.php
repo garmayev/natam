@@ -2,7 +2,7 @@
 
 namespace frontend\modules\admin\controllers;
 
-use common\modules\admin\models\Settings;
+use frontend\modules\admin\models\Settings;
 use Yii;
 use yii\web\Controller;
 

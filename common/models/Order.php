@@ -2,12 +2,12 @@
 
 namespace common\models;
 
-use console\helper\Helper;
 use common\behaviors\UpdateBehavior;
 use frontend\models\Updates;
 use frontend\modules\admin\models\Settings;
 use garmayev\staff\models\Employee;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
+use nhkey\arh\ActiveRecordHistoryBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
@@ -32,9 +32,12 @@ use yii\db\ActiveRecord;
  * @property Product[] $products
  * @property OrderProduct $orderProduct
  * @property Updates[] $updates
+ * @property Location $location
  */
 class Order extends ActiveRecord
 {
+	public $name;
+	public $locationTitle;
 	public $tmp_products;
 
 	const STATUS_NEW = 1;
@@ -60,20 +63,33 @@ class Order extends ActiveRecord
 			], [
 				'class' => UpdateBehavior::className(),
 				'attribute_name' => 'status',
-//			], [
-//				'class' => SaveRelationsBehavior::class,
-//				'relations' => [
-//					'products' => [
-//						'extraColumns' => function ($model) {
-//							/**
-//							 * @var Product $model
-//							 */
-//							return [
-//								'product_count' => $this->orderProduct->product_count
-//							];
-//						}
-//					]
-//				]
+			], [
+				'class' => SaveRelationsBehavior::class,
+				'relations' => [
+					'products' => [
+						'extraColumns' => function ($model) {
+							/**
+							 * @var Product $model
+							 */
+							return [
+								'product_count' => $this->orderProduct->product_count
+							];
+						}
+					]
+				]
+			], [
+				'class' => ActiveRecordHistoryBehavior::class,
+				'manager' => '\nhkey\arh\managers\DBManager',
+				'ignoreFields' => [
+					'address',
+					'client_id',
+					'location_id',
+					'comment',
+					'created_at',
+					'updated_at',
+					'notify_started_at',
+					'delivery_date'
+				]
 			]
 		];
 	}
@@ -97,13 +113,6 @@ class Order extends ActiveRecord
 			"address" => Yii::t("app", "Address"),
 			"comment" => Yii::t("app", "Comment"),
 		];
-	}
-
-	private function sendSms()
-	{
-		$link = "https://telegram.me/natam_trade_bot?start={$this->client->phone}";
-		$text = "Подпишитесь на нашего бота, перейдя по ссылке: $link";
-		Sms::send($text, $this->client->phone);
 	}
 
 	public function getStatus($status = null)
@@ -189,6 +198,10 @@ class Order extends ActiveRecord
 		}
 		$transaction->commit();
 		return Order::findOne($newOrderId);
+	}
+
+	public function search($params)
+	{
 	}
 
 	public function checkAlerts()

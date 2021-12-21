@@ -133,9 +133,12 @@
     max-height: 100%;
     min-height: 100%;
 }
+.form {
+    padding: 10px 0 0 0;
+}
 .modal > a.close-modal {
-    top: 0 !important;
-    right: 15px !important;
+    top: 0px !important;
+    right: 110px !important;
 }
 .blocker {
     z-index: 3 !important;
@@ -149,4 +152,22 @@
 }
 .order-block.active {
     display: block;
+}
+
+.form_inner {
+    padding: 1vh 0;
+    margin: 1vh 0 0;
+    min-height: 85vh;
+    max-height: 85vh;
+}
+.form_inner .journal {
+    left: 65%;
+    bottom: 0;
+}
+
+.blocker {
+    padding: 0;
+}
+.modal {
+    padding: 0 !important;
 }

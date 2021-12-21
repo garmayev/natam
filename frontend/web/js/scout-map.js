@@ -1,8 +1,11 @@
 $(() => {
+
+    let natam_base;
 // Количество юнитов на страницу
     let pageSize = 9;
 // Интервал запроса онлайн-данных с сервера, в миллисекундах
     let timerInterval = 1000;
+// 78001001545
 
 // Начальная позиция карты (центрирование на Санкт-Петербурге)
     let initialMapPosition = [51.819879855767255, 107.60937851186925];
@@ -56,6 +59,7 @@ $(() => {
     let map;
 // Handler таймера (указатель на него), обновляющего онлайн-данные
     let onlineDataUpdater;
+    let carCluster;
 
 //  Метод, вызываемый при входе в систему.
 //  После нажатия кнопки "Войти" проверяются логин и пароль. Если вход
@@ -94,6 +98,64 @@ $(() => {
         loadPage(0);
         initMap();
 
+        $.ajax("/admin/order/get-list", {
+            success: function (response) {
+                let order_clusterer = new ymaps.Clusterer({
+                    preset: 'islands#invertedVioletClusterIcons',
+                    clusterHideIconOnBalloonOpen: false,
+                    geoObjectHideIconOnBalloonOpen: false,
+                    gridSize: 128,
+                });
+
+                /**
+                 * Кластеризатор расширяет коллекцию, что позволяет использовать один обработчик
+                 * для обработки событий всех геообъектов.
+                 * Будем менять цвет иконок и кластеров при наведении.
+                 */
+                order_clusterer.events
+                    // Можно слушать сразу несколько событий, указывая их имена в массиве.
+                    .add(['mouseenter', 'mouseleave'], function (e) {
+                        var target = e.get('target'),
+                            type = e.get('type');
+                        if (typeof target.getGeoObjects != 'undefined') {
+                            // Событие произошло на кластере.
+                            if (type == 'mouseenter') {
+                                target.options.set('preset', 'islands#invertedBlueClusterIcons');
+                            } else {
+                                target.options.set('preset', 'islands#invertedBlueClusterIcons');
+                            }
+                        } else {
+                            // Событие произошло на геообъекте.
+                            if (type == 'mouseenter') {
+                                target.options.set('preset', 'islands#blueIcon');
+                            } else {
+                                target.options.set('preset', 'islands#blueIcon');
+                            }
+                        }
+                    });
+
+                let geoObjects = [];
+
+                for (const key in response) {
+                    if (response[key].location !== null) {
+                        // points.push([response[key].location.latitude, response[key].location.longitude])
+                        geoObjects.push(new ymaps.Placemark([response[key].location.latitude, response[key].location.longitude], {
+                            balloonContentBody: response[key].location.title,
+                            clusterCaption: response[key].location.title
+                        }, {
+                            preset: 'islands#blueIcon'
+                        }));
+                    }
+                }
+
+                // for(var i = 0, len = points.length; i < len; i++) {
+                // }
+
+                order_clusterer.add(geoObjects);
+                map.geoObjects.add(order_clusterer);
+            }
+        })
+
         // Запуск обновления онлайн-данных
         onlineDataUpdater = window.setInterval(timerCallback, timerInterval);
 
@@ -113,7 +175,7 @@ $(() => {
             for (let i = 0; i < unitsCount / pageSize; i++) {
                 htmlCode += generatePageButtonHtmlText(i);
             }
-            console.log(htmlCode);
+            // console.log(htmlCode);
             // document.getElementById('pagesDiv').innerHTML = htmlCode;
         }
 
@@ -125,20 +187,70 @@ $(() => {
         // Метод, инициализирующий карту. К началу его исполнения
         // на странице уже должен быть контейнер для карты
         function initMap() {
+            map = new ymaps.Map('map', {center: initialMapPosition, zoom: initialMapZoom}, {});
+            // natam_base = ymaps.geoQuery({
+            //     type: "FeatureCollection",
+            //     metadata: {
+            //         name: "natam base",
+            //         creator: "Garmayev",
+            //         features: [
+            //             {
+            //                 type: "Feature",
+            //                 id: 0,
+            //                 geometry: {
+            //                     type: "Polygon",
+            //                     coordinates: [
+            //                         [
+            //                             [51.83542591765271, 107.67984510281633],
+            //                             [51.83416303672322, 107.67995239117697],
+            //                             [51.83170364011863, 107.68299938061789],
+            //                             [51.83214235318969, 107.69113183835104],
+            //                             [51.83383069371976, 107.69585252621722],
+            //                             [51.83656912653127, 107.69746185162616],
+            //                             [51.83900167159433, 107.69656062939717],
+            //                             [51.83663559126639, 107.68799901822165]
+            //                         ]
+            //                     ],
+            //                 }
+            //             }
+            //         ]
+            //     }
+            // }).addToMap(map);
+
+            // natam_base.options.set({
+            //     fillColor: natam_base.properties.get('fill'),
+            //     fillOpacity: natam_base.properties.get('fill-opacity'),
+            //     strokeColor: natam_base.properties.get('stroke'),
+            //     strokeWidth: natam_base.properties.get('stroke-width'),
+            //     strokeOpacity: natam_base.properties.get('stroke-opacity')
+            // });
+            // natam_base.properties.set('balloonContent', natam_base.properties.get('description'))
+
             // Создание карты
             // map = L.map('map').setView(initialMapPosition, initialMapZoom);
-            map = new ymaps.Map('map', {center: initialMapPosition, zoom: initialMapZoom}, {});
+            // map.geoObjects.add(natam_base);
+            // carCluster = new ymaps.Clusterer({
+            //     clusterNumbers: [10],
+            //     clusterIconContentLayout: null,
+            //     gridSize: 128,
+            //     clusterIcons: [{
+            //         href: '/img/marker.png',
+            //         size: [52, 52],
+            //         offset: [-26, -52]
+            //     }]
+            // });
 
             // Так устанавливается провайдер тайлов:
             // L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                // attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-                // maxZoom: 18
+            // attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+            // maxZoom: 18
             // }).addTo(map);
         }
 
         //  Здесь происходит обновление онлайн-данных (т.е. запрос с сервера и обновление
         // интерфейса пользователя).
         function timerCallback() {
+
             loadOnlineData();
             fillUnitsPage(currentUnitsPage);
         }
@@ -202,7 +314,6 @@ $(() => {
             onlineDataSubscriptionId = subscribeOnlineData(allUnits);
         }
         let onlineDataCollection = getRawOnlineData(onlineDataSubscriptionId);
-        console.log(onlineDataCollection);
         onlineDataDictionary = getOnlineDataDictionary(onlineDataCollection);
         addOrUpdateMarkers();
 
@@ -243,52 +354,33 @@ $(() => {
 
         // Метод, добавляющий или обновляющий маркеры на карте.
         function addOrUpdateMarkers() {
-            let clusterer = new ymaps.Clusterer({
-                preset: 'islands#invertedVioletClusterIcons',
-                clusterHideIconOnBalloonOpen: false,
-                geoObjectHideIconOnBalloonOpen: false
-            });
+            function findPlacemakByName(array, name) {
+                for (unitId in array) {
+                    // console.log(array[unitId].hint.getData());
+                    if (array[unitId].balloonContentBody === name) {
 
-            /**
-             * Кластеризатор расширяет коллекцию, что позволяет использовать один обработчик
-             * для обработки событий всех геообъектов.
-             * Будем менять цвет иконок и кластеров при наведении.
-             */
-            clusterer.events
-                // Можно слушать сразу несколько событий, указывая их имена в массиве.
-                .add(['mouseenter', 'mouseleave'], function (e) {
-                    var target = e.get('target'),
-                        type = e.get('type');
-                    if (typeof target.getGeoObjects != 'undefined') {
-                        // Событие произошло на кластере.
-                        if (type == 'mouseenter') {
-                            target.options.set('preset', 'islands#invertedPinkClusterIcons');
-                        } else {
-                            target.options.set('preset', 'islands#invertedVioletClusterIcons');
-                        }
-                    } else {
-                        // Событие произошло на геообъекте.
-                        if (type == 'mouseenter') {
-                            target.options.set('preset', 'islands#pinkIcon');
-                        } else {
-                            target.options.set('preset', 'islands#violetIcon');
-                        }
+                        return array[unitId];
                     }
-                });
+                }
+                return false;
+            }
+
+            let clusterer = new ymaps.Clusterer({
+                clusterNumbers: [10],
+                clusterIconContentLayout: null,
+                gridSize: 180,
+            });
 
             let getPointData = function (index) {
                     return {
-                        balloonContentBody: 'балун <strong>метки ' + index + '</strong>',
-                        clusterCaption: 'метка <strong>' + index + '</strong>'
+                        balloonContentBody: allUnitsDictionary[index].Name,
+                        clusterCaption: allUnitsDictionary[index].Name
                     };
                 },
-                getPointOptions = function () {
-                    return {
-                        preset: 'islands#violetIcon'
-                    };
-                },
+                geoObjects = [],
                 points = [],
-                geoObjects = [];
+                pointsForCluster = []
+            ;
 
             for (let unitId in onlineDataDictionary) {
                 let onlineData = onlineDataDictionary[unitId];
@@ -296,20 +388,34 @@ $(() => {
                 let lon = onlineData.Navigation.Location.Longitude;
                 let lat = onlineData.Navigation.Location.Latitude;
 
-                points.push([lat, lon]);
-                // if (unitId in markersDictionary) {
+                // geoObjects.push(new ymaps.Placemark([lat, lon], getPointData(unitId), getPointOptions()));
+                let geo = findPlacemakByName(markersDictionary, allUnitsDictionary[unitId].Name);
+                // console.log(geo);
+                if (unitId in markersDictionary) {
+                    // let p = natam_base.searchContaining([lat, lon]).get(0);
+                    // console.log(p);
+                    // if (  ) {
+                    //
+                    // }
+                    markersDictionary[unitId].geometry.setCoordinates([lat, lon]);
+                } else {
+                    markersDictionary[unitId] = new ymaps.Placemark([lat, lon], getPointData(unitId), {
+                        preset: 'islands#redIcon',
+                        iconColor: '#735184'
+                    })
+                }
+                // if (unitId in markersDictionary && geo !== undefined) {
                 //     markersDictionary[unitId].geometry.setCoordinates([lat, lon]);
-                //     // markersDictionary[unitId].setLatLng([lat, lon]);
-                //     // markersDictionary[unitId].update();
                 // } else {
-                //     markersDictionary[unitId] = new ymaps.Placemark([lat, lon], {
-                //         title: allUnitsDictionary[unitId].Name
-                //     });
-                //     map.geoObjects.add(markersDictionary[unitId]);
+                //     markersDictionary[unitId] = new ymaps.Placemark([lat, lon], getPointData(unitId), {
+                //             preset: 'islands#darkBlueStretchyIcon',
+                //             iconColor: '#735184'
+                //         });
                 // }
+                points.push({coordinates: markersDictionary[unitId], data: getPointData(unitId)});
             }
-            for(var i = 0, len = points.length; i < len; i++) {
-                geoObjects[i] = new ymaps.Placemark(points[i], getPointData(i), getPointOptions());
+            for (let i = 0, len = points.length; i < len; i++) {
+                geoObjects[i] = points[i].coordinates;
             }
 
             clusterer.add(geoObjects);

@@ -40,6 +40,7 @@ $form = ActiveForm::begin();
     </div>
 
 <?php
+
 $selector = Html::dropDownList("Order[product][id][]", null, ArrayHelper::map(Product::find()->all(), "id", "title"), ["class" => ["form-control", "col-lg-2", "col-md-3", "col-xs-4"], "style" => "width: 300px", "prompt" => "Выберите товар"]);
 $this->registerJs("
 $(document).on('click', '.panel-heading', function(e){
