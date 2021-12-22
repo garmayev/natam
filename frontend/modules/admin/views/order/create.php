@@ -40,8 +40,13 @@ $form = ActiveForm::begin();
     </div>
 
 <?php
+$allProducts = Product::find()->all();
+$list = [];
+foreach ($allProducts as $product) {
+	$list[$product->id] = "{$product->title} ({$product->value})";
+}
 
-$selector = Html::dropDownList("Order[product][id][]", null, ArrayHelper::map(Product::find()->all(), "id", "title"), ["class" => ["form-control", "col-lg-2", "col-md-3", "col-xs-4"], "style" => "width: 300px", "prompt" => "Выберите товар"]);
+$selector = Html::dropDownList("Order[product][id][]", null, $list, ["class" => ["form-control"], "style" => "width: 20%", "prompt" => "Выберите товар"]);
 $this->registerJsFile("/js/jquery.maskedinput.min.js", ["depends" => \yii\web\JqueryAsset::class]);
 $this->registerJsFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js", ["depends" => \yii\web\JqueryAsset::class]);
 $this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU");
@@ -61,7 +66,7 @@ $(document).on('click', '.panel-heading', function(e){
 });
 $('.add-product').on('click', (e) => {
     e.preventDefault();
-    $(`<div class=\"input-group\">{$selector}<input type=\"text\" name=\"Order[product][count][]\" class=\"form-control col-lg-10 col-md-9 col-xs-8\" placeholder=\"Введите количество\"></div>`).insertBefore($(e.currentTarget).parent());
+    $(`<div class=\"input-group\">{$selector}<input type=\"text\" name=\"Order[product][count][]\" class=\"form-control\" style='width: 70%;' placeholder=\"Введите количество\"><a class='delete-product input-group-btn fa fa-trash' style='width: 10%; text-align: center; padding-top: 12px;'></a></div>`).insertBefore($(e.currentTarget).parent());
 });
 $('[name=\'Client[phone]\']').mask('+7(999)999 9999');
 let myMap = myPlacemark = undefined
@@ -162,6 +167,10 @@ ymaps.ready(() => {
         $('#location-logintude').val(coords[1]);
     }
 });
+$('.delete-product').on('click', (e) => {
+    e.preventDefault();
+    $(e.currentTarget).closest('.input-group').remove();
+})
 ";
 $this->registerJs($js, View::POS_LOAD);
 $this->registerCss("
@@ -192,6 +201,22 @@ $this->registerCss("
 //			echo Html::textInput("Order[address]", $model->address, ["id" => "order-address", "class" => "form-control", "placeholder" => Yii::t("app", "Address"), "style" => "margin-bottom: 15px;"]);
             echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
 			echo $form->field($model, "status")->dropDownList($model->getStatus());
+            echo \kartik\datetime\DateTimePicker::widget([
+
+	            'name' => 'Order[delivery_date]',
+                'value' => ($model->delivery_date > 0) ? Yii::$app->formatter->asDatetime($model->delivery_date, 'php:Y-m-d H:i') : "",
+	            'options' => [
+		            "id" => "order-delivery_date",
+		            "placeholder" => Yii::t("app", "Delivery Date"),
+	            ],
+	            "pluginOptions" => [
+		            'daysOfWeekDisabled' => [0, 6],
+		            'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
+		            'minuteStep' => 30,
+		            'startDate' => date("Y-m-d"),
+		            'autoclose' => true,
+	            ]
+            ])
 			?>
         </div>
     </div>
@@ -202,9 +227,10 @@ $this->registerCss("
         <div class="panel-body">
 			<?php
 			foreach ($model->products as $product) {
-				$result = "<tr><td><div class='input-group'>" .
-					Html::dropDownList("Order[product][id][]", $product->id, ArrayHelper::map(Product::find()->all(), "id", "title"), ["class" => ["form-control"], "style" => "width: 300px", "prompt" => "Выберите товар"]) .
-					"<input type='text' name='Order[product][count][]' class='form-control col-lg-10 col-md-9 col-xs-8' value='{$model->getCount($product->id)}' placeholder='Введите количество'></div></td></tr>";
+				$result = "<div class='input-group'>" .
+					Html::dropDownList("Order[product][id][]", $product->id, $list, ["class" => ["form-control"], "style" => "width: 20%", "prompt" => "Выберите товар"]) .
+					"<input type='text' name='Order[product][count][]' class='form-control' style='width: 70%;' value='{$model->getCount($product->id)}' placeholder='Введите количество'>".
+                    "<a class='delete-product input-group-btn fa fa-trash' style='width: 10%; text-align: center; padding-top: 12px;'></a></div>";
 				echo $result;
 			}
 			echo Html::tag("p", Html::a(Yii::t("app", "Append Product"), "#", ["class" => ["btn", "btn-success", "add-product"]]));
