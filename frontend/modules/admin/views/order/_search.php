@@ -10,7 +10,7 @@ use yii\widgets\ActiveForm;
  */
 ?>
 <a class="btn btn-primary" role="button" data-toggle="collapse" href="#filter" aria-expanded="false"
-   aria-controls="filter">
+   aria-controls="filter" style="margin-left: 10px;">
     Фильтр
 </a>
 <div class="collapse" id="filter">
@@ -77,8 +77,16 @@ use yii\widgets\ActiveForm;
 	])->label(false);
 
 	//echo \yii\helpers\Html::resetButton("Reset", ["class" => "btn btn-default", "style" => "margin-right: 10px"]);
-	echo \yii\helpers\Html::a("Reset", ["/admin/order/index"], ["class" => "btn btn-default", "style" => "margin-right: 10px"]);
-	echo \yii\helpers\Html::submitButton("Filter", ["class" => "btn btn-success"]);
+	echo \yii\helpers\Html::a("Сбросить", ["/admin/order/index"], ["class" => "btn btn-default", "style" => "margin-right: 10px"]);
+	echo \yii\helpers\Html::submitButton("Применить", ["class" => "btn btn-success", "style" => "margin-right: 10px"]);
 	ActiveForm::end();
 	?>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        $(".export").on("click", (e) => {
+            e.preventDefault();
+            $(e.currentTarget).closest("form").attr("action", "export").submit();
+        })
+    });
+</script>

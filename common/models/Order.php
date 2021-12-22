@@ -7,6 +7,7 @@ use frontend\models\Updates;
 use frontend\modules\admin\models\Settings;
 use garmayev\staff\models\Employee;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
 use nhkey\arh\ActiveRecordHistoryBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -36,6 +37,8 @@ use yii\db\ActiveRecord;
  */
 class Order extends ActiveRecord
 {
+	use SaveRelationsTrait;
+
 	public $name;
 	public $locationTitle;
 	public $tmp_products;
@@ -81,6 +84,7 @@ class Order extends ActiveRecord
 				'class' => ActiveRecordHistoryBehavior::class,
 				'manager' => '\nhkey\arh\managers\DBManager',
 				'ignoreFields' => [
+					'id',
 					'address',
 					'client_id',
 					'location_id',
@@ -112,6 +116,10 @@ class Order extends ActiveRecord
 		return [
 			"address" => Yii::t("app", "Address"),
 			"comment" => Yii::t("app", "Comment"),
+			"status" => Yii::t("app", "Status"),
+			"created_at" => Yii::t("app", "Created At"),
+			"delivery_date" => Yii::t("app", "Delivery Date"),
+			"price" => Yii::t("app", "Price"),
 		];
 	}
 
@@ -173,7 +181,8 @@ class Order extends ActiveRecord
 	}
 
 	/**
-	 * @param Order $original
+	 * @return Order|null
+	 * @throws \yii\db\Exception
 	 */
 	public function deepClone()
 	{

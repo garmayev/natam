@@ -78,4 +78,5 @@ return [
 	'Profile' => 'Профиль',
 
 	'Delivery Date' => 'Дата доставки',
+	'Created At' => 'Дата создания',
 ];

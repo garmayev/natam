@@ -10,6 +10,7 @@ use frontend\models\Telegram;
 use frontend\models\Updates;
 use garmayev\staff\models\Employee;
 use yii\db\ActiveRecord;
+use yii\helpers\ArrayHelper;
 
 class UpdateBehavior extends \yii\base\Behavior
 {
@@ -32,6 +33,7 @@ class UpdateBehavior extends \yii\base\Behavior
 		 * @var $item OrderProduct
 		 */
 		$owner = $this->owner;
+		$dirty = $owner->getDirtyAttributes();
 		if ( count($_POST) > 0 ) {
 			$post = \Yii::$app->request->post();
 			if (isset($post["Order"]) && isset($post["Order"]["product"])) {
@@ -59,9 +61,56 @@ class UpdateBehavior extends \yii\base\Behavior
 		}
 	}
 
+	private function diff($hash, $needle)
+	{
+		$result = [ "mustInsert" => [], "mustDelete" => [] ];
+		for ( $i = 0; $i < count($hash["id"]); $i++ ) {
+			if ( array_search($hash["id"][$i], array_column($needle, 'product_id')) === false ) {
+				$result["mustInsert"]["id"][] = $hash["id"][$i];
+				$result["mustInsert"]["count"][] = $hash["count"][$i];
+			}
+		}
+		for ( $i = 0; $i < count($needle); $i++ ) {
+			if ( array_search($needle[$i]["product_id"], $hash["id"]) === false ) {
+				$result["mustDelete"][] = $needle[$i]["product_id"];
+			}
+		}
+		return $result;
+	}
+
+	public function exclude()
+	{
+		/**
+		 * @var OrderProduct $orderProducts
+		 * @var Order $owner
+		 */
+		$owner = $this->owner;
+		$post = \Yii::$app->request->post();
+		$dirty = $owner->getDirtyAttributes();
+		$orderProducts = OrderProduct::find()->where(["order_id" => $owner->id])->asArray()->all();
+		$diff = $this->diff($post["Order"]["product"], $orderProducts);
+		if ( count($diff["mustDelete"]) ) {
+			$orderProducts = OrderProduct::find()->where(["product_id" => $diff["mustDelete"]])->all();
+			foreach ($orderProducts as $op) {
+				$op->delete();
+			}
+		}
+
+		if ( count($diff["mustInsert"]) ) {
+			for ($i = 0; $i < count($diff["mustInsert"]["id"]); $i++) {
+				$op = new OrderProduct([
+					"order_id" => $owner->id,
+					"product_id" => $diff["mustInsert"]["id"][$i],
+					"product_count" => $diff["mustInsert"]["count"][$i]
+				]);
+				$op->save();
+			}
+		}
+	}
+
 	public function afterInsert($event)
 	{
-		$this->saveProducts();
+		$this->exclude();
 	}
 
 	public function beforeInsert($event)
@@ -73,7 +122,8 @@ class UpdateBehavior extends \yii\base\Behavior
 
 	public function beforeUpdate($event)
 	{
-		$this->saveProducts();
+//		$this->saveProducts();
+//		$this->exclude();
 //		if ( isset($this->owner->getDirtyAttributes()["status"]) ) $this->owner->updated_at = time();
 		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
 		}
@@ -81,6 +131,7 @@ class UpdateBehavior extends \yii\base\Behavior
 
 	public function afterUpdate()
 	{
+		$this->exclude();
 		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
 		}
 	}
@@ -156,71 +207,5 @@ class UpdateBehavior extends \yii\base\Behavior
 			}
 		}
 		return ["ok" => false, "message" => $response["description"]];
-	}
-
-	/**
-	 * Подготовка заголовка для текстового сообщения в Telegram
-	 *
-	 * @return string
-	 */
-	private function generateHeader()
-	{
-		/**
-		 * @var $owner Order
-		 */
-		$owner = $this->owner;
-		switch ($owner->status) {
-			// Новый заказ (заказ отправляется менеджерам)
-			case 0:
-				$text = "Новый заказ #{$owner->id}\n\n";
-				break;
-			// Подготовлен для отправки (заказ отправляется кладовщикам)
-			case 1:
-				$text = "Заказ #{$owner->id} подготовлен\n\n";
-				break;
-			// В процессе доставки (заказ отправляется водителям)
-			case 2:
-				$text = "Заказ #{$owner->id} ожидает доставки\n\n";
-				break;
-		}
-		return $text;
-	}
-
-	/**
-	 * Подготовка списка продуктов в заказе для текстового сообщения в Telegram
-	 *
-	 * @param Order $order
-	 * @return string
-	 */
-	private function generateProductList()
-	{
-		/**
-		 * @var OrderProduct $order_product
-		 * @var Order $owner
-		 */
-		$text = "Список заказанных продуктов: \n";
-		$total_price = 0;
-		$owner = $this->owner;
-		foreach ($owner->orderProduct as $order_product) {
-			$product = $order_product->product;
-			$text .= "\t{$product->title}\n" .
-				"\t\tОбъем: {$product->value}\n" .
-				"\t\tКоличество: {$order_product->product_count}\n" .
-				"\t\tЦена: {$product->price}\n\n";
-			$total_price += $order_product->product_count * $product->price;
-		}
-		$text .= "Общая стоимость заказа: {$total_price}";
-		return $text;
-	}
-
-	private function generateClientInfo()
-	{
-		/**
-		 * @var Client $client
-		 * @var Order $order
-		 */
-		$order = $this->owner;
-		$client = $order->client;
-		return "Информация о клиенте:\n\t\tФИО: {$client->name}\n\t\tКонтактный номер: {$client->phone}\n";
 	}
 }

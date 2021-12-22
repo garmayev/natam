@@ -15,8 +15,6 @@ class DefaultController extends BaseController
      */
     public function actionIndex()
     {
-        return $this->render('index', [
-			'order' => Order::findOne(56)
-        ]);
+        return $this->render('index');
     }
 }

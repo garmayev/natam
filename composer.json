@@ -27,7 +27,8 @@
         "devanych/yii2-cart": "*",
         "ext-curl": "*",
         "kartik-v/yii2-widget-datetimepicker": "*",
-        "nhkey/yii2-activerecord-history": "*"
+        "nhkey/yii2-activerecord-history": "*",
+        "kartik-v/yii2-export": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

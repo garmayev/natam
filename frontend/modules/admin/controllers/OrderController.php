@@ -3,6 +3,7 @@
 namespace frontend\modules\admin\controllers;
 
 use common\models\Client;
+use common\models\Location;
 use common\models\Order;
 use common\models\search\OrderSearch;
 use common\models\Ticket;
@@ -48,23 +49,34 @@ class OrderController extends BaseController
 			Yii::$app->session->remove("client_id");
 			Yii::$app->session->remove("ticket_id");
 		}
-		if (Yii::$app->request->isPost) {
-			$client = Client::findOne(["phone" => $post["Client"]["phone"]]);
-			if (empty($client)) {
+		if ( Yii::$app->request->isPost ) {
+			$phone = preg_replace("/[\(\)\ \+]*/", "", $post["Client"]["phone"], -1);
+			$client = Client::find()->where(["phone" => $phone])->one();
+			if ( empty($client) ) {
 				$client = new Client();
-				if (!$client->load($post) || !$client->save()) {
+				if ( !$client->load($post) || !$client->save() ) {
 					Yii::error($client->getErrorSummary(true));
-					Yii::$app->session->setFlash("error", "Failed! " . json_encode($client->getErrorSummary(true)));
+					Yii::$app->session->setFlash("error", "Failed! Client info is not saved!");
 				}
 			}
-			$order->client_id = $client->id;
-//			var_dump($order);
-			if ($order->load($post) && $order->save()) {
-				Yii::$app->session->setFlash("success", "Order was created! Manager was calling you");
-				return $this->redirect("/admin/order/index");
+			$location = new Location();
+//			var_dump($post["Location"]); die;
+			$location->title = $post["Location"]["title"];
+			$location->latitude = $post["Location"]["latitude"];
+			$location->longitude = $post["Location"]["longitude"];
+			if ( $location->load($post) && $location->save() ) {
+				$order->location_id = $location->id;
+				$order->client_id = $client->id;
+				$order->delivery_date = Yii::$app->formatter->asTimestamp($post["Order"]["delivery_date"]);
+				if ($order->load($post) && $order->save()) {
+					Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
+					return $this->redirect("/");
+				} else {
+					Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
+					Yii::error($order->getErrorSummary(true));
+				}
 			} else {
-				Yii::$app->session->setFlash("error", "Failed! Order was not created!");
-				Yii::error($order->getErrorSummary(true));
+				Yii::error($location->getErrorSummary(true));
 			}
 		}
 		$client = new Client();
@@ -83,6 +95,7 @@ class OrderController extends BaseController
 			Yii::$app->session->remove("client_id");
 		}
 		if (Yii::$app->request->isPost) {
+			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
 			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 				return $this->redirect(["/admin/order/view", "id" => $id]);
@@ -106,6 +119,11 @@ class OrderController extends BaseController
 			Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order #{n} is not deleted!", ["n" => $id]));
 		}
 		return $this->redirect("/admin/order/index");
+	}
+
+	public function actionExport()
+	{
+
 	}
 
 	public function actionUpdateComment($comment, $id)
@@ -144,8 +162,9 @@ class OrderController extends BaseController
 	{
 		Yii::$app->response->format = Response::FORMAT_JSON;
 		$orders = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
-		$locations = $cart = [];
+		$locations = [];
 		foreach ($orders as $order) {
+			$cart = [];
 			foreach ($order->products as $product) {
 				$cart[] = [
 					"product" => $product,

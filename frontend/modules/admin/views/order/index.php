@@ -1,6 +1,7 @@
 <?php
 
 use common\models\search\OrderSearch;
+use kartik\export\ExportMenu;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
 use yii\helpers\Html;
@@ -15,6 +16,45 @@ use yii\helpers\Html;
 $this->title = Yii::t("app", "Orders");
 
 echo Html::a(Yii::t("app", "New Order"), ["order/create"], ["class" => ["btn", "btn-success"], "style" => "margin-right: 10px;"]);
+
+$gridColumns = [
+	'client.name',
+	'client.phone',
+	[
+		"attribute" => "location.title",
+		"label" => Yii::t("app", "Address"),
+		"format" => "html",
+		"enableSorting" => true,
+		"content" => function ($model, $key) {
+			if ($model->location) return $model->location->title;
+			return $model->address;
+		}
+	], [
+		"attribute" => "comment",
+	],
+	"price",
+	[
+		"attribute" => "status",
+		"content" => function ($model, $key) {
+			return $model->getStatus($model->status);
+		}
+	], [
+		"attribute" => "created_at",
+		"label" => Yii::t("app", "Created At"),
+		"content" => function ($model, $key) {
+			return Yii::$app->formatter->asDatetime($model->created_at, "php:d M Y H;i");
+		}
+	], [
+		"attribute" => "delivery_date",
+		"content" => function ($model) {
+			return Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i");
+		}
+	],
+];
+echo ExportMenu::widget([
+	'dataProvider' => $orderProvider,
+	'columns' => $gridColumns
+]);
 
 echo $this->render("_search", ["model" => $searchModel]);
 
@@ -42,7 +82,7 @@ echo \yii\grid\GridView::widget([
 			"format" => "html",
 			"enableSorting" => true,
 			"content" => function ($model, $key) {
-				if ( $model->location ) return $model->location->title;
+				if ($model->location) return $model->location->title;
 				return null;
 			}
 		], [
@@ -61,12 +101,12 @@ echo \yii\grid\GridView::widget([
 			}
 		], [
 			"attribute" => "created_at",
-			"content" => function($model, $key) {
+			"content" => function ($model, $key) {
 				return Yii::$app->formatter->asDatetime($model->created_at, "php:d M Y H;i");
 			}
 		], [
 			"attribute" => "delivery_date",
-			"content" => function($model) {
+			"content" => function ($model) {
 				return Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i");
 			}
 		], [

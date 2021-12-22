@@ -36,9 +36,6 @@ class OrderSearch extends Model
 //		$query = self::find();
 		$dataProvider = new ActiveDataProvider([
 			"query" => $query,
-			"pagination" => [
-				"pageSize" => 10
-			],
 			"sort" => [
 				"defaultOrder" => [
 					"delivery_date" => SORT_DESC,

@@ -28,9 +28,9 @@ class OrderController extends \yii\web\Controller
 			}
 			$location = new Location();
 //			var_dump($post["Location"]); die;
-			$location->title = $post["Location"]["title"];
-			$location->latitude = $post["Location"]["latitude"];
-			$location->longitude = $post["Location"]["longitude"];
+//			$location->title = $post["Location"]["title"];
+//			$location->latitude = $post["Location"]["latitude"];
+//			$location->longitude = $post["Location"]["longitude"];
 			if ( $location->load($post) && $location->save() ) {
 				$order->location_id = $location->id;
 				$order->client_id = $client->id;
@@ -46,7 +46,7 @@ class OrderController extends \yii\web\Controller
 				Yii::error($location->getErrorSummary(true));
 			}
 		}
-//		var_dump($order); die;
+		var_dump($order); die;
 		return $this->redirect("/");
 	}
 }

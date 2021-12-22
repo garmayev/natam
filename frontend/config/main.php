@@ -105,6 +105,9 @@ return [
 	    ],
 	],
 	'modules' => [
+		'gridview' =>  [
+			'class' => '\kartik\grid\Module',
+		],
 		'admin' => [
 			'class' => 'frontend\modules\admin\Module',
 		],
