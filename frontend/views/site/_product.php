@@ -28,7 +28,6 @@ foreach ( $products as $product ) {
 	<?= Html::tag("span", Html::img("/img/info.svg", ["alt" => "info"]), ["class" => "product_more"]) ?>
     <?= Html::tag("div", Html::img($model->thumbs, ["alt" => $model->title]), ["class" => "product_img"]) ?>
     <?= Html::tag("p", $model->title, ["class" => "product_item_title"]) ?>
-<!--    --><?//= Html::tag("div", $model->content, ["class" => "product_text"]) ?>
     <?php
         if ( $any ) {
 	        if ( count($items) > 1 ) {
@@ -48,7 +47,5 @@ foreach ( $products as $product ) {
             <button class="plus" <?= (!$any) ? "disabled=disabled" : "" ?>>+</button>
         </div>
         <?= Html::a("Заказать", "#", ["class" => ["btn", ($any) ? "blue" : "disabled"]]) ?>
-<!--        <a href="#" class="btn blue">заказать</a>-->
     </div>
-<!--    --><?//= ($model->isset == 0) ? Html::tag("span", \Yii::t("natam", "Isset"), ["class" => "product_info"]) : Html::tag("span", \Yii::t("natam", "Empty"), ["class" => "product_info_empty"]) ?>
 </div>
