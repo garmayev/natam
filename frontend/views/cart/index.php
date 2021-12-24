@@ -146,7 +146,7 @@ $this->registerCssFile("/css/style.css");
 	            <?php
                 // TODO: Добавление товара в форме
                 // TODO: Исключение товара из списка вариантов
-                    if (!empty($cartItems = $cart->getItems())): ?>
+                    if (!empty($cartItems = $cart->getItems())) { ?>
                     <div id="product_list" class="order-block active form_block">
 			            <?php
 			            foreach ($cart->getItems() as $cartItem) {
@@ -213,9 +213,9 @@ $this->registerCssFile("/css/style.css");
                         </div>
 			            <?= Html::submitButton("FINISH", ["class" => ["btn", "blue", "finish"]]) ?>
                     </div>
-	            <?php else: ?>
+	            <?php } else { ?>
                     <label>Корзина пуста</label>
-                <?php endif ?>
+                <?php } ?>
                 </div>
             <?php ActiveForm::end(); ?>
         </div>
