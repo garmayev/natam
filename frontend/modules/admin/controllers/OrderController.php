@@ -121,11 +121,6 @@ class OrderController extends BaseController
 		return $this->redirect("/admin/order/index");
 	}
 
-	public function actionExport()
-	{
-
-	}
-
 	public function actionUpdateComment($comment, $id)
 	{
 		Yii::$app->response->format = Response::FORMAT_JSON;

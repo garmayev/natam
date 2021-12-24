@@ -18,6 +18,7 @@ use yii\db\ActiveRecord;
  *
  * @property-read int $uniqueId
  * @property-read string $label
+ * @property int $category_id [int(11)]
  */
 class Product extends ActiveRecord
 {
@@ -31,12 +32,13 @@ class Product extends ActiveRecord
 	public function rules()
 	{
 		return [
-			[["title", "description", "price", "value"], "required"],
+			[["title", "price", "value"], "required"],
 			[["title", "description", "thumbs"], "string"],
 			[["price", "isset", "visible"], "integer"],
 			[["price"], "double"],
 			[["isset"], "default", "value" => 0],
 			[["visible"], "default", "value" => 1],
+			[["category_id"], "exist", "targetClass" => Category::class, "targetAttribute" => "id"],
 		];
 	}
 

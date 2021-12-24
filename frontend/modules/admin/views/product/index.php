@@ -9,6 +9,7 @@ use yii\helpers\Html;
 
 /**
  * @var $this View
+ * @var $categoryProvider ActiveDataProvider
  * @var $productProvider ActiveDataProvider
  * @var $model Product
  */
@@ -29,13 +30,13 @@ echo GridView::widget([
 			"attribute" => "thumbs",
 			"format" => "html",
 			"content" => function ($model) {
-				return Html::img($model->thumbs, ["width" => "150px"]);
+				return Html::img($model->thumbs, ["width" => "100px"]);
 			}
 		], [
 			"attribute" => "isset",
 			"format" => "html",
 			"content" => function ($model) {
-				return ($model->isset == 0) ? Html::tag("span", "", ["class" => ["fa", "fa-check"]]) : Html::tag("span", "", ["class" => ["fa", "fa-times"]]);
+				return ($model->isset) ? Html::tag("span", "", ["class" => ["fa", "fa-check"]]) : Html::tag("span", "", ["class" => ["fa", "fa-times"]]);
 			}
 		], [
 			'class' => \yii\grid\ActionColumn::className(),

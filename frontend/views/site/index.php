@@ -63,7 +63,6 @@ $this->title = Yii::$app->name;
         ?>
     </section>
     <section class="services">
-
         <div class="container-fluid">
             <div class="services_inner">
 				<?php
