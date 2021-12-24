@@ -87,23 +87,25 @@ class UpdateBehavior extends \yii\base\Behavior
 		$owner = $this->owner;
 		$post = \Yii::$app->request->post();
 		$dirty = $owner->getDirtyAttributes();
-		$orderProducts = OrderProduct::find()->where(["order_id" => $owner->id])->asArray()->all();
-		$diff = $this->diff($post["Order"]["product"], $orderProducts);
-		if ( count($diff["mustDelete"]) ) {
-			$orderProducts = OrderProduct::find()->where(["product_id" => $diff["mustDelete"]])->all();
-			foreach ($orderProducts as $op) {
-				$op->delete();
+		if ( isset($post["Order"]) ) {
+			$orderProducts = OrderProduct::find()->where(["order_id" => $owner->id])->asArray()->all();
+			$diff = $this->diff($post["Order"]["product"], $orderProducts);
+			if (count($diff["mustDelete"])) {
+				$orderProducts = OrderProduct::find()->where(["product_id" => $diff["mustDelete"]])->all();
+				foreach ($orderProducts as $op) {
+					$op->delete();
+				}
 			}
-		}
 
-		if ( count($diff["mustInsert"]) ) {
-			for ($i = 0; $i < count($diff["mustInsert"]["id"]); $i++) {
-				$op = new OrderProduct([
-					"order_id" => $owner->id,
-					"product_id" => $diff["mustInsert"]["id"][$i],
-					"product_count" => $diff["mustInsert"]["count"][$i]
-				]);
-				$op->save();
+			if (count($diff["mustInsert"])) {
+				for ($i = 0; $i < count($diff["mustInsert"]["id"]); $i++) {
+					$op = new OrderProduct([
+						"order_id" => $owner->id,
+						"product_id" => $diff["mustInsert"]["id"][$i],
+						"product_count" => $diff["mustInsert"]["count"][$i]
+					]);
+					$op->save();
+				}
 			}
 		}
 	}

@@ -2,6 +2,7 @@
 
 namespace frontend\modules\admin\controllers;
 
+use common\models\Category;
 use common\models\Product;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -18,9 +19,12 @@ class ProductController extends BaseController
 	public function actionIndex()
 	{
 		return $this->render("index", [
-			"productProvider" => new ActiveDataProvider([
+			"categoryProvider" => new ActiveDataProvider([
+				"query" => Category::find()
+			]),
+			'productProvider' => new ActiveDataProvider([
 				"query" => Product::find()
-			])
+			]),
 		]);
 	}
 
@@ -39,7 +43,7 @@ class ProductController extends BaseController
 		{
 			$model->file = UploadedFile::getInstance($model, "file");
 			if ( $model->load(Yii::$app->request->post()) && $model->upload() && $model->save() ) {
-				return $this->redirect(["/admin/product/index"]);
+				return $this->redirect(["/admin/category/view", "id" => $model->category_id]);
 			} else {
 				Yii::error($model->getErrorSummary(true));
 			}
@@ -56,7 +60,7 @@ class ProductController extends BaseController
 		{
 			$model->file = UploadedFile::getInstance($model, "file");
 			if ( $model->load(Yii::$app->request->post()) && $model->upload() && $model->save() ) {
-				return $this->redirect(["/admin/product/index"]);
+				return $this->redirect(["/admin/category/view", "id" => $model->category_id]);
 			} else {
 				Yii::error($model->getErrorSummary(true));
 			}
@@ -70,6 +74,6 @@ class ProductController extends BaseController
 	{
 		$model = Product::findOne($id);
 		$model->delete();
-		return $this->redirect(["/admin/product/index"]);
+		return $this->redirect(["/admin/category/view", "id" => $model->category_id]);
 	}
 }

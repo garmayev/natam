@@ -16,6 +16,8 @@ use Yii;
  */
 class Category extends \yii\db\ActiveRecord
 {
+	public $image;
+
     /**
      * {@inheritdoc}
      */
@@ -47,6 +49,18 @@ class Category extends \yii\db\ActiveRecord
             'thumbs' => Yii::t('app', 'Thumbs'),
         ];
     }
+
+	public function upload()
+	{
+		if ( $this->validate() ) {
+			if ( isset($this->image) ) {
+				$this->image->saveAs("img/uploads/{$this->image->baseName}.{$this->image->extension}");
+				$this->thumbs = "/img/uploads/{$this->image->baseName}.{$this->image->extension}";
+			}
+			return true;
+		}
+		return false;
+	}
 
     /**
      * Gets query for [[Products]].

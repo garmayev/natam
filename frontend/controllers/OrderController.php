@@ -36,6 +36,7 @@ class OrderController extends \yii\web\Controller
 				$order->client_id = $client->id;
 				$order->delivery_date = Yii::$app->formatter->asTimestamp($post["Order"]["delivery_date"]);
 				if ($order->load($post) && $order->save()) {
+					Yii::$app->cart->clear();
 					Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
 					return $this->redirect("/");
 				} else {
@@ -46,7 +47,6 @@ class OrderController extends \yii\web\Controller
 				Yii::error($location->getErrorSummary(true));
 			}
 		}
-		var_dump($order); die;
 		return $this->redirect("/");
 	}
 }
