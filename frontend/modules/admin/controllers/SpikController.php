@@ -104,6 +104,16 @@ class SpikController extends \yii\rest\Controller
 			$subscribtionId = $subscribtionId["SessionId"];
 			\Yii::$app->session->set("subscribtion_id", $subscribtionId);
 		}
-		return $this->getOnlineData($subscribtionId)["OnlineDataCollection"]["DataCollection"];
+		$onlineData = $this->getOnlineData($subscribtionId);
+		if ( isset($onlineData["OnlineDataCollection"]) ) {
+			$collection = $onlineData["OnlineDataCollection"];
+			if ( isset($collection) ) {
+				$dataCollection = $collection["DataCollection"];
+				if ( isset($dataCollection) ) {
+					return $dataCollection;
+				}
+			}
+		}
+		return [];
 	}
 }

@@ -3713,16 +3713,16 @@
         },
         {
             "name": "codeception/codeception",
-            "version": "4.1.25",
+            "version": "4.1.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Codeception/Codeception.git",
-                "reference": "bd05fe0a6c861b9045662fe25ea62c86a6915b5b"
+                "reference": "2d9a11e6f487e3bcc17e22b7552fb6a10cec5c7c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/bd05fe0a6c861b9045662fe25ea62c86a6915b5b",
-                "reference": "bd05fe0a6c861b9045662fe25ea62c86a6915b5b",
+                "url": "https://api.github.com/repos/Codeception/Codeception/zipball/2d9a11e6f487e3bcc17e22b7552fb6a10cec5c7c",
+                "reference": "2d9a11e6f487e3bcc17e22b7552fb6a10cec5c7c",
                 "shasum": ""
             },
             "require": {
@@ -3742,7 +3742,6 @@
                 "symfony/yaml": ">=2.7 <6.0"
             },
             "require-dev": {
-                "codeception/lib-innerbrowser": "^1.0 | 2.0.*@dev",
                 "codeception/module-asserts": "^1.0 | 2.0.*@dev",
                 "codeception/module-cli": "^1.0 | 2.0.*@dev",
                 "codeception/module-db": "^1.0 | 2.0.*@dev",
@@ -3800,7 +3799,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Codeception/Codeception/issues",
-                "source": "https://github.com/Codeception/Codeception/tree/4.1.25"
+                "source": "https://github.com/Codeception/Codeception/tree/4.1.27"
             },
             "funding": [
                 {
@@ -3808,7 +3807,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2021-12-21T01:23:05+00:00"
+            "time": "2021-12-22T06:40:46+00:00"
         },
         {
             "name": "codeception/lib-asserts",

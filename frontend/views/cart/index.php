@@ -140,7 +140,7 @@ $this->registerCssFile("/css/style.css");
     <div class="container-fluid">
         <div class="form_inner">
             <img src="img/journal.png" class="journal" alt="journal">
-			<?php $form = ActiveForm::begin(["id" => "create-order", "action" => ["/order/create"], "options" => ["class" => "form_inner"]]); ?>
+			<?php $form = ActiveForm::begin(["id" => "create-order", "action" => ["/order/create"]]); ?>
             <div class="form_content">
 				<?php if (!empty($cartItems = $cart->getItems())) { ?>
                     <div id="product_list" class="order-block active form_block">
@@ -161,7 +161,7 @@ $this->registerCssFile("/css/style.css");
                             <div class="form-group col-lg-6 col-md-6 col-xs-12">
 								<?= Html::textInput("Order[product][count][]", $cartItem->getQuantity(), ["class" => "form-control"]); ?>
                             </div>
-							<?
+							<?php
 						}
 						?>
                         <a href="#" class="btn blue">Next</a>
@@ -209,8 +209,6 @@ $this->registerCssFile("/css/style.css");
                         </div>
 						<?= Html::submitButton("FINISH", ["class" => ["btn", "blue", "finish"]]); ?>
                     </div>
-				<?php } else { ?>
-                    <label>Корзина пуста</label>
 				<?php } ?>
             </div>
 			<?php ActiveForm::end(); ?>

@@ -2,7 +2,7 @@ let map, cars, orders, carCluster, orderCluster, home, objects,
     carsCollection = [],
     points = [],
     orderPoints = [],
-    interval = 1500,
+    interval = 1000,
     initialMapPosition = [51.819879855767255, 107.60937851186925],
     initialMapZoom = 12,
     iteration = 0;
@@ -58,12 +58,13 @@ $(() => {
                         let item = cars[carsKey];
                         if ( item.DeviceId.SerialId !== "231790" ) {
                             if (carsCollection[item.DeviceId.SerialId] === undefined) {
+				// console.log(item);
                                 carsCollection[item.DeviceId.SerialId] = {
                                     DeviceId: item.DeviceId.SerialId,
                                     Navigation: item.Navigation,
                                     Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude], {
                                         balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
-                                        balloonContent: item.Address,
+                                        balloonContent: "Название: "+item.Name+"<br>"+item.Address,
                                     }, {
                                         preset: 'islands#redIcon',
                                     })
@@ -81,7 +82,7 @@ $(() => {
             ajax("/admin/order/get-list").then(response => {
                 let orders = JSON.parse(response);
                 for (const index in orders) {
-                    if ( orderPoints.length < index ) {
+                    if ( orderPoints.length < orders.length ) {
                         let order = orders[index];
                         let content = '';
                         for (const index in order.cart) {
