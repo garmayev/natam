@@ -102,7 +102,7 @@ echo \yii\grid\GridView::widget([
 		], [
 			"attribute" => "created_at",
 			"content" => function ($model, $key) {
-				return Yii::$app->formatter->asDatetime($model->created_at, "php:d M Y H;i");
+				return Yii::$app->formatter->asDatetime($model->created_at, "php:d M Y H:i");
 			}
 		], [
 			"attribute" => "delivery_date",
