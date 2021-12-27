@@ -85,7 +85,7 @@ class UpdateBehavior extends \yii\base\Behavior
 		 * @var Order $owner
 		 */
 		$owner = $this->owner;
-		if ( \Yii::$app->request->isPost ) {
+		if ( \Yii::$app->request->hasMethod("post") ) {
 			$post = \Yii::$app->request->post();
 			$orderProducts = OrderProduct::find()->where(["order_id" => $owner->id])->asArray()->all();
 			$diff = $this->diff($post["Order"]["product"], $orderProducts);

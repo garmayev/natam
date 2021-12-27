@@ -8,6 +8,7 @@ $this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-
 //$this->registerCssFile("http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css", ["depends" => \yii\web\JqueryAsset::class]);
 //$this->registerJsFile("http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js", ["depends" => \yii\web\JqueryAsset::class]);
 $this->registerJsFile("/js/tracker.js", ["depends" => \yii\web\JqueryAsset::class]);
+$this->title = "";
 ?>
 
 <div class="admin-default-index">

@@ -89,8 +89,9 @@ $(() => {
                             let item = order.cart[index];
                             content += `<b>${item.product.title} (${item.product.value})</b>: ${item.count}<br>`;
                         }
-                        content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p>`;
-
+			let date = new Date(order.order.delivery_date * 1000);
+                        content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
+//			console.log(order);
                         orderPoints.push(new ymaps.Placemark([order.location.latitude, order.location.longitude], {
                             balloonContentHeader: `<h3>Заказ #${order.id}</h3>`,
                             balloonContentBody: content,
