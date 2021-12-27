@@ -85,9 +85,8 @@ class UpdateBehavior extends \yii\base\Behavior
 		 * @var Order $owner
 		 */
 		$owner = $this->owner;
-		$post = \Yii::$app->request->post();
-		$dirty = $owner->getDirtyAttributes();
-		if ( isset($post["Order"]) ) {
+		if ( \Yii::$app->request->isPost ) {
+			$post = \Yii::$app->request->post();
 			$orderProducts = OrderProduct::find()->where(["order_id" => $owner->id])->asArray()->all();
 			$diff = $this->diff($post["Order"]["product"], $orderProducts);
 			if (count($diff["mustDelete"])) {
@@ -124,18 +123,16 @@ class UpdateBehavior extends \yii\base\Behavior
 
 	public function beforeUpdate($event)
 	{
-//		$this->saveProducts();
-//		$this->exclude();
-//		if ( isset($this->owner->getDirtyAttributes()["status"]) ) $this->owner->updated_at = time();
-		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
-		}
+//		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
+//
+//		}
 	}
 
 	public function afterUpdate()
 	{
 		$this->exclude();
-		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
-		}
+//		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
+//		}
 	}
 
 	public function disablePreviousMessage($event)
