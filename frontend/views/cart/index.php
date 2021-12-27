@@ -209,8 +209,6 @@ $this->registerCssFile("/css/style.css");
                         </div>
 						<?= Html::submitButton("FINISH", ["class" => ["btn", "blue", "finish"]]); ?>
                     </div>
-				<?php } else { ?>
-                    <label>Корзина пуста</label>
 				<?php } ?>
             </div>
 			<?php ActiveForm::end(); ?>
