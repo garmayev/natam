@@ -123,16 +123,16 @@ class UpdateBehavior extends \yii\base\Behavior
 
 	public function beforeUpdate($event)
 	{
-		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
-
-		}
+//		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
+//
+//		}
 	}
 
 	public function afterUpdate()
 	{
 		$this->exclude();
-		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
-		}
+//		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
+//		}
 	}
 
 	public function disablePreviousMessage($event)
