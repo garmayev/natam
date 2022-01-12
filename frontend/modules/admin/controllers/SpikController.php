@@ -29,7 +29,7 @@ class SpikController extends \yii\rest\Controller
 		];
 
 		$options[CURLOPT_CUSTOMREQUEST] = $method;
-		$options[CURLOPT_POSTFIELDS] = json_encode(is_null($data) ? [] : $data );
+		$options[CURLOPT_POSTFIELDS] = json_encode(is_null($data) ? [] : $data);
 
 		$headers = [
 			"Accept:json",
@@ -45,7 +45,7 @@ class SpikController extends \yii\rest\Controller
 
 		$response = curl_exec($ch);
 
-		if($errno = curl_errno($ch)) {
+		if ($errno = curl_errno($ch)) {
 			$error_message = curl_strerror($errno);
 			\Yii::error("cURL error ({$errno}):\n {$error_message}");
 		}
@@ -91,7 +91,7 @@ class SpikController extends \yii\rest\Controller
 		}
 		$ids = [];
 		$units = $this->units();
-		if ( !isset($units) ) {
+		if (!isset($units)) {
 			$sessionId = $this->authorization()["SessionId"];
 			\Yii::$app->session->set("session_id", $sessionId);
 			$units = $this->units();
@@ -100,18 +100,16 @@ class SpikController extends \yii\rest\Controller
 			$ids[] = $unit["UnitId"];
 		}
 		$subscribtionId = $this->getSubscribtionId($ids);
-		if ( $subscribtionId ) {
+		if ($subscribtionId) {
 			$subscribtionId = $subscribtionId["SessionId"];
 			\Yii::$app->session->set("subscribtion_id", $subscribtionId);
 		}
 		$onlineData = $this->getOnlineData($subscribtionId);
-		if ( isset($onlineData["OnlineDataCollection"]) ) {
+		if (isset($onlineData["OnlineDataCollection"])) {
 			$collection = $onlineData["OnlineDataCollection"];
-			if ( isset($collection) ) {
-				$dataCollection = $collection["DataCollection"];
-				if ( isset($dataCollection) ) {
-					return $dataCollection;
-				}
+			$dataCollection = $collection["DataCollection"];
+			if (isset($dataCollection)) {
+				return $dataCollection;
 			}
 		}
 		return [];
