@@ -110,7 +110,7 @@ ymaps.ready(() => {
         }
     })
     if (longitude && latitude) {
-        console.log(longitude);
+//        console.log(longitude);
         myMap = new ymaps.Map('map', {
             center: [latitude, longitude],
             zoom: 12
@@ -151,7 +151,7 @@ ymaps.ready(() => {
         ymaps.geocode(coords).then(function (res) {
             var firstGeoObject = res.geoObjects.get(0);
             let address = firstGeoObject.getAddressLine();
-    
+            
             myPlacemark.properties
                 .set({
                     iconCaption: [
@@ -162,9 +162,9 @@ ymaps.ready(() => {
                 });
             $('#order-address').val(address);
             $('#location-title').val(address);
+            $('#location-latitude').val(coords[0]);
+            $('#location-logintude').val(coords[1]);
         });
-        $('#location-latitude').val(coords[0]);
-        $('#location-logintude').val(coords[1]);
     }
 });
 $('.delete-product').on('click', (e) => {

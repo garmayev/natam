@@ -2,7 +2,7 @@ let map, cars, orders, carCluster, orderCluster, home, objects,
     carsCollection = [],
     points = [],
     orderPoints = [],
-    interval = 1000,
+    interval = 2000,
     initialMapPosition = [51.819879855767255, 107.60937851186925],
     initialMapZoom = 12,
     iteration = 0;
