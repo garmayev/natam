@@ -78,7 +78,8 @@ class Order extends ActiveRecord
 								'product_count' => $this->orderProduct->product_count
 							];
 						}
-					]
+					],
+					'location',
 				]
 			], [
 				'class' => ActiveRecordHistoryBehavior::class,
