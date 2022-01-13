@@ -16,10 +16,8 @@ class SpikController extends \yii\rest\Controller
 		"ONLINE_DATA" => "spic/OnlineDataService/rest/GetOnlineData",
 	];
 
-	private function send($data, $url, $method = "POST")
+	private function send($data, $url, $session_id = null, $method = "POST")
 	{
-		$session_id = \Yii::$app->session->get("session_id");
-
 		$ch = curl_init();
 		$options = [
 			CURLOPT_URL => $this->base_url . $url,
@@ -49,7 +47,6 @@ class SpikController extends \yii\rest\Controller
 			$error_message = curl_strerror($errno);
 			\Yii::error("cURL error ({$errno}):\n {$error_message}");
 		}
-
 		return json_decode($response, true);
 	}
 
@@ -58,60 +55,61 @@ class SpikController extends \yii\rest\Controller
 		$data = [
 			"Login" => "garmayev@yandex.ru",
 			"Password" => "12345",
-			"TimeStampUtc" => "/Date(" . time() . ")/",
+			"TimeStampUtc" => "/Date(" . (time() + 10000) . ")/",
+			"TimeZoneOlsonId" => "Aisa/Irkutsk",
 			"CultureName" => "ru-ru",
 			"UiCultureName" => "ru-ru"
 		];
 		return $this->send($data, $this->actions['LOGIN']);
 	}
 
-	private function units()
+	private function units($session_id)
 	{
-		return $this->send(["Offset" => 0, "Count" => 25], $this->actions["ALL_UNITS_PAGE"]);
+		return $this->send(["Offset" => 0, "Count" => 25], $this->actions["ALL_UNITS_PAGE"], $session_id);
 	}
 
-	private function getSubscribtionId($unitIds)
+	private function getSubscribtionId($unitIds, $session_id)
 	{
-		return $this->send(["UnitIds" => $unitIds], $this->actions["SUBSCRIBE"]);
+		return $this->send(["UnitIds" => $unitIds], $this->actions["SUBSCRIBE"], $session_id);
 	}
 
-	private function getOnlineData($subscribe)
+	private function getUnitsCount($session_id) 
 	{
-		return $this->send($subscribe, $this->actions["ONLINE_DATA"]);
+		return $this->send(null, $this->actions["ALL_UNITS_COUNT"], $session_id);
+	}
+
+	private function getOnlineData($subscribe, $session_id)
+	{
+		return $this->send(["Id" => $subscribe], $this->actions["ONLINE_DATA"], $session_id);
 	}
 
 	public function actionCars()
 	{
 		\Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-		$sessionId = \Yii::$app->session->get("session_id");
-		$subscribtionId = \Yii::$app->session->get("subscribtion_id");
-		if (!isset($sessionId)) {
-			$sessionId = $this->authorization()["SessionId"];
-			\Yii::$app->session->set("session_id", $sessionId);
-		}
+		$auth = $this->authorization();
+		\Yii::error($auth);
+		$authToken = $auth["SessionId"];
 		$ids = [];
-		$units = $this->units();
-		if (!isset($units)) {
-			$sessionId = $this->authorization()["SessionId"];
-			\Yii::$app->session->set("session_id", $sessionId);
-			$units = $this->units();
-		}
-		foreach ($units["Units"] as $unit) {
-			$ids[] = $unit["UnitId"];
-		}
-		$subscribtionId = $this->getSubscribtionId($ids);
-		if ($subscribtionId) {
-			$subscribtionId = $subscribtionId["SessionId"];
-			\Yii::$app->session->set("subscribtion_id", $subscribtionId);
-		}
-		$onlineData = $this->getOnlineData($subscribtionId);
-		if (isset($onlineData["OnlineDataCollection"])) {
-			$collection = $onlineData["OnlineDataCollection"];
-			$dataCollection = $collection["DataCollection"];
-			if (isset($dataCollection)) {
-				return $dataCollection;
+		$units = $this->units($authToken);
+		if (isset($units)) {
+			foreach ($units["Units"] as $unit) {
+				$ids[] = $unit["UnitId"];
+			}
+			$subscribe = $this->getSubscribtionId($ids, $authToken)["SessionId"]["Id"];
+			$onlineData = $this->getOnlineData($subscribe, $authToken);
+			if (isset($onlineData["OnlineDataCollection"])) {
+				$collection = $onlineData["OnlineDataCollection"];
+				$dataCollection = $collection["DataCollection"];
+				if (isset($dataCollection)) {
+					return $dataCollection;
+				}
 			}
 		}
 		return [];
+	}
+	
+	public function actionLogout()
+	{
+		
 	}
 }

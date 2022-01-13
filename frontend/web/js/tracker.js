@@ -8,6 +8,9 @@ let map, cars, orders, carCluster, orderCluster, home, objects,
     iteration = 0;
 
 $(() => {
+    $(window).on('onunload', () => {
+	ajax('/admin/spik/logout');
+    })
     function ajax(url) {
         return new Promise(function (resolve, reject) {
             let xhr = new XMLHttpRequest();
