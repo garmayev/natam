@@ -131,6 +131,7 @@ $(() => {
             orderCluster.add(orderPoints);
         });
         setTimeout(() => {
+            clearInterval(data)
             window.location.reload();
         }, 30000)
     })
