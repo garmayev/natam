@@ -59,6 +59,11 @@ $(() => {
             console.time();
             ajax("/admin/spik/cars").then(response => {
                 cars = JSON.parse(response);
+                if ( cars.ok === false ) {
+                    console.error(cars.data);
+                } else {
+                    cars = cars.data;
+                }
                 console.groupCollapsed(`Запрос #${count}`);
                 console.timeEnd();
                 console.log(cars);
