@@ -132,6 +132,6 @@ $(() => {
         });
         setTimeout(() => {
             window.location.reload();
-        }, 600)
+        }, 60000)
     })
 })
