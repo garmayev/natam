@@ -62,25 +62,31 @@ class SpikController extends \yii\rest\Controller
 			"UiCultureName" => "ru-ru"
 		];
 		$authExpire = \Yii::$app->session->get("authExpire");
-		if ( $now > $authExpire ) {
-			$response = $this->send($data, $this->actions['LOGIN']);
-			\Yii::error($response);
-			if ( $response["IsAuthenticated"] && $response["IsAuthorized"]) {
-				preg_match("/Date\(([0-9]*)/", $response["ExpireDate"], $matches);
-				$expire = (intval($matches[1]) / 1000) + (8 * 3600);
-				$authToken = $response["SessionId"];
-				\Yii::$app->session->set("authToken", $authToken);
-				\Yii::$app->session->set("authExpire", $expire);
-				return $authToken;
+		if ( isset($authExpire) ) {
+			if ($now > $authExpire) {
+				\Yii::error("Auth token is die! Generate new Token");
+			} else {
+				return \Yii::$app->session->get("authToken");
 			}
+		}
+		$response = $this->send($data, $this->actions['LOGIN']);
+		if ($response["IsAuthenticated"] && $response["IsAuthorized"]) {
+			preg_match("/Date\(([0-9]*)/", $response["ExpireDate"], $matches);
+			$expire = (intval($matches[1]) / 1000) + (3 * 3600);
+			$authToken = $response["SessionId"];
+			\Yii::$app->session->set("authToken", $authToken);
+			\Yii::$app->session->set("authExpire", $expire);
+			return $authToken;
 		} else {
-			return \Yii::$app->session->get("authToken");
+			return null;
 		}
 	}
 
 	private function units($session_id)
 	{
-		return $this->send(["Offset" => 0, "Count" => 25], $this->actions["ALL_UNITS_PAGE"], $session_id);
+		$response = $this->send(["Offset" => 0, "Count" => 25], $this->actions["ALL_UNITS_PAGE"], $session_id);
+		\Yii::error($response);
+		return $response;
 	}
 
 	private function getSubscribtionId($unitIds, $session_id)
@@ -112,6 +118,8 @@ class SpikController extends \yii\rest\Controller
 
 	public function actionCars()
 	{
+//		\Yii::$app->session->remove("authToken");
+//		\Yii::$app->session->remove("authExpire");
 		\Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 		$authToken = $this->authorization();
 		if ( is_null($authToken) ) return ["ok" => false, "data" => "Authorization token is die"];
