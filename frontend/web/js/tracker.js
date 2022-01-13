@@ -9,8 +9,11 @@ let map, cars, orders, carCluster, orderCluster, home, objects,
     count = 0, token = '', subscribe = '';
 
 $(() => {
-    $(window).on('onunload', () => {
-        ajax('/admin/spik/logout');
+    $(window).on("beforeunload", () => {
+        ajax('/admin/spik/logout').then(() => {
+            console.log("Log out");
+            // alert("Bye");
+        });
     })
 
     function ajax(url) {
@@ -61,14 +64,18 @@ $(() => {
             gridSize: 180,
         })
         map.geoObjects.add(orderCluster);
-        let tokenPromise = ajax("/admin/spik/token");
-        let subscribePromise = ajax("/admin/spik/subscribe");
         let data = setInterval(() => {
-            let onlineData = ajax("/admin/spik/online");
-            Promise.all([tokenPromise, subscribePromise, onlineData]).then(
+            let request = [];
+                // request.push(ajax("/admin/spik/token"));
+                // request.push(ajax("/admin/spik/subscribe"));
+            request.push(ajax("/admin/spik/online"));
+            Promise.all(request).then(
                 response => {
-                    cars = JSON.parse(response[2]);
-                    if (cars.length) {
+                    cars = JSON.parse(response[0]);
+                    // subscribe = JSON.parse(response[1]);
+                    // cars = response[2];
+                    console.log(cars);
+                    if (cars !== null) {
                         for (const carsKey in cars) {
                             let item = cars[carsKey];
                             if (item.DeviceId.SerialId !== "231790") {
