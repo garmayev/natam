@@ -86,12 +86,14 @@ $(() => {
                         }
                     }
                     carCluster.add(points);
+                } else {
+                    console.error(cars);
                 }
             });
         }, interval);
-        setTimeout(() => {
-            clearInterval(int);
-        }, 60000)
+        // setTimeout(() => {
+        //     clearInterval(int);
+        // }, 60000)
         ajax("/admin/order/get-list").then(response => {
             let orders = JSON.parse(response);
             for (const index in orders) {

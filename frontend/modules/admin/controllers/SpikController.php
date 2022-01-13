@@ -52,15 +52,29 @@ class SpikController extends \yii\rest\Controller
 
 	private function authorization()
 	{
+		$now = time();
 		$data = [
 			"Login" => "garmayev@yandex.ru",
 			"Password" => "12345",
-			"TimeStampUtc" => "/Date(" . (time() + 10000) . ")/",
+			"TimeStampUtc" => "/Date(" . ($now + 10000) . ")/",
 			"TimeZoneOlsonId" => "Aisa/Irkutsk",
 			"CultureName" => "ru-ru",
 			"UiCultureName" => "ru-ru"
 		];
-		return $this->send($data, $this->actions['LOGIN']);
+		$authExpire = \Yii::$app->session->get("authExpire");
+		if ( $now > $authExpire ) {
+			$response = $this->send($data, $this->actions['LOGIN']);
+			if ( $response["IsAuthenticated"] && $response["IsAuthorized"]) {
+				preg_match("/Date\(([0-9]*)/", $response["ExpireDate"], $matches);
+				$expire = intval($matches[1]) / 1000;
+				$authToken = $response["SessionId"];
+				\Yii::$app->session->set("authToken", $authToken);
+				\Yii::$app->session->set("authExpire", $expire);
+				return $authToken;
+			}
+		} else {
+			return \Yii::$app->session->get("authToken");
+		}
 	}
 
 	private function units($session_id)
@@ -70,7 +84,19 @@ class SpikController extends \yii\rest\Controller
 
 	private function getSubscribtionId($unitIds, $session_id)
 	{
-		return $this->send(["UnitIds" => $unitIds], $this->actions["SUBSCRIBE"], $session_id);
+		if ( $subscribeToken = \Yii::$app->session->get("subscribeToken") ) {
+			return $subscribeToken;
+		} else {
+			$response = $this->send(["UnitIds" => $unitIds], $this->actions["SUBSCRIBE"], $session_id);
+			if ( count($response["State"]["ErrorCodes"]) > 0 ) {
+				\Yii::error($response);
+				return null;
+			} else {
+				$subscribeToken = $response["SessionId"]["Id"];
+				\Yii::$app->session->set("subscribeToken", $subscribeToken);
+				return $subscribeToken;
+			}
+		}
 	}
 
 	private function getUnitsCount($session_id) 
@@ -86,24 +112,16 @@ class SpikController extends \yii\rest\Controller
 	public function actionCars()
 	{
 		\Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-		$authToken = \Yii::$app->session->get("authToken");
-		if (!isset($authToken)) {
-			$auth = $this->authorization();
-			\Yii::error($auth);
-			$authToken = $auth["SessionId"];
-			\Yii::$app->session->set("authToken", $authToken);
-		}
+		$authToken = $this->authorization();
+		if ( is_null($authToken) ) return [];
 		$ids = [];
 		$units = $this->units($authToken);
 		if (isset($units)) {
 			foreach ($units["Units"] as $unit) {
 				$ids[] = $unit["UnitId"];
 			}
-			$subscribeToken = \Yii::$app->session->get("subscribeToken");
-			if ( !isset($subscribeToken) ) {
-				$subscribeToken = $this->getSubscribtionId($ids, $authToken)["SessionId"]["Id"];
-				\Yii::$app->session->set("subscribeToken", $subscribeToken);
-			}
+			$subscribeToken = $this->getSubscribtionId($ids, $authToken);
+			if ( is_null($subscribeToken) ) return [];
 			$onlineData = $this->getOnlineData($subscribeToken, $authToken);
 			if (isset($onlineData["OnlineDataCollection"])) {
 				$collection = $onlineData["OnlineDataCollection"];
