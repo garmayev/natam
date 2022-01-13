@@ -2,7 +2,7 @@
 
 namespace frontend\modules\admin\controllers;
 
-use common\models\Vacancy;
+use frontend\models\Vacancy;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\UploadedFile;

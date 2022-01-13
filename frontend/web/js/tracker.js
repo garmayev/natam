@@ -16,6 +16,7 @@ $(() => {
         return new Promise(function (resolve, reject) {
             let xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
+		xhr.timeout = 1500;
             xhr.onload = function () {
                 if (this.status === 200) {
                     resolve(this.response);
@@ -29,6 +30,10 @@ $(() => {
             xhr.onerror = function () {
                 reject(new Error("Network Error"));
             };
+
+		xhr.ontimeout = function () {
+			reject(new Error("Timeout Error"));
+		}
 
             xhr.send();
         });
@@ -55,8 +60,6 @@ $(() => {
         })
         map.geoObjects.add(orderCluster);
         let int = setInterval(() => {
-            count++;
-            console.time();
             ajax("/admin/spik/cars").then(response => {
                 cars = JSON.parse(response);
                 if ( cars.ok === false ) {
@@ -64,10 +67,6 @@ $(() => {
                 } else {
                     cars = cars.data;
                 }
-                console.groupCollapsed(`Запрос #${count}`);
-                console.timeEnd();
-                console.log(cars);
-                console.groupEnd();
                 if (cars.length) {
                     for (const carsKey in cars) {
                         let item = cars[carsKey];
@@ -94,7 +93,9 @@ $(() => {
                 } else {
                     console.error(cars);
                 }
-            });
+            }, reject => {
+			console.error(reject);
+	    });
         }, interval);
         // setTimeout(() => {
         //     clearInterval(int);

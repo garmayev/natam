@@ -24,6 +24,7 @@ class SpikController extends \yii\rest\Controller
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_SSL_VERIFYPEER => false,
 			CURLOPT_SSL_VERIFYHOST => false,
+			CURLOPT_CONNECTTIMEOUT => 2,
 		];
 
 		$options[CURLOPT_CUSTOMREQUEST] = $method;
@@ -56,13 +57,14 @@ class SpikController extends \yii\rest\Controller
 		$data = [
 			"Login" => "garmayev@yandex.ru",
 			"Password" => "12345",
-			"TimeStampUtc" => "/Date(" . ($now + 10000) . ")/",
+			"TimeStampUtc" => "/Date(" . ($now) . ")/",
 			"TimeZoneOlsonId" => "Aisa/Irkutsk",
 			"CultureName" => "ru-ru",
 			"UiCultureName" => "ru-ru"
 		];
 		$authExpire = \Yii::$app->session->get("authExpire");
-		if ( isset($authExpire) ) {
+		$authToken = \Yii::$app->session->get("authToken");
+		if ( isset($authExpire) && isset($authToken) ) {
 			if ($now > $authExpire) {
 				\Yii::error("Auth token is die! Generate new Token");
 			} else {
@@ -70,13 +72,15 @@ class SpikController extends \yii\rest\Controller
 			}
 		}
 		$response = $this->send($data, $this->actions['LOGIN']);
-		if ($response["IsAuthenticated"] && $response["IsAuthorized"]) {
-			preg_match("/Date\(([0-9]*)/", $response["ExpireDate"], $matches);
-			$expire = (intval($matches[1]) / 1000) + (3 * 3600);
-			$authToken = $response["SessionId"];
-			\Yii::$app->session->set("authToken", $authToken);
-			\Yii::$app->session->set("authExpire", $expire);
-			return $authToken;
+		if (isset($response)) {
+			if ($response["IsAuthenticated"] && $response["IsAuthorized"]) {
+				preg_match("/Date\(([0-9]*)/", $response["ExpireDate"], $matches);
+				$expire = (intval($matches[1] / 1000) + 60);
+				$authToken = $response["SessionId"];
+				\Yii::$app->session->set("authToken", $authToken);
+				\Yii::$app->session->set("authExpire", $expire);
+				return $authToken;
+			}
 		} else {
 			return null;
 		}
@@ -85,7 +89,7 @@ class SpikController extends \yii\rest\Controller
 	private function units($session_id)
 	{
 		$response = $this->send(["Offset" => 0, "Count" => 25], $this->actions["ALL_UNITS_PAGE"], $session_id);
-		\Yii::error($response);
+		// \Yii::error($response);
 		return $response;
 	}
 
@@ -95,6 +99,7 @@ class SpikController extends \yii\rest\Controller
 			return $subscribeToken;
 		} else {
 			$response = $this->send(["UnitIds" => $unitIds], $this->actions["SUBSCRIBE"], $session_id);
+			if ( is_null($response) ) return null;
 			if ( count($response["State"]["ErrorCodes"]) > 0 ) {
 				\Yii::error($response);
 				return null;
@@ -121,6 +126,8 @@ class SpikController extends \yii\rest\Controller
 //		\Yii::$app->session->remove("authToken");
 //		\Yii::$app->session->remove("authExpire");
 		\Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+//		\Yii::error( \Yii::$app->session->get("authExpire") );
+//		\Yii::error( time() );
 		$authToken = $this->authorization();
 		if ( is_null($authToken) ) return ["ok" => false, "data" => "Authorization token is die"];
 		$ids = [];
@@ -147,6 +154,10 @@ class SpikController extends \yii\rest\Controller
 	
 	public function actionLogout()
 	{
-		
+		$response = $this->send(null, $this->actions["LOGOUT"], \Yii::$app->session->get("authToken"), "GET");
+		if ( isset($response) ) {
+			\Yii::$app->session->remove("authToken");
+			\Yii::$app->session->remove("authExpire");
+		}
 	}
 }
