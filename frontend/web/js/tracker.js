@@ -5,7 +5,8 @@ let map, cars, orders, carCluster, orderCluster, home, objects,
     interval = 2000,
     initialMapPosition = [51.819879855767255, 107.60937851186925],
     initialMapZoom = 12,
-    iteration = 0;
+    iteration = 0,
+    count = 0;
 
 $(() => {
     $(window).on('onunload', () => {
@@ -54,14 +55,19 @@ $(() => {
         })
         map.geoObjects.add(orderCluster);
         let int = setInterval(() => {
+            count++;
+            console.time();
             ajax("/admin/spik/cars").then(response => {
                 cars = JSON.parse(response);
+                console.groupCollapsed(`Запрос #${count}`);
+                console.timeEnd();
+                console.log(cars);
+                console.groupEnd();
                 if (cars.length) {
                     for (const carsKey in cars) {
                         let item = cars[carsKey];
                         if ( item.DeviceId.SerialId !== "231790" ) {
                             if (carsCollection[item.DeviceId.SerialId] === undefined) {
-				// console.log(item);
                                 carsCollection[item.DeviceId.SerialId] = {
                                     DeviceId: item.DeviceId.SerialId,
                                     Navigation: item.Navigation,
@@ -83,6 +89,9 @@ $(() => {
                 }
             });
         }, interval);
+        setTimeout(() => {
+            clearInterval(int);
+        }, 60000)
         ajax("/admin/order/get-list").then(response => {
             let orders = JSON.parse(response);
             for (const index in orders) {

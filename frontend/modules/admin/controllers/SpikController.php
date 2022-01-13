@@ -86,17 +86,25 @@ class SpikController extends \yii\rest\Controller
 	public function actionCars()
 	{
 		\Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-		$auth = $this->authorization();
-		\Yii::error($auth);
-		$authToken = $auth["SessionId"];
+		$authToken = \Yii::$app->session->get("authToken");
+		if (!isset($authToken)) {
+			$auth = $this->authorization();
+			\Yii::error($auth);
+			$authToken = $auth["SessionId"];
+			\Yii::$app->session->set("authToken", $authToken);
+		}
 		$ids = [];
 		$units = $this->units($authToken);
 		if (isset($units)) {
 			foreach ($units["Units"] as $unit) {
 				$ids[] = $unit["UnitId"];
 			}
-			$subscribe = $this->getSubscribtionId($ids, $authToken)["SessionId"]["Id"];
-			$onlineData = $this->getOnlineData($subscribe, $authToken);
+			$subscribeToken = \Yii::$app->session->get("subscribeToken");
+			if ( !isset($subscribeToken) ) {
+				$subscribeToken = $this->getSubscribtionId($ids, $authToken)["SessionId"]["Id"];
+				\Yii::$app->session->set("subscribeToken", $subscribeToken);
+			}
+			$onlineData = $this->getOnlineData($subscribeToken, $authToken);
 			if (isset($onlineData["OnlineDataCollection"])) {
 				$collection = $onlineData["OnlineDataCollection"];
 				$dataCollection = $collection["DataCollection"];
