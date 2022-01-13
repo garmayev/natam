@@ -130,5 +130,8 @@ $(() => {
             }
             orderCluster.add(orderPoints);
         });
+        setTimeout(() => {
+            window.location.reload();
+        }, 600)
     })
 })
