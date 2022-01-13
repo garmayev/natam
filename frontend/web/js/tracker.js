@@ -6,17 +6,18 @@ let map, cars, orders, carCluster, orderCluster, home, objects,
     initialMapPosition = [51.819879855767255, 107.60937851186925],
     initialMapZoom = 12,
     iteration = 0,
-    count = 0;
+    count = 0, token = '', subscribe = '';
 
 $(() => {
     $(window).on('onunload', () => {
-	ajax('/admin/spik/logout');
+        ajax('/admin/spik/logout');
     })
+
     function ajax(url) {
         return new Promise(function (resolve, reject) {
             let xhr = new XMLHttpRequest();
             xhr.open('GET', url, true);
-		xhr.timeout = 1500;
+            // xhr.timeout = 1500;
             xhr.onload = function () {
                 if (this.status === 200) {
                     resolve(this.response);
@@ -31,15 +32,16 @@ $(() => {
                 reject(new Error("Network Error"));
             };
 
-		xhr.ontimeout = function () {
-			reject(new Error("Timeout Error"));
-		}
+            xhr.ontimeout = function () {
+                reject(new Error("Timeout Error"));
+            }
 
             xhr.send();
         });
     }
 
     ymaps.ready(() => {
+
         map = new ymaps.Map('map', {
             center: initialMapPosition,
             zoom: initialMapZoom,
@@ -59,51 +61,49 @@ $(() => {
             gridSize: 180,
         })
         map.geoObjects.add(orderCluster);
-        let int = setInterval(() => {
-            ajax("/admin/spik/cars").then(response => {
-                cars = JSON.parse(response);
-                if ( cars.ok === false ) {
-                    console.error(cars.data);
-                } else {
-                    cars = cars.data;
-                }
-                if (cars.length) {
-                    for (const carsKey in cars) {
-                        let item = cars[carsKey];
-                        if ( item.DeviceId.SerialId !== "231790" ) {
-                            if (carsCollection[item.DeviceId.SerialId] === undefined) {
-                                carsCollection[item.DeviceId.SerialId] = {
-                                    DeviceId: item.DeviceId.SerialId,
-                                    Navigation: item.Navigation,
-                                    Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude], {
-                                        balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
-                                        balloonContent: "Название: "+item.Name+"<br>"+item.Address,
-                                    }, {
-                                        preset: 'islands#redIcon',
-                                    })
-                                };
-                                points.push(carsCollection[item.DeviceId.SerialId].Placemark);
-                                // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
-                            } else {
-                                carsCollection[item.DeviceId.SerialId].Placemark.geometry.setCoordinates([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude])
+        let tokenPromise = ajax("/admin/spik/token");
+        let subscribePromise = ajax("/admin/spik/subscribe");
+        let data = setInterval(() => {
+            let onlineData = ajax("/admin/spik/online");
+            Promise.all([tokenPromise, subscribePromise, onlineData]).then(
+                response => {
+                    cars = JSON.parse(response[2]);
+                    if (cars.length) {
+                        for (const carsKey in cars) {
+                            let item = cars[carsKey];
+                            if (item.DeviceId.SerialId !== "231790") {
+                                if (carsCollection[item.DeviceId.SerialId] === undefined) {
+                                    carsCollection[item.DeviceId.SerialId] = {
+                                        DeviceId: item.DeviceId.SerialId,
+                                        Navigation: item.Navigation,
+                                        Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude], {
+                                            balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
+                                            balloonContent: "Название: " + item.Name + "<br>" + item.Address,
+                                        }, {
+                                            preset: 'islands#redIcon',
+                                        })
+                                    };
+                                    points.push(carsCollection[item.DeviceId.SerialId].Placemark);
+                                    // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
+                                } else {
+                                    carsCollection[item.DeviceId.SerialId].Placemark.geometry.setCoordinates([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude])
+                                }
                             }
                         }
+                        carCluster.add(points);
+                    } else {
+                        console.error(cars);
                     }
-                    carCluster.add(points);
-                } else {
-                    console.error(cars);
+                },
+                reject => {
+                    console.log(reject);
                 }
-            }, reject => {
-			console.error(reject);
-	    });
+            )
         }, interval);
-        // setTimeout(() => {
-        //     clearInterval(int);
-        // }, 60000)
         ajax("/admin/order/get-list").then(response => {
             let orders = JSON.parse(response);
             for (const index in orders) {
-                if ( orderPoints.length < orders.length ) {
+                if (orderPoints.length < orders.length) {
                     let order = orders[index];
                     let content = '';
                     for (const index in order.cart) {

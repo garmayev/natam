@@ -28,6 +28,7 @@ return [
 	    ],
         'request' => [
             'csrfParam' => '_csrf-frontend',
+	        'cookieValidationKey' => 'rhbcnbyfgfrekjdf',
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
