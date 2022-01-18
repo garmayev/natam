@@ -65,58 +65,50 @@ $(() => {
         })
         map.geoObjects.add(orderCluster);
         let request = [];
-	    request.push(ajax("/admin/spik/token"));
-	    Promise.all(request).then(
-	        response => {
-                document.cookie = `token=${response}`;
-                request.push(ajax("/admin/spik/subscribe"));
-                request.pop();
-                console.log(request);
-                Promise.all(request).then(response => {
-                    document.cookie = `subscribe=${response}`;
+        request.push(ajax("/admin/spik/token"));
+        request.push(ajax("/admin/spik/subscribe"));
+        Promise.all(request).then(
+            let
+        data = setInterval(() => {
+            request.push(ajax("/admin/spik/online"));
+            request.pop();
+            Promise.all(request).then(
+                response => {
                     console.log(request);
-                    let data = setInterval(() => {
-                        request.push(ajax("/admin/spik/online"));
-                        request.pop();
-                        Promise.all(request).then(
-                            response => {
-                                cars = JSON.parse(response[0]);
-                                console.log(cars);
-                                if (cars !== null) {
-                                    for (const carsKey in cars) {
-                                        let item = cars[carsKey];
-                                        if (item.DeviceId.SerialId !== "231790") {
-                                            if (carsCollection[item.DeviceId.SerialId] === undefined) {
-                                                carsCollection[item.DeviceId.SerialId] = {
-                                                    DeviceId: item.DeviceId.SerialId,
-                                                    Navigation: item.Navigation,
-                                                    Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude], {
-                                                        balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
-                                                        balloonContent: "Название: " + item.Name + "<br>" + item.Address,
-                                                    }, {
-                                                        preset: 'islands#redIcon',
-                                                    })
-                                                };
-                                                points.push(carsCollection[item.DeviceId.SerialId].Placemark);
-                                                // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
-                                            } else {
-                                                carsCollection[item.DeviceId.SerialId].Placemark.geometry.setCoordinates([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude])
-                                            }
-                                        }
-                                    }
-                                    carCluster.add(points);
+                    cars = JSON.parse(response[0]);
+                    console.log(cars);
+                    if (cars !== null) {
+                        for (const carsKey in cars) {
+                            let item = cars[carsKey];
+                            if (item.DeviceId.SerialId !== "231790") {
+                                if (carsCollection[item.DeviceId.SerialId] === undefined) {
+                                    carsCollection[item.DeviceId.SerialId] = {
+                                        DeviceId: item.DeviceId.SerialId,
+                                        Navigation: item.Navigation,
+                                        Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude], {
+                                            balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
+                                            balloonContent: "Название: " + item.Name + "<br>" + item.Address,
+                                        }, {
+                                            preset: 'islands#redIcon',
+                                        })
+                                    };
+                                    points.push(carsCollection[item.DeviceId.SerialId].Placemark);
+                                    // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
                                 } else {
-                                    console.error(cars);
+                                    carsCollection[item.DeviceId.SerialId].Placemark.geometry.setCoordinates([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude])
                                 }
-                            },
-                            reject => {
-                                console.log(reject);
                             }
-                        )
-                    }, interval);
-                })
-            }
-        );
+                        }
+                        carCluster.add(points);
+                    } else {
+                        console.error(cars);
+                    }
+                },
+                reject => {
+                    console.log(reject);
+                }
+            )
+        }, interval);
         ajax("/admin/order/get-list").then(response => {
             let orders = JSON.parse(response);
             for (const index in orders) {
@@ -129,19 +121,18 @@ $(() => {
                     }
                     let date = new Date(order.order.delivery_date * 1000);
                     console.log(order.location !== null);
-                    if ( order.location !== null)
-                        if ( order.location.hasOwnProperty("title") ) 
-			{
+                    if (order.location !== null)
+                        if (order.location.hasOwnProperty("title")) {
                             content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
-                    // if (order.location.title !== undefined) content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
-                	orderPoints.push(new ymaps.Placemark([order.location.latitude, order.location.longitude], {
-                    	    balloonContentHeader: `<h3>Заказ #${order.id}</h3>`,
-                    	    balloonContentBody: content,
-                    	    balloonContentFooter: `<h4>Общая стоимость заказа: ${order.cost}</h4>`,
-                	}, {
-                    	    preset: "islands#darkBlueIcon"
-                	}))
-		    }
+                            // if (order.location.title !== undefined) content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
+                            orderPoints.push(new ymaps.Placemark([order.location.latitude, order.location.longitude], {
+                                balloonContentHeader: `<h3>Заказ #${order.id}</h3>`,
+                                balloonContentBody: content,
+                                balloonContentFooter: `<h4>Общая стоимость заказа: ${order.cost}</h4>`,
+                            }, {
+                                preset: "islands#darkBlueIcon"
+                            }))
+                        }
                 }
             }
             orderCluster.add(orderPoints);
