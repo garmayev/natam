@@ -67,11 +67,8 @@ $(() => {
         let request = [];
         request.push(ajax("/admin/spik/token"));
         request.push(ajax("/admin/spik/subscribe"));
-        Promise.all(request).then(
-            let
         data = setInterval(() => {
             request.push(ajax("/admin/spik/online"));
-            request.pop();
             Promise.all(request).then(
                 response => {
                     console.log(request);
