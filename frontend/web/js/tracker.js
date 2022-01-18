@@ -118,7 +118,8 @@ $(() => {
                         content += `<b>${item.product.title} (${item.product.value})</b>: ${item.count}<br>`;
                     }
                     let date = new Date(order.order.delivery_date * 1000);
-                    if ( order.hasOwnProperty("location"))
+                    console.log(order);
+                    if ( order.hasOwnProperty("location") && order.location !== 'null')
                         if ( order.location.hasOwnProperty("title") )
                             content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
                     // if (order.location.title !== undefined) content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
