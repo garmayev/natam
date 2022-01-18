@@ -70,10 +70,12 @@ $(() => {
 	        response => {
                 document.cookie = `token=${response}`;
                 request.push(ajax("/admin/spik/subscribe"));
+                request.pop();
                 Promise.all(request).then(response => {
                     document.cookie = `subscribe=${response}`;
                     let data = setInterval(() => {
                         request.push(ajax("/admin/spik/online"));
+                        request.pop();
                         Promise.all(request).then(
                             response => {
                                 cars = JSON.parse(response[0]);
