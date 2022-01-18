@@ -65,6 +65,10 @@ $(() => {
         })
         map.geoObjects.add(orderCluster);
         let request = [];
+	request.push(ajax("/admin/spik/token"));
+	request.push(ajax("/admin/spik/subscribe"));
+	Promise.all(request).then(
+	    response => {
         let data = setInterval(() => {
                 // request.push(ajax("/admin/spik/token"));
                 // request.push(ajax("/admin/spik/subscribe"));
@@ -107,6 +111,7 @@ $(() => {
                 }
             )
         }, interval);
+	});
         ajax("/admin/order/get-list").then(response => {
             let orders = JSON.parse(response);
             for (const index in orders) {
@@ -118,18 +123,20 @@ $(() => {
                         content += `<b>${item.product.title} (${item.product.value})</b>: ${item.count}<br>`;
                     }
                     let date = new Date(order.order.delivery_date * 1000);
-                    console.log(order);
-                    if ( order.hasOwnProperty("location") && order.location !== 'null')
-                        if ( order.location.hasOwnProperty("title") )
+                    console.log(order.location !== null);
+                    if ( order.location !== null)
+                        if ( order.location.hasOwnProperty("title") ) 
+			{
                             content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
                     // if (order.location.title !== undefined) content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
-                    orderPoints.push(new ymaps.Placemark([order.location.latitude, order.location.longitude], {
-                        balloonContentHeader: `<h3>Заказ #${order.id}</h3>`,
-                        balloonContentBody: content,
-                        balloonContentFooter: `<h4>Общая стоимость заказа: ${order.cost}</h4>`,
-                    }, {
-                        preset: "islands#darkBlueIcon"
-                    }))
+                	orderPoints.push(new ymaps.Placemark([order.location.latitude, order.location.longitude], {
+                    	    balloonContentHeader: `<h3>Заказ #${order.id}</h3>`,
+                    	    balloonContentBody: content,
+                    	    balloonContentFooter: `<h4>Общая стоимость заказа: ${order.cost}</h4>`,
+                	}, {
+                    	    preset: "islands#darkBlueIcon"
+                	}))
+		    }
                 }
             }
             orderCluster.add(orderPoints);
