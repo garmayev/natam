@@ -64,8 +64,8 @@ $(() => {
             gridSize: 180,
         })
         map.geoObjects.add(orderCluster);
+        let request = [];
         let data = setInterval(() => {
-            let request = [];
                 // request.push(ajax("/admin/spik/token"));
                 // request.push(ajax("/admin/spik/subscribe"));
             request.push(ajax("/admin/spik/online"));
@@ -74,7 +74,7 @@ $(() => {
                     cars = JSON.parse(response[0]);
                     // subscribe = JSON.parse(response[1]);
                     // cars = response[2];
-                    console.log(cars);
+                    // console.log(cars);
                     if (cars !== null) {
                         for (const carsKey in cars) {
                             let item = cars[carsKey];
@@ -131,9 +131,9 @@ $(() => {
             }
             orderCluster.add(orderPoints);
         });
-        // setTimeout(() => {
-        //     clearInterval(data)
-        //     window.location.reload();
-        // }, 30000)
+        setTimeout(() => {
+            clearInterval(data)
+            window.location.reload();
+        }, 30000)
     })
 })
