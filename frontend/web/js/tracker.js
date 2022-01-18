@@ -71,8 +71,10 @@ $(() => {
                 document.cookie = `token=${response}`;
                 request.push(ajax("/admin/spik/subscribe"));
                 request.pop();
+                console.log(request);
                 Promise.all(request).then(response => {
                     document.cookie = `subscribe=${response}`;
+                    console.log(request);
                     let data = setInterval(() => {
                         request.push(ajax("/admin/spik/online"));
                         request.pop();
