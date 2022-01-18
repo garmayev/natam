@@ -41,7 +41,7 @@ class SiteController extends Controller
     {
         return $this->render('index', [
 			"categoryProvider" => new ActiveDataProvider([
-				"query" => Category::find()
+				"query" => Category::find()->select(['category.*', 'COUNT(p.id) AS product_count'])->leftJoin('product p', "category.id = p.category_id AND p.isset <> 1")->groupBy(["category.id"])->orderBy(["product_count" => SORT_DESC])
 			]),
         	"postProvider" => new ActiveDataProvider([
         		"query" => Post::find()

@@ -130,9 +130,9 @@ $(() => {
             }
             orderCluster.add(orderPoints);
         });
-        setTimeout(() => {
-            clearInterval(data)
-            window.location.reload();
-        }, 30000)
+        // setTimeout(() => {
+        //     clearInterval(data)
+        //     window.location.reload();
+        // }, 30000)
     })
 })
