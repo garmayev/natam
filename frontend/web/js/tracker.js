@@ -65,8 +65,8 @@ $(() => {
         })
         map.geoObjects.add(orderCluster);
         let request = [];
-        request.push(ajax("/admin/spik/token"));
-        request.push(ajax("/admin/spik/subscribe"));
+        // request.push(ajax("/admin/spik/token"));
+        // request.push(ajax("/admin/spik/subscribe"));
         data = setInterval(() => {
             request.push(ajax("/admin/spik/online"));
             Promise.all(request).then(
