@@ -94,9 +94,6 @@ class SpikController extends \yii\rest\Controller
 
 	public function actionSubscribe()
 	{
-		if ( $this->data["subscribe"] ) {
-			return $this->data["subscribe"];
-		}
 		$response = $this->send(["UnitIds" => $this->data["units"]], $this->actions["SUBSCRIBE"], $this->data["token"]["id"]);
 		$this->data["subscribe"] = $response["SessionId"];
 		return $response["SessionId"];
