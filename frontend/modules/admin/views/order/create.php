@@ -163,7 +163,7 @@ ymaps.ready(() => {
             $('#order-address').val(address);
             $('#location-title').val(address);
             $('#location-latitude').val(coords[0]);
-            $('#location-logintude').val(coords[1]);
+            $('#location-longitude').val(coords[1]);
         });
     }
 });
@@ -195,7 +195,14 @@ $this->registerCss("
                 echo $form->field($model->location, "latitude")->hiddenInput()->label(false);
 	            echo $form->field($model->location, "longitude")->hiddenInput()->label(false);
             } else {
-	            echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
+                if ( $model->isNewRecord ) {
+                    $model->location = new \common\models\Location();
+	                echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
+	                echo $form->field($model->location, "title")->hiddenInput()->label(false);
+	                echo $form->field($model->location, "latitude")->hiddenInput()->label(false);
+	                echo $form->field($model->location, "longitude")->hiddenInput()->label(false);
+                }
+//	            echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
             }
 
 //			echo Html::textInput("Order[address]", $model->address, ["id" => "order-address", "class" => "form-control", "placeholder" => Yii::t("app", "Address"), "style" => "margin-bottom: 15px;"]);
