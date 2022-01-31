@@ -92,7 +92,8 @@ use yii\widgets\Menu;
         clickmap:true,
         trackLinks:true,
         accurateTrackBounce:true,
-        webvisor:true
+        webvisor:true,
+        ecommerce:"dataLayer"
     });
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/87339199" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
