@@ -200,8 +200,8 @@ class TelegramController extends \yii\rest\Controller
 										]
 									], [
 										[
-											"text" => "Отложить на 5 час",
-											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=18000",
+											"text" => "Отложить на 6 час",
+											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=21600",
 										]
 									], [
 										[
@@ -233,6 +233,7 @@ class TelegramController extends \yii\rest\Controller
 					$order = Order::findOne($argument["id"]);
 					$seconds = $argument["sec"];
 					if ( isset($order) ) {
+						$order->hold($seconds);
 						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 						switch ($seconds) {
 							case 3600:
@@ -242,7 +243,7 @@ class TelegramController extends \yii\rest\Controller
 								$text = "Заказ #$order->id отложен на 3 часа\n";
 								break;
 							case 18000:
-								$text = "Заказ #$order->id отложен на 5 часов\n";
+								$text = "Заказ #$order->id отложен на 6 часов\n";
 								break;
 							case 86400:
 								$text = "Заказ #$order->id отложен на сутки\n";

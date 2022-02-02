@@ -26,6 +26,8 @@ use yii\db\ActiveRecord;
  * @property int $boss_chat_id [int(11)]
  * @property int $delivery_date
  * @property int $location_id
+ * @property int $hold_at
+ * @property int $hold_time
  *
  * @property int $price
  *
@@ -33,6 +35,7 @@ use yii\db\ActiveRecord;
  * @property Product[] $products
  * @property OrderProduct $orderProduct
  * @property Updates[] $updates
+ * @property-write mixed $count
  * @property Location $location
  */
 class Order extends ActiveRecord
@@ -267,13 +270,15 @@ class Order extends ActiveRecord
 		$keyboard = [];
 		switch ($this->status) {
 			case self::STATUS_NEW:
-				$keyboard[] =
+				$keyboard[] = [
 					[
-						[
-							"text" => "Передать заказ кладовщику",
-							"callback_data" => "/order_complete id={$this->id}"
-						]
-					];
+						"text" => "Передать заказ кладовщику",
+						"callback_data" => "/order_complete id={$this->id}"
+					], [
+						"text" => "Отложить",
+						"callback_data" => "/order_hold id={$this->id}"
+					]
+				];
 				break;
 			case self::STATUS_PREPARE:
 				$employees = Employee::find()->where(["state_id" => $this->status + 1])->limit(5)->all();
@@ -299,5 +304,11 @@ class Order extends ActiveRecord
 				break;
 		}
 		return $keyboard;
+	}
+
+	public function hold($time) {
+		$this->hold_at = time();
+		$this->hold_time = $time;
+		$this->save();
 	}
 }

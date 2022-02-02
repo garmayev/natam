@@ -25,7 +25,7 @@ class NotifyController extends \yii\console\Controller
 
 	public function actionIndex()
 	{
-		$models = Order::find()->all();
+		$models = Order::find()->where(["<=", "status", Order::STATUS_COMPLETE])->all();
 		foreach ($models as $model) {
 			$this->stdout("Заказ #{$model->id}\n", Console::BOLD);
 			if ( $this->isNeedNextMessage($model) ) {
