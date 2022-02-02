@@ -69,20 +69,6 @@ use yii\widgets\Menu;
                     </p>
                 </div>
 			</div>
-            <?php
-                $this->registerJs("$('.header_inner .blue').on('click', (e) => {
-		    if ( window.location.href === window.location.hostname ) {
-	            e.preventDefault();
-        	        $('html, body').animate({
-                	    scrollTop: $('#form').offset().top
-	                });
-        	        $('.form_tab > button:last-child').trigger('click');
-		    } else {
-			window.location.href = '/#product';
-		    }
-		})
-		");
-            ?>
 			<div class="header_info" data-aos="fade-left">
 				<a href="tel:+73012204056" class="phone">
 					+7 3012 20 40 56

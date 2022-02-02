@@ -5,6 +5,7 @@ use common\models\Order;
 use common\models\Product;
 use common\models\Service;
 use common\models\Ticket;
+use kartik\datetime\DateTimePicker;
 use yii\web\View;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
@@ -36,75 +37,99 @@ $this->title = Yii::$app->name;
                     <button class="active">ЗАКАЗАТЬ</button>
                 </div>
                 <form class="form_block form_submit">
-                    <?php
-                        $ticket = new Ticket();
-                        $client = new Client();
-                        echo Html::beginTag("div", ["class" => "form_content"]);
-                            echo Html::beginTag("div", ["class" => "form_item"]);
-                                echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО"]);
-                                echo Html::textInput("Client[phone]", "", ["placeholder" => "+ 7 ( ____ ) - ___ - __ - __"]);
-                                echo Html::textInput("Client[email]", "", ["placeholder" => "Ваш E-mail", "type" => "email"]);
-                                echo Html::textInput("Client[company]", "", ["placeholder" => "Название организации"]);
-                            echo Html::endTag("div");
-                    ?>
-                            <div class="form_item">
-                                <?= Html::textarea("Ticket[comment]", "", ["placeholder" => "Ваш комментарий", "style" => "width: 100%; height: 185px; border-radius: 10px; padding: 18px;"]) ?>
-                            <div class="form_btn">
-                                <div class="form_policy">
-                                    <input type="checkbox" id="form_policy">
-                                    <label for="form_policy">
-                                        Даю согласие на обработку
-                                        персональных данных
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn blue">
-                                    отправить
-                                </button>
+					<?php
+					$ticket = new Ticket();
+					$client = new Client();
+					echo Html::beginTag("div", ["class" => "form_content"]);
+					echo Html::beginTag("div", ["class" => "form_item"]);
+					echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО"]);
+					echo Html::textInput("Client[phone]", "", ["placeholder" => "+ 7 ( ____ ) - ___ - __ - __"]);
+					echo Html::textInput("Client[email]", "", ["placeholder" => "Ваш E-mail", "type" => "email"]);
+					echo Html::textInput("Client[company]", "", ["placeholder" => "Название организации"]);
+					echo Html::endTag("div");
+					?>
+                    <div class="form_item">
+						<?= Html::textarea("Ticket[comment]", "", ["placeholder" => "Ваш комментарий", "style" => "width: 100%; height: 185px; border-radius: 10px; padding: 18px;"]) ?>
+                        <div class="form_btn">
+                            <div class="form_policy">
+                                <input type="checkbox" id="form_policy">
+                                <label for="form_policy">
+                                    Даю согласие на обработку
+                                    персональных данных
+                                </label>
                             </div>
+                            <button type="submit" class="btn blue">
+                                отправить
+                            </button>
                         </div>
-                    <?php
-                        echo Html::endTag("div");
+                    </div>
+					<?php
+					echo Html::endTag("div");
 
-                    ?>
+					?>
                 </form>
-                <form class="form_block form_order active">
-                    <div class="form_content">
+                <?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block","form_order","active"]]) ?>
+<!--                <form class="form_block form_order active">-->
+                    <div class="form_content step" data-index="1">
+                        <div class="form_item"></div>
+                        <div class="form_item"></div>
+                    </div>
+                    <div class="form_content step" data-index="2">
                         <div class="form_item">
-                            <input type="text" placeholder="Ваше ФИО">
-                            <input type="text" placeholder="+ 7 ( ____ ) - ___ - __ - __">
-                            <input type="email" placeholder="Ваш E-mail">
-                            <input type="text" placeholder="Название организации">
+                            <input type="text" id="client-name" name="Client[name]" placeholder="Ваше ФИО">
+                            <input type="text" id="client-phone" name="Client[phone]" placeholder="Ваш номер телефона">
                         </div>
                         <div class="form_item">
-                            <div class="form_select">
-                                <select>
-                                    <option>Товары</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                </select>
-                            </div>
-                            <div class="form_select">
-                                <select>
-                                    <option>Количество</option>
-                                    <option>1</option>
-                                    <option>2</option>
-                                </select>
-                            </div>
+                            <input type="email" name="Client[email]" placeholder="Ваш E-mail">
+                            <input type="text" name="Client[company]" placeholder="Название организации">
                             <div class="form_btn">
-                                <div class="form_policy">
-                                    <input type="checkbox" id="form_policy">
-                                    <label for="form_policy">
-                                        Даю согласие на обработку
-                                        персональных данных
-                                    </label>
-                                </div>
-                                <button type="submit" class="btn blue">
-                                    отправить
-                                </button>
+                                <a href="#" class="btn blue">
+                                    Следующий шаг
+                                </a>
                             </div>
                         </div>
                     </div>
-                </form>
+                    <div class="form_content step" data-index="3">
+                        <div class="date-address">
+                            <div class="form_item">
+								<?=
+								DateTimePicker::widget([
+									'name' => 'Order[delivery_date]',
+									'type' => DateTimePicker::TYPE_INPUT,
+									'options' => [
+										'class' => 'form',
+										'id' => 'order-delivery_date',
+										'placeholder' => Yii::t('app', 'Delivery Date')
+									],
+									'pluginOptions' => [
+										'startDate' => date('Y-m-d'),
+										'daysOfWeekDisabled' => [0,6],
+                                        'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
+										'minuteStep' => 30,
+//                                        'minView' => 1,
+										'autoclose' => true,
+									]
+								]);
+
+								?>
+                            </div>
+                            <div class="form_item">
+                                <input type="text" id="order-address" class="form"
+                                       name="Order[address]" value="" placeholder="Адрес доставки">
+                                <input type="hidden" name="Location[title]" id="location-title" "="">
+                                <input type="hidden" name="Location[latitude]" id="location-latitude">
+                                <input type="hidden" name="Location[longitude]" id="location-logintude">
+                            </div>
+                        </div>
+                        <div id="map" style="height: 250px; min-width: 100%;"></div>
+                        <div class="form_btn">
+                            <button type="submit" class="btn blue">
+                                Отправить
+                            </button>
+                        </div>
+                    </div>
+<!--                </form>-->
+                <?= Html::endForm() ?>
             </div>
         </div>
     </section>
@@ -112,7 +137,7 @@ $this->title = Yii::$app->name;
     <section class="product" id="product">
         <div class="container">
             <div class="product_top">
-				<?= Html::tag("h2", "ОФОРМИТЬ ЗАКАЗ", ["class" => "title",  "data-aos" => "fade-up"]) ?>
+				<?= Html::tag("h2", "ОФОРМИТЬ ЗАКАЗ", ["class" => "title", "data-aos" => "fade-up"]) ?>
 				<?= Html::a("", Url::to("#"), ["class" => "more"]) ?>
             </div>
 			<?= ListView::widget([
@@ -131,20 +156,6 @@ $this->title = Yii::$app->name;
 				"emptyText" => "Пока ничего не добавлено"
 			]) ?>
         </div>
-        <?php
-            $this->registerJs("
-                $('[name=\'Cart[product_id]\']').on('change', (e) => {
-                    let target = $(e.currentTarget);
-                    $.ajax('/product/get-product', {
-                        data: {id: target.val()},
-                        success: (response) => {
-                            html = `\${response.price} <span> руб.</span>`;
-                            target.next().html(html);
-                        }
-                    });
-                    target.next().next().find($('input')).val(1);
-                });", View::POS_LOAD);
-        ?>
     </section>
     <section class="services">
         <div class="container-fluid">
@@ -199,7 +210,7 @@ $this->title = Yii::$app->name;
     <section class="news">
         <div class="container">
             <div class="news_top">
-				<?= Html::tag("h2", "НОВОСТИ", ["class" => "title",  "data-aos" => "fade-up"]) ?>
+				<?= Html::tag("h2", "НОВОСТИ", ["class" => "title", "data-aos" => "fade-up"]) ?>
 				<?= Html::a("СМОТРЕТЬ ВСЕ", Url::to("/post/index"), ["class" => "more"]) ?>
             </div>
 			<?= ListView::widget([
@@ -218,11 +229,3 @@ $this->title = Yii::$app->name;
         </div>
     </section>
 </main>
-<?php
-$this->registerJs("$(() => {
-    let myMap, myPlacemark;
-    
-    $('#cart-pjax a').on('click', (e) => {
-        $.modal.open();
-    });
-})", \yii\web\View::POS_LOAD);

@@ -192,7 +192,7 @@ $this->registerCssFile("/css/style.css");
 									'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
 									'minuteStep' => 30,
 //				    'minView' => 1,
-									'startDate' => date("Y-m-d"),
+									'startDate' => date("Y-m-d 00:00"),
 									'autoclose' => true,
 								]
 							]) ?>

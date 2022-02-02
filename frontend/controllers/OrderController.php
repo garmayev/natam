@@ -16,6 +16,7 @@ class OrderController extends \yii\web\Controller
 	{
 		$order = new Order();
 		$post = Yii::$app->request->post();
+		Yii::error($post);
 		if (Yii::$app->request->isPost) {
 			$client = Client::findByPhone($post["Client"]["phone"]);
 			if ( !isset($client) ) {

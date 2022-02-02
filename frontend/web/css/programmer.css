@@ -135,9 +135,13 @@
 }
 .form {
     padding: 10px 0 0 0;
+    /*height: 56px;*/
+}
+.form_inner form .form_content .form_item input {
+    height: 52px;
 }
 .modal > a.close-modal {
-    top: 0px !important;
+    top: 0 !important;
     right: 110px !important;
 }
 .blocker {
@@ -151,18 +155,33 @@
     float: right;
 }
 .order-block.active {
-    display: block;
+    display: flex;
 }
-
 .form_inner {
-    padding: 1vh 0;
-    margin: 1vh 0 0;
-    min-height: 85vh;
-    max-height: 85vh;
+    overflow: none;
+    margin-bottom: 60px;
+    min-height: 530px;
+    max-height: 531px;
 }
 .blocker {
     padding: 0;
 }
 .modal {
     padding: 0 !important;
+}
+.form_inner .form_block.active {
+    max-height: 300px;
+    overflow: auto;
+}
+.form_inner form .form_content.step {
+    display: none;
+    overflow: auto;
+}
+.date-address {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+.form_inner form .form_content.step[data-index="3"] {
+flex-direction: column;;
 }

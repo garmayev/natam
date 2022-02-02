@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\models\Category;
 use common\models\Product;
 use yii\web\Response;
 
@@ -52,7 +53,29 @@ class CartController extends \yii\web\Controller
 	public function actionGetCart()
 	{
 		\Yii::$app->response->format = Response::FORMAT_JSON;
-		return $this->cart->getItems();
+		$result = [];
+		foreach ($this->cart->getItems() as $item) {
+			$result[] = [
+				"product_id" => $item->getProduct()->id,
+				"quantity" => $item->getQuantity(),
+			];
+		}
+		return $result;
+	}
+
+	public function actionGetProducts()
+	{
+		\Yii::$app->response->format = Response::FORMAT_JSON;
+		$result = [];
+		$categories = Category::find()->all();
+		foreach ($categories as $category) {
+			if ( count($products = $category->products) > 0 ) {
+				foreach ($products as $product) {
+					$result[$product->id] = "{$product->title}({$product->value})";
+				}
+			}
+		}
+		return $result;
 	}
 
 	private function getProduct($id)
