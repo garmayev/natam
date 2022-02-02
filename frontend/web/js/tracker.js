@@ -137,48 +137,47 @@ $(() => {
             let now = new Date(Date.now())
             let expireDate = new Date(parseInt(regexp.exec(JSON.parse(response).token.expireDate)[1]));
             console.log(now, expireDate);
-            // if (now > expireDate) {
-                ajax("/admin/spik/token").then(response => {
-                    console.log("GET TOKEN");
-                    console.log(response);
-                })
-            // }
-            ajax("/admin/spik/get-units-page").then(response => {
-                console.log("GET UNITS PAGE");
-                console.log(JSON.parse(response))
-                ajax("/admin/spik/subscribe").then(response => {
-                    console.log("GET SUBSCRIBE");
-                    console.log(JSON.parse(response));
-                }).then(() => {
-                    let data = setInterval(() => {
-                        ajax("/admin/spik/online").then(response => {
-                            cars = JSON.parse(response);
-                            for (const carsKey in cars) {
-                                let item = cars[carsKey];
-                                if (item.DeviceId.SerialId !== "231790") {
-                                    if (carsCollection[item.DeviceId.SerialId] === undefined) {
-                                        carsCollection[item.DeviceId.SerialId] = {
-                                            DeviceId: item.DeviceId.SerialId,
-                                            Navigation: item.Navigation,
-                                            Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude], {
-                                                balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
-                                                balloonContent: "Название: " + item.Name + "<br>" + item.Address,
-                                            }, {
-                                                preset: 'islands#redIcon',
-                                            })
-                                        };
-                                        points.push(carsCollection[item.DeviceId.SerialId].Placemark);
-                                        // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
-                                    } else {
-                                        carsCollection[item.DeviceId.SerialId].Placemark.geometry.setCoordinates([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude])
+            ajax("/admin/spik/token").then(response => {
+                console.log("GET TOKEN");
+                console.log(response);
+                ajax("/admin/spik/get-units-page").then(response => {
+                    console.log("GET UNITS PAGE");
+                    console.log(JSON.parse(response))
+                    ajax("/admin/spik/subscribe").then(response => {
+                        console.log("GET SUBSCRIBE");
+                        console.log(JSON.parse(response));
+                    }).then(() => {
+                        let data = setInterval(() => {
+                            ajax("/admin/spik/online").then(response => {
+                                cars = JSON.parse(response);
+                                for (const carsKey in cars) {
+                                    let item = cars[carsKey];
+                                    if (item.DeviceId.SerialId !== "231790") {
+                                        if (carsCollection[item.DeviceId.SerialId] === undefined) {
+                                            carsCollection[item.DeviceId.SerialId] = {
+                                                DeviceId: item.DeviceId.SerialId,
+                                                Navigation: item.Navigation,
+                                                Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude], {
+                                                    balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
+                                                    balloonContent: "Название: " + item.Name + "<br>" + item.Address,
+                                                }, {
+                                                    preset: 'islands#redIcon',
+                                                })
+                                            };
+                                            points.push(carsCollection[item.DeviceId.SerialId].Placemark);
+                                            // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
+                                        } else {
+                                            carsCollection[item.DeviceId.SerialId].Placemark.geometry.setCoordinates([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude])
+                                        }
                                     }
                                 }
-                            }
-                            carCluster.add(points);
-                        })
-                    }, interval)
-                });
+                                carCluster.add(points);
+                            })
+                        }, interval)
+                    });
+                })
             })
+
         });
     })
 })
