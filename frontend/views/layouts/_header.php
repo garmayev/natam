@@ -8,6 +8,15 @@ use yii\helpers\Url;
 use yii\widgets\Menu;
 
 ?>
+<div class="preloader">
+    <div class="preloader-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+</div>
 <div class="shadow"></div>
 <header class="header">
 	<div class="container">

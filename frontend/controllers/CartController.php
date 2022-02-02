@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\models\Product;
+use yii\web\Response;
 
 class CartController extends \yii\web\Controller
 {
@@ -46,6 +47,12 @@ class CartController extends \yii\web\Controller
 			\Yii::$app->session->setFlash('error', $e->getMessage());
 		}
 		return $this->redirect(['cart/index']);
+	}
+
+	public function actionGetCart()
+	{
+		\Yii::$app->response->format = Response::FORMAT_JSON;
+		return $this->cart->getItems();
 	}
 
 	private function getProduct($id)

@@ -22,6 +22,8 @@ class Ticket extends \yii\db\ActiveRecord
 	const STATUS_OPEN = 0;
 	const STATUS_CLOSE = 1;
 
+	public $require;
+
 	public static function tableName()
 	{
 		return "{{%ticket}}";

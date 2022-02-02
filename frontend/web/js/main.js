@@ -1,5 +1,8 @@
 $(document).ready(function () {
     AOS.init();
+    window.onload = function () {
+        document.querySelector(".preloader").classList.add("active");
+    };
     $(".news_slider").slick({
         dots: false,
         infinite: true,
@@ -51,7 +54,7 @@ $(document).ready(function () {
     $(".form_tab button").on("click", function () {
         $(".form_tab button").removeClass("active");
         $(this).addClass("active");
-        if ($(".form_tab button:last-child()").hasClass("active")) {
+        if ($(".form_tab button:last-child").hasClass("active")) {
             $(".form_block").removeClass("active");
             $(".form_order").addClass("active");
         } else {

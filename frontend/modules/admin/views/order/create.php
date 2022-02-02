@@ -28,7 +28,8 @@ $form = ActiveForm::begin();
 			if (is_null($model->client)) {
 				$client = new Client();
 			} else {
-				$client = Client::findOne($model->client_id);
+				$client = $model->client;
+//				var_dump($model->client); die;
 			}
 		}
 		echo Html::tag("label", $client->getAttributeLabel("name"), ["class" => "control-label", "for" => "client-name"]);

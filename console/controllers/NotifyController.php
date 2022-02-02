@@ -40,6 +40,8 @@ class NotifyController extends \yii\console\Controller
 			}
 			if ( $this->isNeedAlert($model) ) {
 				$this->stdout("\tТребуется отправка сообщения начальнику\n");
+				$model->boss_chat_id = $this->settings["alert"][$model->status - 1]["chat_id"];
+				$model->save();
 				Telegram::sendMessage([
 					"chat_id" => $this->settings["alert"][$model->status - 1]["chat_id"],
 					"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatus($model->status)} никто не обработал"
@@ -85,7 +87,8 @@ class NotifyController extends \yii\console\Controller
 	 */
 	protected function isNeedAlert($model)
 	{
-		return ( time() - ($model->delivery_date + $this->settings["alert"][$model->status - 1]["time"]) > 0 );
+		$timeout = ( time() - ($model->delivery_date - $this->settings["alert"][$model->status - 1]["time"]) > 0 );
+		return ( $timeout && empty($model->boss_chat_id) );
 	}
 
 	/**

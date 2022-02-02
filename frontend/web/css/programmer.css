@@ -160,11 +160,6 @@
     min-height: 85vh;
     max-height: 85vh;
 }
-.form_inner .journal {
-    left: 65%;
-    bottom: 0;
-}
-
 .blocker {
     padding: 0;
 }

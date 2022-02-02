@@ -52,7 +52,8 @@ class OrderSearch extends Model
 		$query->innerJoinWith("location", true);
 
 
-		$query->andFilterWhere(["like", "client.name", $this->client_name])
+		$query->filterWhere(["<", "status", Order::STATUS_COMPLETE])
+			->andFilterWhere(["like", "client.name", $this->client_name])
 			->andFilterWhere(["like", "location.title", $this->location_title])
 			->andFilterWhere(["like", "comment", $this->comment])
 //			->andFilterWhere([">=", "created_at", \Yii::$app->formatter->asTimestamp($this->created_start)])

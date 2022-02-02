@@ -51,9 +51,14 @@ class Client extends \yii\db\ActiveRecord
 		];
 	}
 
+	public function setPhone()
+	{
+		$this->phone = preg_replace("/[\(\)\ \+]*/", "", $this->phone, -1);
+	}
+
 	public static function findByPhone($mixed)
 	{
-		return Client::findOne(["phone" => $mixed]);
+		return Client::findOne(["phone" => preg_replace("/[\(\)\ \+]*/", "", $mixed, -1)]);
 	}
 
 	public static function findByChatId($mixed)

@@ -69,17 +69,9 @@ class Order extends ActiveRecord
 			], [
 				'class' => SaveRelationsBehavior::class,
 				'relations' => [
-					'products' => [
-						'extraColumns' => function ($model) {
-							/**
-							 * @var Product $model
-							 */
-							return [
-								'product_count' => $this->orderProduct->product_count
-							];
-						}
-					],
+//					'products',
 					'location',
+//					'client'
 				]
 			], [
 				'class' => ActiveRecordHistoryBehavior::class,
@@ -164,6 +156,13 @@ class Order extends ActiveRecord
 	{
 		$query = Yii::$app->db->createCommand("SELECT `product_count` FROM `order_product` WHERE order_id={$this->id} AND product_id={$product_id}")->queryOne();
 		return $query["product_count"];
+	}
+
+	public function setCount($product_id)
+	{
+		$item = Yii::$app->cart->getItem($product_id);
+		$query = Yii::$app->db->createCommand("UPDATE `order_product` SET `product_count` = {$item->getQuantity()} WHERE `order_id` = {$this->id} AND `product_id` = {$product_id};")->execute();
+		return true;
 	}
 
 	public function getOrderProduct()
@@ -277,7 +276,7 @@ class Order extends ActiveRecord
 					];
 				break;
 			case self::STATUS_PREPARE:
-				$employees = Employee::find()->where(["state_id" => $this->status])->limit(5)->all();
+				$employees = Employee::find()->where(["state_id" => $this->status + 1])->limit(5)->all();
 				foreach ($employees as $employee) {
 					$keyboard[] = [
 						[

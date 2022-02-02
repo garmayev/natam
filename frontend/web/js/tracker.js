@@ -99,34 +99,34 @@ $(() => {
         //         }
         //     )
         // }, interval);
-        // ajax("/admin/order/get-list").then(response => {
-        //     let orders = JSON.parse(response);
-        //     for (const index in orders) {
-        //         if (orderPoints.length < orders.length) {
-        //             let order = orders[index];
-        //             let content = '';
-        //             for (const index in order.cart) {
-        //                 let item = order.cart[index];
-        //                 content += `<b>${item.product.title} (${item.product.value})</b>: ${item.count}<br>`;
-        //             }
-        //             let date = new Date(order.order.delivery_date * 1000);
-        //             console.log(order.location !== null);
-        //             if (order.location !== null)
-        //                 if (order.location.hasOwnProperty("title")) {
-        //                     content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
-        //                     // if (order.location.title !== undefined) content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
-        //                     orderPoints.push(new ymaps.Placemark([order.location.latitude, order.location.longitude], {
-        //                         balloonContentHeader: `<h3>Заказ #${order.id}</h3>`,
-        //                         balloonContentBody: content,
-        //                         balloonContentFooter: `<h4>Общая стоимость заказа: ${order.cost}</h4>`,
-        //                     }, {
-        //                         preset: "islands#darkBlueIcon"
-        //                     }))
-        //                 }
-        //         }
-        //     }
-        //     orderCluster.add(orderPoints);
-        // });
+        ajax("/admin/order/get-list").then(response => {
+            let orders = JSON.parse(response);
+            for (const index in orders) {
+                if (orderPoints.length < orders.length) {
+                    let order = orders[index];
+                    let content = '';
+                    for (const index in order.cart) {
+                        let item = order.cart[index];
+                        content += `<b>${item.product.title} (${item.product.value})</b>: ${item.count}<br>`;
+                    }
+                    let date = new Date(order.order.delivery_date * 1000);
+                    console.log(order.location !== null);
+                    if (order.location !== null)
+                        if (order.location.hasOwnProperty("title")) {
+                            content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
+                            // if (order.location.title !== undefined) content += `<br><p><i>Адрес доставки</i>: ${order.location.title}</p><p><i>Дата доставки</i>: ${date}</p>`;
+                            orderPoints.push(new ymaps.Placemark([order.location.latitude, order.location.longitude], {
+                                balloonContentHeader: `<h3>Заказ #${order.id}</h3>`,
+                                balloonContentBody: content,
+                                balloonContentFooter: `<h4>Общая стоимость заказа: ${order.cost}</h4>`,
+                            }, {
+                                preset: "islands#darkBlueIcon"
+                            }))
+                        }
+                }
+            }
+            orderCluster.add(orderPoints);
+        });
         // setTimeout(() => {
         //     clearInterval(data)
         //     window.location.reload();

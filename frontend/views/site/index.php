@@ -24,6 +24,90 @@ use yii\widgets\ListView;
 $this->title = Yii::$app->name;
 ?>
 <main>
+    <section class="form" id="form">
+        <div class="container-fluid">
+            <div class="form_inner">
+                <img src="img/journal.png" class="journal" alt="journal">
+                <div class="form_tab">
+                    <button class="">
+                        ОСТАВИТЬ <br>
+                        ЗАЯВКУ
+                    </button>
+                    <button class="active">ЗАКАЗАТЬ</button>
+                </div>
+                <form class="form_block form_submit">
+                    <?php
+                        $ticket = new Ticket();
+                        $client = new Client();
+                        echo Html::beginTag("div", ["class" => "form_content"]);
+                            echo Html::beginTag("div", ["class" => "form_item"]);
+                                echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО"]);
+                                echo Html::textInput("Client[phone]", "", ["placeholder" => "+ 7 ( ____ ) - ___ - __ - __"]);
+                                echo Html::textInput("Client[email]", "", ["placeholder" => "Ваш E-mail", "type" => "email"]);
+                                echo Html::textInput("Client[company]", "", ["placeholder" => "Название организации"]);
+                            echo Html::endTag("div");
+                    ?>
+                            <div class="form_item">
+                                <?= Html::textarea("Ticket[comment]", "", ["placeholder" => "Ваш комментарий", "style" => "width: 100%; height: 185px; border-radius: 10px; padding: 18px;"]) ?>
+                            <div class="form_btn">
+                                <div class="form_policy">
+                                    <input type="checkbox" id="form_policy">
+                                    <label for="form_policy">
+                                        Даю согласие на обработку
+                                        персональных данных
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn blue">
+                                    отправить
+                                </button>
+                            </div>
+                        </div>
+                    <?php
+                        echo Html::endTag("div");
+
+                    ?>
+                </form>
+                <form class="form_block form_order active">
+                    <div class="form_content">
+                        <div class="form_item">
+                            <input type="text" placeholder="Ваше ФИО">
+                            <input type="text" placeholder="+ 7 ( ____ ) - ___ - __ - __">
+                            <input type="email" placeholder="Ваш E-mail">
+                            <input type="text" placeholder="Название организации">
+                        </div>
+                        <div class="form_item">
+                            <div class="form_select">
+                                <select>
+                                    <option>Товары</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                            <div class="form_select">
+                                <select>
+                                    <option>Количество</option>
+                                    <option>1</option>
+                                    <option>2</option>
+                                </select>
+                            </div>
+                            <div class="form_btn">
+                                <div class="form_policy">
+                                    <input type="checkbox" id="form_policy">
+                                    <label for="form_policy">
+                                        Даю согласие на обработку
+                                        персональных данных
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn blue">
+                                    отправить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
     <!-- Популярные продукты -->
     <section class="product" id="product">
         <div class="container">

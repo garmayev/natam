@@ -91,11 +91,12 @@ class OrderController extends BaseController
 		$client = null;
 		$order = Order::findOne($id);
 		if ($client_id = Yii::$app->session->get("client_id")) {
-			$client = Client::findOne($client_id);
 			Yii::$app->session->remove("client_id");
 		}
 		if (Yii::$app->request->isPost) {
+			$client = Client::findByPhone(Yii::$app->request->post()["Client"]["phone"]);
 			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
+			$order->client_id = $client->id;
 			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 				return $this->redirect(["/admin/order/view", "id" => $id]);

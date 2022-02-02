@@ -16,35 +16,31 @@ class OrderController extends \yii\web\Controller
 	{
 		$order = new Order();
 		$post = Yii::$app->request->post();
-		if ( Yii::$app->request->isPost ) {
-			$phone = preg_replace("/[\(\)\ \+]*/", "", $post["Client"]["phone"], -1);
-			$client = Client::find()->where(["phone" => $phone])->one();
-			if ( empty($client) ) {
+		if (Yii::$app->request->isPost) {
+			$client = Client::findByPhone($post["Client"]["phone"]);
+			if ( !isset($client) ) {
 				$client = new Client();
-				if ( !$client->load($post) || !$client->save() ) {
+				if (!$client->load($post) || !$client->save()) {
 					Yii::error($client->getErrorSummary(true));
-					Yii::$app->session->setFlash("error", "Failed! Client info is not saved!");
+					Yii::$app->session->setFlash("error", Yii::t('app', 'Failed! Client info is not saved!'));
+					return $this->redirect("/");
 				}
 			}
+			$order->client_id = $client->id;
 			$location = new Location();
-//			var_dump($post["Location"]); die;
-//			$location->title = $post["Location"]["title"];
-//			$location->latitude = $post["Location"]["latitude"];
-//			$location->longitude = $post["Location"]["longitude"];
-			if ( $location->load($post) && $location->save() ) {
-				$order->location_id = $location->id;
-				$order->client_id = $client->id;
-				$order->delivery_date = Yii::$app->formatter->asTimestamp($post["Order"]["delivery_date"]);
-				if ($order->load($post) && $order->save()) {
-					Yii::$app->cart->clear();
-					Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
-					return $this->redirect("/");
-				} else {
-					Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
-					Yii::error($order->getErrorSummary(true));
-				}
-			} else {
+			if (!$location->load($post) || !$location->save()) {
 				Yii::error($location->getErrorSummary(true));
+				Yii::$app->session->setFlash("error", Yii::t('app', 'Failed! Delivery info is not saved!'));
+				return $this->redirect("/");
+			}
+			$order->location_id = $location->id;
+			$order->delivery_date = Yii::$app->formatter->asTimestamp($post["Order"]["delivery_date"]);
+			if ($order->load($post) && $order->save()) {
+				Yii::$app->cart->clear();
+				Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
+			} else {
+				Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
+				Yii::error($order->getErrorSummary(true));
 			}
 		}
 		return $this->redirect("/");
