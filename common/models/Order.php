@@ -260,7 +260,7 @@ class Order extends ActiveRecord
 			$result .= "$product->title ($product->value): {$this->getCount($product->id)} шт\n";
 		}
 		$result .= "\nАдрес доставки: {$this->address}\n\n";
-		$result .= "Дата доставки: " . Yii::$app->formatter->asDatetime($this->delivery_date);
+		$result .= "Дата доставки: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
 		$result .= "Общая стоимость: {$this->getPrice()}";
 		return $result;
 	}
@@ -296,9 +296,6 @@ class Order extends ActiveRecord
 					[
 						"text" => "Выполнено",
 						"callback_data" => "/order_complete id={$this->id}"
-					], [
-						"text" => "Отказ",
-						"callback_data" => "/order_cancel id={$this->id}"
 					]
 				];
 				break;

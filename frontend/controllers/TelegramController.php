@@ -152,31 +152,6 @@ class TelegramController extends \yii\rest\Controller
 
 					$order->status = Order::STATUS_DELIVERY;
 					$order->save();
-
-					$text = "Заказ #$order->id\nАдрес доставки: $order->address\nДата создания заказа: ".\Yii::$app->formatter->asDate($order->created_at, "php: d M Y H:i")."\nСодержимое заказа:\n";
-					foreach ($order->products as $product) {
-						$text .= "\t$product->title\n\t\t$product->value\n\t\t$product->price\n";
-					}
-					$text .= "\nОбщая стоимость заказа: $order->price";
-					$markup = ["inline_keyboard" => [
-						[
-							[
-								"text" => "Выполнено",
-								"callback_data" => "/order_complete $order->id"
-							]
-						], [
-							[
-								"text" => "Отложить", 
-								"callback_data" => "/order_hold id=$order->id"
-							]
-						]
-					]];
-
-					Telegram::sendMessage([
-						"chat_id" => $driver->chat_id,
-						"text" => $text,
-						"reply_markup" => json_encode($markup),
-					]);
 					break;
 				case "/order_hold":
 					parse_str($args[0], $argument);
@@ -191,22 +166,22 @@ class TelegramController extends \yii\rest\Controller
 									[
 										[
 											"text" => "Отложить на 1 час",
-											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=3600",
+											"callback_data" => "/order_hold_by_time id={$order->id}&sec=3600",
 										]
 									], [
 										[
 											"text" => "Отложить на 3 час",
-											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=10800",
+											"callback_data" => "/order_hold_by_time id={$order->id}&sec=10800",
 										]
 									], [
 										[
 											"text" => "Отложить на 6 час",
-											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=21600",
+											"callback_data" => "/order_hold_by_time id={$order->id}&sec=21600",
 										]
 									], [
 										[
 											"text" => "Отложить на сутки",
-											"callback_data" => "/order_hold_by_time?id={$order->id}&sec=86400",
+											"callback_data" => "/order_hold_by_time id={$order->id}&sec=86400",
 										]
 									],
 								]
@@ -242,7 +217,7 @@ class TelegramController extends \yii\rest\Controller
 							case 10800:
 								$text = "Заказ #$order->id отложен на 3 часа\n";
 								break;
-							case 18000:
+							case 21600:
 								$text = "Заказ #$order->id отложен на 6 часов\n";
 								break;
 							case 86400:

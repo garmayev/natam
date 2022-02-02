@@ -25,7 +25,7 @@ class NotifyController extends \yii\console\Controller
 
 	public function actionIndex()
 	{
-		$models = Order::find()->where(["<=", "status", Order::STATUS_COMPLETE])->all();
+		$models = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
 		foreach ($models as $model) {
 			$this->stdout("Заказ #{$model->id}\n", Console::BOLD);
 			if ( $this->isNeedNextMessage($model) ) {
@@ -72,10 +72,18 @@ class NotifyController extends \yii\console\Controller
 	{
 		$update = Updates::find()->where(["order_id" => $model->id])->andWhere(["order_status" => $model->status])->orderBy(["created_at" => SORT_DESC])->one();
 		if ( $update ) {
-			if (time() < $update->created_at + $this->settings["limit"][$model->status - 1] ) {
+			if ( !is_null($model->hold_at) ){
+				if (time() > ($hold = $model->hold_at + $model->hold_time)) {
+					return 1;
+				}
+				$this->stdout("\tЗаказ был отложен менеджером! Осталось ".($hold-time())." секунд\n");
 				return 0;
 			} else {
-				return 1;
+				if (time() < $update->created_at + $this->settings["limit"][$model->status - 1] ) {
+					return 0;
+				} else {
+					return 1;
+				}
 			}
 		}
 		return 2;
