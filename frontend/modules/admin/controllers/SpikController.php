@@ -62,6 +62,7 @@ class SpikController extends \yii\rest\Controller
 			$error_message = curl_strerror($errno);
 			\Yii::error("cURL error ({$errno}):\n {$error_message}");
 		}
+		\Yii::error($response);
 		return json_decode($response, true);
 	}
 
@@ -95,6 +96,9 @@ class SpikController extends \yii\rest\Controller
 	public function actionSubscribe()
 	{
 		$response = $this->send(["UnitIds" => $this->data["units"]], $this->actions["SUBSCRIBE"], $this->data["token"]["id"]);
+		if ( is_null($response) ) {
+			return $this->data["subscribe"];
+		}
 		$this->data["subscribe"] = $response["SessionId"];
 		return $response["SessionId"];
 	}

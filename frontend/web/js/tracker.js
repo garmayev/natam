@@ -137,12 +137,12 @@ $(() => {
             let now = new Date(Date.now())
             let expireDate = new Date(parseInt(regexp.exec(JSON.parse(response).token.expireDate)[1]));
             console.log(now, expireDate);
-            if (now > expireDate) {
+            // if (now > expireDate) {
                 ajax("/admin/spik/token").then(response => {
                     console.log("GET TOKEN");
                     console.log(response);
                 })
-            }
+            // }
             ajax("/admin/spik/get-units-page").then(response => {
                 console.log("GET UNITS PAGE");
                 console.log(JSON.parse(response))
