@@ -193,6 +193,9 @@
     .step {
         flex-direction: column;
     }
+    .date-address {
+        flex-direction: column;
+    }
 }
 .trash {
     margin: 0 10px;

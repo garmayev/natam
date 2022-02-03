@@ -95,7 +95,7 @@ $this->title = Yii::$app->name;
                         </div>
                     </div>
                     <div class="form_content step" data-index="3">
-                        <div class="date-address" style="display: flex; flex-direction: column;">
+                        <div class="date-address" style="display: flex;">
                             <div class="form_item">
 								<?=
 								DateTimePicker::widget([
@@ -127,7 +127,7 @@ $this->title = Yii::$app->name;
                                 <input type="hidden" name="Location[longitude]" id="location-logintude">
                             </div>
                         </div>
-                        <div id="map" style="height: 250px; min-width: 100%;"></div>
+                        <div id="map" style="height: 250px; min-width: 100%; margin-bottom: 20px;"></div>
                         <div class="form_btn">
                             <a href="#" class="btn blue prev">
                                 Предыдущий шаг
