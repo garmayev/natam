@@ -194,3 +194,6 @@
         flex-direction: column;
     }
 }
+.trash {
+    margin: 0 10px;
+}

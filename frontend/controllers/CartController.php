@@ -47,7 +47,8 @@ class CartController extends \yii\web\Controller
 			\Yii::$app->errorHandler->logException($e);
 			\Yii::$app->session->setFlash('error', $e->getMessage());
 		}
-		return $this->redirect(['cart/index']);
+		\Yii::$app->response->format = Response::FORMAT_JSON;
+		return ["ok" => true];
 	}
 
 	public function actionGetCart()

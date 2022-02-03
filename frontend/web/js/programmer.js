@@ -95,15 +95,23 @@ function rebuild()
                     let count = createElement("input", null, {
                         type: 'text',
                         value: response[index].quantity,
-                        name: "Order[product][count][]"
+                        name: "Order[product][count][]",
+                        style: "width: 80%",
                     });
-                    container.find(".form_item:last-child").append(count);
+                    let drop = createElement("a", null, {class: "trash", "data-index": response[index].product_id}, {click: remove});
+                    $(drop).append(createElement("img", null, {src: "/img/trash.png", style: "width: 36px;"}));
+                    let select_container = createElement("div", null);
+                    select_container.appendChild(count);
+                    select_container.appendChild(drop);
+                    container.find(".form_item:last-child").append(select_container);
                 }
                 let btn_container = createElement("div", null, {class: 'form_btn'});
                 let btn = createElement("a", "Следующий шаг", {class: 'btn blue next'}, {click: next});
                 btn_container.appendChild(btn);
                 container.find(".form_item:last-child").append(btn_container);
             } else {
+                container.find(".form_item:first-child").html("");
+                container.find(".form_item:last-child").html("");
                 container.find(".form_item:first-child").html("<p style='color: white; font-size: 28px;'>Корзина пуста</p>");
             }
         }
@@ -119,6 +127,22 @@ $("[data-index] .form_btn a.prev").on('click', (e) => {
         $(`.step[data-index=${step}]`).attr("style", "display: flex;");
     }
 })
+
+function remove(e)
+{
+    e.preventDefault();
+    let target = $(e.currentTarget);
+    let id = target.attr("data-index");
+    $.ajax({
+        url: "/cart/remove",
+        data: {id: id},
+        type: "GET",
+        success: () => {
+            rebuild();
+            target.parent().remove();
+        }
+    });
+}
 
 let myMap = undefined,
     myPlacemark = undefined;
