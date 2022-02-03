@@ -36,7 +36,8 @@ $this->title = Yii::$app->name;
                     </button>
                     <button class="active">ЗАКАЗАТЬ</button>
                 </div>
-                <form class="form_block form_submit">
+		<?= Html::beginForm(["/ticket/create"], "post", ["class" => ["form_block", "form_submit"]]); ?>
+                <!-- <form class="form_block form_submit"> -->
 					<?php
 					$ticket = new Ticket();
 					$client = new Client();
@@ -67,7 +68,8 @@ $this->title = Yii::$app->name;
 					echo Html::endTag("div");
 
 					?>
-                </form>
+                <!-- </form> -->
+		<?= Html::endForm() ?>
                 <?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block","form_order","active"]]) ?>
 <!--                <form class="form_block form_order active">-->
                     <div class="form_content step" data-index="1">

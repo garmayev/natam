@@ -150,6 +150,7 @@ $(() => {
                         let data = setInterval(() => {
                             ajax("/admin/spik/online").then(response => {
                                 cars = JSON.parse(response);
+				console.log(cars);
                                 for (const carsKey in cars) {
                                     let item = cars[carsKey];
                                     if (item.DeviceId.SerialId !== "231790") {

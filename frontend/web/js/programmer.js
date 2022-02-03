@@ -246,3 +246,17 @@ $('.header_inner .blue').on('click', (e) => {
         window.location.href = '/#product';
     }
 })
+
+
+$(".cart_product_id").on('change', (e) => {
+    let target = $(e.currentTarget);
+    let product_id = target.val();
+    $.ajax({
+        url: '/product/get-product',
+        data: {id: product_id},
+        success: (response) => {
+            console.log(response);
+            target.next().html(response.price + "<span> руб.</span>");
+        }
+    })
+});
