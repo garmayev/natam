@@ -250,7 +250,10 @@ $('.product_order > a.btn').on('click', (e) => {
             url: '/cart/add',
             data: data,
             type: 'GET',
-            success: rebuild
+            success: (response) => {
+                window.location.href = '/#form';
+                rebuild();
+            }
         })
     }
     e.preventDefault();
