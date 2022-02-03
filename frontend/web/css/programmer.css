@@ -183,5 +183,14 @@
 	justify-content: space-between;
 }
 .form_inner form .form_content.step[data-index="3"] {
-flex-direction: column;;
+    flex-direction: column;;
+}
+
+@media screen and (max-width: 670px) {
+    .form_inner form .form_btn .btn.next, .form_inner form .form_btn .btn.prev {
+        width: 46%;
+    }
+    .step {
+        flex-direction: column;
+    }
 }

@@ -85,14 +85,17 @@ $this->title = Yii::$app->name;
                             <input type="email" name="Client[email]" placeholder="Ваш E-mail">
                             <input type="text" name="Client[company]" placeholder="Название организации">
                             <div class="form_btn">
-                                <a href="#" class="btn blue">
+                                <a href="#" class="btn blue prev">
+                                    Предыдущий шаг
+                                </a>
+                                <a href="#" class="btn blue next">
                                     Следующий шаг
                                 </a>
                             </div>
                         </div>
                     </div>
                     <div class="form_content step" data-index="3">
-                        <div class="date-address">
+                        <div class="date-address" style="display: flex; flex-direction: column;">
                             <div class="form_item">
 								<?=
 								DateTimePicker::widget([
@@ -125,7 +128,10 @@ $this->title = Yii::$app->name;
                         </div>
                         <div id="map" style="height: 250px; min-width: 100%;"></div>
                         <div class="form_btn">
-                            <button type="submit" class="btn blue">
+                            <a href="#" class="btn blue prev">
+                                Предыдущий шаг
+                            </a>
+                            <button type="submit" class="btn blue next">
                                 Отправить
                             </button>
                         </div>

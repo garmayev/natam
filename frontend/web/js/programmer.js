@@ -100,7 +100,7 @@ function rebuild()
                     container.find(".form_item:last-child").append(count);
                 }
                 let btn_container = createElement("div", null, {class: 'form_btn'});
-                let btn = createElement("a", "Следующий шаг", {class: 'btn blue'}, {click: next});
+                let btn = createElement("a", "Следующий шаг", {class: 'btn blue next'}, {click: next});
                 btn_container.appendChild(btn);
                 container.find(".form_item:last-child").append(btn_container);
             } else {
@@ -110,7 +110,15 @@ function rebuild()
     })
 }
 
-$("[data-index] .form_btn a").on('click', next);
+$("[data-index] .form_btn a.next").on('click', next);
+$("[data-index] .form_btn a.prev").on('click', (e) => {
+    e.preventDefault();
+    if ( $(`.step[data-index=${step-1}]`).length ) {
+        $(`.step[data-index=${step}]`).attr("style", "display: none");
+        step--;
+        $(`.step[data-index=${step}]`).attr("style", "display: flex;");
+    }
+})
 
 let myMap = undefined,
     myPlacemark = undefined;
@@ -204,7 +212,7 @@ function next (e) {
         } else if (step === 2) {
             $("#client-phone").mask("+7(999)999 9999")
         }
-        $(`.step[data-index=${step}]`).attr("style", "display: flex");
+        $(`.step[data-index=${step}]`).attr("style", "display: flex;");
     } else {
         console.log("DIE!!!");
     }
@@ -246,7 +254,6 @@ $('.header_inner .blue').on('click', (e) => {
         window.location.href = '/#product';
     }
 })
-
 
 $(".cart_product_id").on('change', (e) => {
     let target = $(e.currentTarget);
