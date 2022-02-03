@@ -103,7 +103,7 @@ $this->title = Yii::$app->name;
 									'type' => DateTimePicker::TYPE_INPUT,
 									'options' => [
 										'class' => 'form',
-                                        'autocomplete' => false,
+                                        'autocomplete' => 'qwsedrfrgtghyhuj',
 										'id' => 'order-delivery_date',
 										'placeholder' => Yii::t('app', 'Delivery Date')
 									],
