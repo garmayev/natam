@@ -2,6 +2,7 @@
 
 namespace frontend\models;
 
+use common\models\Order;
 use garmayev\staff\models\Employee;
 use yii\db\ActiveRecord;
 
