@@ -31,6 +31,10 @@ class NotifyController extends \yii\console\Controller
 			if ( $this->isNeedNextMessage($model) ) {
 				$this->stdout("\tТребуется отправка сообщения сотруднику\n");
 				$employee = $this->findNextEmployee($model);
+				print_r($employee->attributes);
+				$employee->last_message_at = time();
+				$employee->save();
+				die;
 				if ( $employee ) {
 					$this->stdout("\tДля уведомления был выбран сотрудник {$employee->family} {$employee->name}\n");
 					$this->sendMessage($employee, $model);
@@ -41,13 +45,14 @@ class NotifyController extends \yii\console\Controller
 				}
 			}
 			if ( $this->isNeedAlert($model) ) {
+				continue;
 				$this->stdout("\tТребуется отправка сообщения начальнику\n");
 				$model->boss_chat_id = $this->settings["alert"][$model->status - 1]["chat_id"];
 				$model->save();
-				Telegram::sendMessage([
-					"chat_id" => $this->settings["alert"][$model->status - 1]["chat_id"],
-					"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatus($model->status)} никто не обработал"
-				]);
+//				Telegram::sendMessage([
+//					"chat_id" => $this->settings["alert"][$model->status - 1]["chat_id"],
+//					"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatus($model->status)} никто не обработал"
+//				]);
 			}
 		}
 	}
@@ -60,8 +65,10 @@ class NotifyController extends \yii\console\Controller
 	{
 		$usedEmployees = [];
 		$updates = Updates::find()->where(["order_id" => $model->id])->andWhere(["order_status" => $model->status])->all();
-		foreach ($updates as $update) {
-			// $usedEmployees[] = $update->employee->id;
+		if (count($updates) > 1) {
+			foreach ($updates as $update) {
+				$usedEmployees[] = $update->employee->id;
+			}
 		}
 		return Employee::find()->where(["not in", "id", $usedEmployees])->andWhere(["state_id" => $model->status])->orderBy(["last_message_at" => SORT_ASC])->one();
 	}

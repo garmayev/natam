@@ -157,7 +157,7 @@ class OrderController extends BaseController
 	public function actionGetList()
 	{
 		Yii::$app->response->format = Response::FORMAT_JSON;
-		$orders = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
+		$orders = Order::find()->where(["<", "status", Order::STATUS_HOLD])->all();
 		$locations = [];
 		foreach ($orders as $order) {
 			$cart = [];
@@ -167,7 +167,7 @@ class OrderController extends BaseController
 					"count" => $order->getCount($product->id)
 				];
 			}
-			$locations[] = ["id" => $order->id, "location" => $order->location, "order" => $order, "cart" => $cart, "cost" => $order->getPrice()];
+			$locations[] = ["id" => $order->id, "location" => $order->location, "order" => $order, "client" => $order->client, "cart" => $cart, "cost" => $order->getPrice()];
 		}
 		return $locations;
 	}
