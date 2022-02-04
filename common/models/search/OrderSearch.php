@@ -38,8 +38,7 @@ class OrderSearch extends Model
 			"query" => $query,
 			"sort" => [
 				"defaultOrder" => [
-					"delivery_date" => SORT_DESC,
-					"created_at" => SORT_DESC,
+					"id" => SORT_DESC
 				]
 			]
 		]);

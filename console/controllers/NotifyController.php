@@ -34,6 +34,8 @@ class NotifyController extends \yii\console\Controller
 				if ( $employee ) {
 					$this->stdout("\tДля уведомления был выбран сотрудник {$employee->family} {$employee->name}\n");
 					$this->sendMessage($employee, $model);
+					$employee->last_message_at = time();
+					$employee->save();
 				} else {
 					$this->stdout("\tНе найден подходящий сотрудник для уведомления\n");
 				}
@@ -59,7 +61,7 @@ class NotifyController extends \yii\console\Controller
 		$usedEmployees = [];
 		$updates = Updates::find()->where(["order_id" => $model->id])->andWhere(["order_status" => $model->status])->all();
 		foreach ($updates as $update) {
-			$usedEmployees[] = $update->employee->id;
+			// $usedEmployees[] = $update->employee->id;
 		}
 		return Employee::find()->where(["not in", "id", $usedEmployees])->andWhere(["state_id" => $model->status])->orderBy(["last_message_at" => SORT_ASC])->one();
 	}
@@ -108,6 +110,7 @@ class NotifyController extends \yii\console\Controller
 	{
 		$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
 		if ( !$response->isOk ) {
+			\Yii::error($employee->chat_id);
 			\Yii::error($response->getContent());
 			return false;
 		}

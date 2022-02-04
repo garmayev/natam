@@ -17,7 +17,7 @@ use yii\widgets\Pjax;
 $menu = [
     ["label" => Yii::t("app", "About company"), "url" => Url::to("/about")],
 	["label" => Yii::t("app", "Vacancy"), "url" => Url::to("/vacancy/index")],
-	["label" => "Технические газы", "url" => Url::to("/product/index")],
+	["label" => "Технические газы", "url" => Url::to("/#product")],
 	["label" => "Наши услуги", "url" => Url::to("/service/index")],
 	["label" => "Контакты", "url" => Url::to("/contact")],
 ];

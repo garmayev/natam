@@ -274,7 +274,10 @@ class Order extends ActiveRecord
 					[
 						"text" => "Передать заказ кладовщику",
 						"callback_data" => "/order_complete id={$this->id}"
-					], [
+					],
+				];
+				$keyboard[] = [
+					 [
 						"text" => "Отложить",
 						"callback_data" => "/order_hold id={$this->id}"
 					]
