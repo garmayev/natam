@@ -129,8 +129,9 @@ class TelegramController extends \yii\rest\Controller
 					if ( isset($staff) && isset($order) && ($staff->state_id == $order->status) ) {
 						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 						foreach ($updates as $update) {
-							Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
-							$update->delete();
+							$response = Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
+							\Yii::error($response->getContent());
+							// $update->delete();
 						}
 						$order->status++;
 						$order->save();
@@ -147,7 +148,7 @@ class TelegramController extends \yii\rest\Controller
 							"text" => "Стаутус заказа #{$order->id} был изменен",
 							"message_id" => $update->message_id
 						]);
-						$update->delete();
+						// $update->delete();
 					}
 
 					$order->status = Order::STATUS_DELIVERY;
@@ -244,7 +245,7 @@ class TelegramController extends \yii\rest\Controller
 						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 						foreach ($updates as $update) {
 							Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
-							$update->delete();
+							// $update->delete();
 						}
 						$order->status = Order::STATUS_PREPARE;
 						$order->save();

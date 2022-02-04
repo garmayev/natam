@@ -31,10 +31,10 @@ class NotifyController extends \yii\console\Controller
 			if ( $this->isNeedNextMessage($model) ) {
 				$this->stdout("\tТребуется отправка сообщения сотруднику\n");
 				$employee = $this->findNextEmployee($model);
-				print_r($employee->attributes);
-				$employee->last_message_at = time();
-				$employee->save();
-				die;
+//				print_r($employee->attributes);
+//				$employee->last_message_at = time();
+//				$employee->save();
+//				die;
 				if ( $employee ) {
 					$this->stdout("\tДля уведомления был выбран сотрудник {$employee->family} {$employee->name}\n");
 					$this->sendMessage($employee, $model);
@@ -122,6 +122,8 @@ class NotifyController extends \yii\console\Controller
 			return false;
 		}
 		$data = $response->getData();
+// \Yii::error($data);
+		// \Yii::error($data);
 		$update = new Updates([
 			"order_id" => $model->id,
 			"order_status" => $model->status,

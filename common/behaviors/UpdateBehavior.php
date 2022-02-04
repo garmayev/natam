@@ -140,8 +140,8 @@ class UpdateBehavior extends \yii\base\Behavior
 		/**
 		 * @var $owner Order
 		 */
-		$owner = $this->owner;
-		$update = Updates::find()->where(["order_id" => $owner->getOldAttributes()["id"]])->orderBy(['created_at' => SORT_DESC])->one();
+		/* $owner = $this->owner;
+		/* $update = Updates::find()->where(["order_id" => $owner->getOldAttributes()["id"]])->orderBy(['created_at' => SORT_DESC])->one();
 		if (!empty($update)) {
 			$response = (Telegram::editMessage([
 				"chat_id" => $update->staff->chat_id,
@@ -161,7 +161,7 @@ class UpdateBehavior extends \yii\base\Behavior
 			}
 			return ["ok" => false, "message" => $response["description"]];
 		}
-		return ["ok" => false, "message" => "Missing Updates for order"];
+		return ["ok" => false, "message" => "Missing Updates for order"]; */
 	}
 
 	public function sendNewMessage()
