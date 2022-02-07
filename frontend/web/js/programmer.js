@@ -148,8 +148,7 @@ let myMap = undefined,
 function next (e) {
     e.preventDefault();
     if ( $(`.step[data-index=${step+1}]`).length ) {
-        $(`.step[data-index=${step}]`).attr("style", "display: none");
-        step++;
+	// console.log(step);
         if (step === 3) {
             if ( myMap === undefined ) {
                 myMap = new ymaps.Map('map', {
@@ -233,10 +232,53 @@ function next (e) {
                 $('#location-latitude').val(coords[0]);
                 $('#location-logintude').val(coords[1]);
             }
+
+	    if ($("#order-delivery_date").val()) {
+		e.preventDefault();
+		alert("Требуется заполнить поле \"Ваше ФИО\"");
+		throw "Требуется заполнить поле \"Ваше ФИО\"";
+		return false;
+	    }
+	    if ($("#order-address").val()) {
+		e.preventDefault();
+		alert("Требуется заполнить поле \"Ваше ФИО\"");
+		throw "Требуется заполнить поле \"Ваше ФИО\"";
+		return false;
+	    }
+	    if ($("#client-name").val()) {
+		e.preventDefault();
+		alert("Требуется заполнить поле \"Ваше ФИО\"");
+		throw "Требуется заполнить поле \"Ваше ФИО\"";
+		return false;
+	    }
+	    
+    	    $(`.step[data-index=${step}]`).attr("style", "display: none");
+    	    step++;
+	    $(`.step[data-index=${step}]`).attr("style", "display: flex;");
         } else if (step === 2) {
-            $("#client-phone").mask("+7(999)999 9999")
-        }
-        $(`.step[data-index=${step}]`).attr("style", "display: flex;");
+	    console.log(step);
+	    console.log($("#client-phone"));
+            $("#client-phone").mask("+7(999)999 9999");
+	    if ($("#client-name").val()) {
+		e.preventDefault();
+		alert("Требуется заполнить поле \"Ваше ФИО\"");
+		throw "Требуется заполнить поле \"Ваше ФИО\"";
+		return false;
+	    }
+	    if ($("#client-phone").val()) {
+		e.preventDefault();
+		alert("Требуется заполнить поле \"Ваш номер телефона\"");
+		throw "Требуется заполнить поле \"Ваш номер телефона\"";
+		return false;
+	    }
+	    $(`.step[data-index=${step}]`).attr("style", "display: none");
+	    step++;
+    	    $(`.step[data-index=${step}]`).attr("style", "display: flex;");
+        } else if (step === 1) {
+	    $(`.step[data-index=${step}]`).attr("style", "display: none");
+	    step++;
+    	    $(`.step[data-index=${step}]`).attr("style", "display: flex;");
+	}
     } else {
         console.log("DIE!!!");
     }
