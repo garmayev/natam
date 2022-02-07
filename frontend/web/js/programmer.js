@@ -1,3 +1,7 @@
+$.fn.maskVal = function () {
+    return $(this).mask();
+};
+
 if ((window.location.pathname !== `/`)) {
     $("body").removeClass("home");
 }
@@ -23,7 +27,7 @@ $('.about_slider').slick({
     ],
 });
 $(".main_inner > .blue").on("click", (e) => {
-    if ( !$(e.currentTarget).hasClass('next_step') ) {
+    if (!$(e.currentTarget).hasClass('next_step')) {
         e.preventDefault();
         console.log("CLICK")
         // $("html, body").animate({
@@ -45,8 +49,7 @@ if ($('.alert').html() !== '') {
 // console.log( $($(".form_block > .step")[0]) );
 $($(".form_block > .step")[0]).attr("style", "display: flex");
 
-function createElement(tag, value, attr, event)
-{
+function createElement(tag, value, attr, event) {
     let el = document.createElement(tag);
     for (const attrKey in attr) {
         el.setAttribute(attrKey, attr[attrKey]);
@@ -58,10 +61,8 @@ function createElement(tag, value, attr, event)
     return el;
 }
 
-function rebuild()
-{
-    function build_select(options)
-    {
+function rebuild() {
+    function build_select(options) {
         // console.log(options);
         let attr = {};
         let select_container = createElement("div", null, {class: 'form_select'});
@@ -84,7 +85,7 @@ function rebuild()
         type: 'GET',
         success: (response) => {
             let container = $('.step[data-index=1]');
-            if ( response.length > 0 ) {
+            if (response.length > 0) {
                 container.find(".form_item:first-child").html("");
                 container.find(".form_item:last-child").html("");
                 for (const index in response) {
@@ -97,7 +98,10 @@ function rebuild()
                         name: "Order[product][count][]",
                         style: "width: 80%",
                     });
-                    let drop = createElement("a", null, {class: "trash", "data-index": response[index].product_id}, {click: remove});
+                    let drop = createElement("a", null, {
+                        class: "trash",
+                        "data-index": response[index].product_id
+                    }, {click: remove});
                     $(drop).append(createElement("img", null, {src: "/img/trash.png", style: "width: 36px;"}));
                     let select_container = createElement("div", null);
                     select_container.appendChild(count);
@@ -105,7 +109,10 @@ function rebuild()
                     container.find(".form_item:last-child").append(select_container);
                 }
                 let btn_container = createElement("div", null, {class: 'form_btn'});
-                let btn = createElement("a", "Следующий шаг", {class: 'btn blue next', style: "float: right;"}, {click: next});
+                let btn = createElement("a", "Следующий шаг", {
+                    class: 'btn blue next',
+                    style: "float: right;"
+                }, {click: next});
                 btn_container.appendChild(btn);
                 container.find(".form_item:last-child").append(btn_container);
             } else {
@@ -120,15 +127,18 @@ function rebuild()
 $("[data-index] .form_btn a.next").on('click', next);
 $("[data-index] .form_btn a.prev").on('click', (e) => {
     e.preventDefault();
-    if ( $(`.step[data-index=${step-1}]`).length ) {
-        $(`.step[data-index=${step}]`).attr("style", "display: none");
-        step--;
-        $(`.step[data-index=${step}]`).attr("style", "display: flex;");
-    }
-})
 
-function remove(e)
-{
+    let currentElement = $(e.currentTarget).closest(".step");
+    let previousElement = currentElement.prev();
+    if (previousElement.length) {
+        currentElement.attr("style", "display: none");
+        previousElement.attr("style", "display: flex;");
+    }
+    step--;
+})
+$("#order-client-phone, #ticket-client-phone").mask("+7(999)999 9999");
+
+function remove(e) {
     e.preventDefault();
     let target = $(e.currentTarget);
     let id = target.attr("data-index");
@@ -145,64 +155,90 @@ function remove(e)
 
 let myMap = undefined,
     myPlacemark = undefined;
-function next (e) {
+
+function next(e) {
     e.preventDefault();
-    if ( $(`.step[data-index=${step+1}]`).length ) {
-	// console.log(step);
-        if (step === 3) {
-            if ( myMap === undefined ) {
-                myMap = new ymaps.Map('map', {
-                    center: [51.76, 107.64],
-                    zoom: 12
-                }, {});
-            }
-            $('#order-address').suggestions({
-                token: '2c9418f4fdb909e7469087c681aac4dd7eca158c',
-                type: 'ADDRESS',
-                constraints: {
-                    locations: {region: 'Бурятия'},
-                },
-                onSelect: function (suggestion) {
-                    ymaps.geocode(suggestion.value, {
-                        results: 1
-                    }).then(function (res) {
-                        let placemark = res.geoObjects.get(0),
-                            coords = placemark.geometry.getCoordinates(),
-                            bounds = placemark.properties.get('boundedBy');
+    let prev_element = $(`.step[data-index=${step}]`);
+    let next_element = $(`.step[data-index=${step + 1}]`);
 
-                        if (myPlacemark) {
-                            myPlacemark.geometry.setCoordinates(coords);
-                        } else {
-                            myPlacemark = createPlacemark(coords);
-                            myMap.geoObjects.add(myPlacemark);
-                            myPlacemark.events.add('dragend', function () {
-                                getAddress(myPlacemark.geometry.getCoordinates());
+    let delivery_field = $("#order-delivery_date");
+    let address_field = $("#order-address");
+    let phone_field = $("#order-client-phone");
+    let name_field = $("#order-client-name");
+    if (next_element.length) {
+        switch (step) {
+            case 1:
+                prev_element.attr("style", "display: none");
+                next_element.attr("style", "display: flex;");
+                step++;
+                break;
+            case 2:
+                console.log(name_field.val());
+                if (name_field.val() === '') {
+                    e.preventDefault();
+                    alert("Требуется заполнить поле \"Ваше ФИО\"");
+                    return false;
+                }
+                if ( phone_field.val() === '' ) {
+                        e.preventDefault();
+                        alert("Требуется заполнить поле \"Ваш номер телефона\"");
+                        return false;
+                }
+                prev_element.attr("style", "display: none");
+                next_element.attr("style", "display: flex;");
+                if (myMap === undefined) {
+                    myMap = new ymaps.Map('map', {
+                        center: [51.76, 107.64],
+                        zoom: 12
+                    }, {});
+                }
+                $('#order-address').suggestions({
+                    token: '2c9418f4fdb909e7469087c681aac4dd7eca158c',
+                    type: 'ADDRESS',
+                    constraints: {
+                        locations: {region: 'Бурятия'},
+                    },
+                    onSelect: function (suggestion) {
+                        ymaps.geocode(suggestion.value, {
+                            results: 1
+                        }).then(function (res) {
+                            let placemark = res.geoObjects.get(0),
+                                coords = placemark.geometry.getCoordinates(),
+                                bounds = placemark.properties.get('boundedBy');
+
+                            if (myPlacemark) {
+                                myPlacemark.geometry.setCoordinates(coords);
+                            } else {
+                                myPlacemark = createPlacemark(coords);
+                                myMap.geoObjects.add(myPlacemark);
+                                myPlacemark.events.add('dragend', function () {
+                                    getAddress(myPlacemark.geometry.getCoordinates());
+                                });
+                            }
+                            myMap.setBounds(bounds, {
+                                checkZoomRange: true
                             });
-                        }
-                        myMap.setBounds(bounds, {
-                            checkZoomRange: true
+                            getAddress(coords);
                         });
-                        getAddress(coords);
-                    });
-                }
-            });
+                    }
+                });
 
-            myMap.events.add('click', function (e) {
-                let coords = e.get('coords');
+                myMap.events.add('click', function (e) {
+                    let coords = e.get('coords');
 
-                if (myPlacemark) {
-                    myPlacemark.geometry.setCoordinates(coords);
-                } else {
-                    myPlacemark = createPlacemark(coords);
-                    myMap.geoObjects.add(myPlacemark);
-                    myPlacemark.events.add('dragend', function () {
-                        getAddress(myPlacemark.geometry.getCoordinates());
-                    });
-                }
-                getAddress(coords);
-            });
+                    if (myPlacemark) {
+                        myPlacemark.geometry.setCoordinates(coords);
+                    } else {
+                        myPlacemark = createPlacemark(coords);
+                        myMap.geoObjects.add(myPlacemark);
+                        myPlacemark.events.add('dragend', function () {
+                            getAddress(myPlacemark.geometry.getCoordinates());
+                        });
+                    }
+                    getAddress(coords);
+                });
 
-            // Создание метки.
+                // Создание метки.
             function createPlacemark(coords) {
                 return new ymaps.Placemark(coords, {
                     iconCaption: 'поиск...'
@@ -233,61 +269,20 @@ function next (e) {
                 $('#location-logintude').val(coords[1]);
             }
 
-	    if ($("#order-delivery_date").val()) {
-		e.preventDefault();
-		alert("Требуется заполнить поле \"Ваше ФИО\"");
-		throw "Требуется заполнить поле \"Ваше ФИО\"";
-		return false;
-	    }
-	    if ($("#order-address").val()) {
-		e.preventDefault();
-		alert("Требуется заполнить поле \"Ваше ФИО\"");
-		throw "Требуется заполнить поле \"Ваше ФИО\"";
-		return false;
-	    }
-	    if ($("#client-name").val()) {
-		e.preventDefault();
-		alert("Требуется заполнить поле \"Ваше ФИО\"");
-		throw "Требуется заполнить поле \"Ваше ФИО\"";
-		return false;
-	    }
-	    
-    	    $(`.step[data-index=${step}]`).attr("style", "display: none");
-    	    step++;
-	    $(`.step[data-index=${step}]`).attr("style", "display: flex;");
-        } else if (step === 2) {
-	    console.log(step);
-	    console.log($("#client-phone"));
-            $("#client-phone").mask("+7(999)999 9999");
-	    if ($("#client-name").val()) {
-		e.preventDefault();
-		alert("Требуется заполнить поле \"Ваше ФИО\"");
-		throw "Требуется заполнить поле \"Ваше ФИО\"";
-		return false;
-	    }
-	    if ($("#client-phone").val()) {
-		e.preventDefault();
-		alert("Требуется заполнить поле \"Ваш номер телефона\"");
-		throw "Требуется заполнить поле \"Ваш номер телефона\"";
-		return false;
-	    }
-	    $(`.step[data-index=${step}]`).attr("style", "display: none");
-	    step++;
-    	    $(`.step[data-index=${step}]`).attr("style", "display: flex;");
-        } else if (step === 1) {
-	    $(`.step[data-index=${step}]`).attr("style", "display: none");
-	    step++;
-    	    $(`.step[data-index=${step}]`).attr("style", "display: flex;");
-	}
+                prev_element.attr("style", "display: none");
+                next_element.attr("style", "display: flex;");
+                step++;
+                break;
+            case 3:
+                break;
+        }
     } else {
         console.log("DIE!!!");
     }
 }
 
-$("#client-phone").mask("+7(999)999 9999");
-
 $('.product_order > a.btn').on('click', (e) => {
-    if ( !$(e.currentTarget).hasClass('disabled') ) {
+    if (!$(e.currentTarget).hasClass('disabled')) {
         let card = $(e.currentTarget).closest('.product_item');
         data = `id=${card.find('.cart_product_id').val()}&count=${card.find('.cart_product_count').val()}`
         $.ajax({
@@ -315,7 +310,7 @@ $.ajax({
 })
 
 $('.header_inner .blue').on('click', (e) => {
-    if ( window.location.href === window.location.hostname ) {
+    if (window.location.href === window.location.hostname) {
         e.preventDefault();
         $('html, body').animate({
             scrollTop: $('#form').offset().top

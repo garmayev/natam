@@ -35,6 +35,7 @@ class AppAsset extends AssetBundle
 	    '//cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js',
 	    '//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js',
 	    '//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU',
+	    ['https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js', 'depends' => JqueryAsset::class],
     ];
     public $depends = [
         'yii\web\YiiAsset',

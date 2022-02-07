@@ -44,10 +44,10 @@ $this->title = Yii::$app->name;
 				$client = new Client();
 				echo Html::beginTag("div", ["class" => "form_content"]);
 				echo Html::beginTag("div", ["class" => "form_item"]);
-				echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО", "id" => "client-name", "required" => true]);
-				echo Html::textInput("Client[phone]", "", ["placeholder" => "Ваш номер телефона", "id" => "client-phone", "required" => true]);
-				echo Html::textInput("Client[email]", "", ["placeholder" => "Ваш E-mail", "type" => "email", "id" => "client-email"]);
-				echo Html::textInput("Client[company]", "", ["placeholder" => "Название организации", "id" => "client-company"]);
+				echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО", "id" => "ticket-client-name", "required" => true]);
+				echo Html::textInput("Client[phone]", "", ["placeholder" => "Ваш номер телефона", "id" => "ticket-client-phone", "required" => true]);
+				echo Html::textInput("Client[email]", "", ["placeholder" => "Ваш E-mail", "type" => "email", "id" => "ticket-client-email"]);
+				echo Html::textInput("Client[company]", "", ["placeholder" => "Название организации", "id" => "ticket-client-company"]);
 				echo Html::endTag("div");
 				?>
                 <div class="form_item">
@@ -79,9 +79,9 @@ $this->title = Yii::$app->name;
                 </div>
                 <div class="form_content step" data-index="2">
                     <div class="form_item">
-                        <input type="text" id="client-name" name="Client[name]" placeholder="Ваше ФИО">
-                        <input type="text" id="client-phone" name="Client[phone]" placeholder="Ваш номер телефона">
-                        <input type="email" name="Client[email]" placeholder="Ваш E-mail">
+                        <input type="text" id="order-client-name" name="Client[name]" placeholder="Ваше ФИО">
+                        <input type="text" id="order-client-phone" name="Client[phone]" data-inputmask="'mask': '+7(999)999 9999'" placeholder="Ваш номер телефона">
+                        <input type="email" id="order-client-email" name="Client[email]" placeholder="Ваш E-mail">
                     </div>
                     <div class="form_item">
                         <textarea name="Order[comment]" placeholder="Комментарий" rows="5" style="border-radius: 10px; padding: 18px;"></textarea>
@@ -106,7 +106,8 @@ $this->title = Yii::$app->name;
 									'class' => 'form',
 									'autocomplete' => 'qwsedrfrgtghyhuj',
 									'id' => 'order-delivery_date',
-									'placeholder' => Yii::t('app', 'Delivery Date')
+									'placeholder' => Yii::t('app', 'Delivery Date'),
+                                    'required' => true,
 								],
 								'pluginOptions' => [
 									'startDate' => date('Y-m-d'),
@@ -130,7 +131,7 @@ $this->title = Yii::$app->name;
 							?>
                         </div>
                         <div class="form_item">
-                            <input type="text" id="order-address" class="form"
+                            <input type="text" id="order-address" class="form" required
                                    name="Order[address]" value="" placeholder="Адрес доставки">
                             <input type="hidden" name="Location[title]" id="location-title" "="">
                             <input type="hidden" name="Location[latitude]" id="location-latitude">
