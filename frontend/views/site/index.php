@@ -36,109 +36,121 @@ $this->title = Yii::$app->name;
                     </button>
                     <button class="active">ЗАКАЗАТЬ</button>
                 </div>
-		<?= Html::beginForm(["/ticket/create"], "post", ["class" => ["form_block", "form_submit"]]); ?>
+				<?= Html::beginForm(["/ticket/create"], "post", ["class" => ["form_block", "form_submit"]]); ?>
                 <!-- <form class="form_block form_submit"> -->
-					<?php
-					$ticket = new Ticket();
-					$client = new Client();
-					echo Html::beginTag("div", ["class" => "form_content"]);
-					echo Html::beginTag("div", ["class" => "form_item"]);
-					echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО"]);
-					echo Html::textInput("Client[phone]", "", ["placeholder" => "+ 7 ( ____ ) - ___ - __ - __"]);
-					echo Html::textInput("Client[email]", "", ["placeholder" => "Ваш E-mail", "type" => "email"]);
-					echo Html::textInput("Client[company]", "", ["placeholder" => "Название организации"]);
-					echo Html::endTag("div");
-					?>
-                    <div class="form_item">
-						<?= Html::textarea("Ticket[comment]", "", ["placeholder" => "Ваш комментарий", "style" => "width: 100%; height: 185px; border-radius: 10px; padding: 18px;"]) ?>
-                        <div class="form_btn">
-                            <div class="form_policy">
-                                <input type="checkbox" id="form_policy">
-                                <label for="form_policy">
-                                    Даю согласие на обработку
-                                    персональных данных
-                                </label>
-                            </div>
-                            <button type="submit" class="btn blue">
-                                отправить
-                            </button>
+                <input type="hidden" name="Ticket[service_id]" value="0">
+				<?php
+				$ticket = new Ticket();
+				$client = new Client();
+				echo Html::beginTag("div", ["class" => "form_content"]);
+				echo Html::beginTag("div", ["class" => "form_item"]);
+				echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО"]);
+				echo Html::textInput("Client[phone]", "", ["placeholder" => "+ 7 ( ____ ) - ___ - __ - __"]);
+				echo Html::textInput("Client[email]", "", ["placeholder" => "Ваш E-mail", "type" => "email"]);
+				echo Html::textInput("Client[company]", "", ["placeholder" => "Название организации"]);
+				echo Html::endTag("div");
+				?>
+                <div class="form_item">
+					<?= Html::textarea("Ticket[comment]", "", ["placeholder" => "Ваш комментарий", "style" => "width: 100%; height: 185px; border-radius: 10px; padding: 18px;"]) ?>
+                    <div class="form_btn">
+                        <div class="form_policy">
+                            <input type="checkbox" id="form_policy">
+                            <label for="form_policy">
+                                Даю согласие на обработку
+                                персональных данных
+                            </label>
                         </div>
+                        <button type="submit" class="btn blue">
+                            отправить
+                        </button>
                     </div>
-					<?php
-					echo Html::endTag("div");
+                </div>
+				<?php
+				echo Html::endTag("div");
 
-					?>
+				?>
                 <!-- </form> -->
-		<?= Html::endForm() ?>
-                <?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block","form_order","active"]]) ?>
-<!--                <form class="form_block form_order active">-->
-                    <div class="form_content step" data-index="1">
-                        <div class="form_item"></div>
-                        <div class="form_item"></div>
+				<?= Html::endForm() ?>
+				<?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"]]) ?>
+                <!--                <form class="form_block form_order active">-->
+                <div class="form_content step" data-index="1">
+                    <div class="form_item"></div>
+                    <div class="form_item"></div>
+                </div>
+                <div class="form_content step" data-index="2">
+                    <div class="form_item">
+                        <input type="text" id="client-name" name="Client[name]" placeholder="Ваше ФИО">
+                        <input type="text" id="client-phone" name="Client[phone]" placeholder="Ваш номер телефона">
+                        <input type="email" name="Client[email]" placeholder="Ваш E-mail">
                     </div>
-                    <div class="form_content step" data-index="2">
-                        <div class="form_item">
-                            <input type="text" id="client-name" name="Client[name]" placeholder="Ваше ФИО">
-                            <input type="text" id="client-phone" name="Client[phone]" placeholder="Ваш номер телефона">
-                        </div>
-                        <div class="form_item">
-                            <input type="email" name="Client[email]" placeholder="Ваш E-mail">
-                            <input type="text" name="Client[company]" placeholder="Название организации">
-                            <div class="form_btn">
-                                <a href="#" class="btn blue prev" style="float: left">
-                                    Предыдущий шаг
-                                </a>
-                                <a href="#" class="btn blue next" style="float: right">
-                                    Следующий шаг
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form_content step" data-index="3">
-                        <div class="date-address" style="display: flex;">
-                            <div class="form_item">
-								<?=
-								DateTimePicker::widget([
-									'name' => 'Order[delivery_date]',
-									'type' => DateTimePicker::TYPE_INPUT,
-									'options' => [
-										'class' => 'form',
-                                        'autocomplete' => 'qwsedrfrgtghyhuj',
-										'id' => 'order-delivery_date',
-										'placeholder' => Yii::t('app', 'Delivery Date')
-									],
-									'pluginOptions' => [
-										'startDate' => date('Y-m-d',strtotime("-1 days")),
-										'daysOfWeekDisabled' => [0],
-                                        'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
-										'minuteStep' => 30,
-//                                        'minView' => 1,
-										'autoclose' => true,
-									]
-								]);
-
-								?>
-                            </div>
-                            <div class="form_item">
-                                <input type="text" id="order-address" class="form"
-                                       name="Order[address]" value="" placeholder="Адрес доставки">
-                                <input type="hidden" name="Location[title]" id="location-title" "="">
-                                <input type="hidden" name="Location[latitude]" id="location-latitude">
-                                <input type="hidden" name="Location[longitude]" id="location-logintude">
-                            </div>
-                        </div>
-                        <div id="map" style="height: 250px; min-width: 100%; margin-bottom: 20px;"></div>
+                    <div class="form_item">
+                        <textarea name="Order[comment]" placeholder="Комментарий" rows="5" style="border-radius: 10px; padding: 18px;"></textarea>
                         <div class="form_btn">
-                            <a href="#" class="btn blue prev" style="float: left;">
+                            <a href="#" class="btn blue prev" style="float: left">
                                 Предыдущий шаг
                             </a>
-                            <button type="submit" class="btn blue next" style="float: right;">
-                                Отправить
-                            </button>
+                            <a href="#" class="btn blue next" style="float: right">
+                                Следующий шаг
+                            </a>
                         </div>
                     </div>
-<!--                </form>-->
-                <?= Html::endForm() ?>
+                </div>
+                <div class="form_content step" data-index="3">
+                    <div class="date-address" style="display: flex;">
+                        <div class="form_item">
+							<?=
+							DateTimePicker::widget([
+								'name' => 'Order[delivery_date]',
+								'type' => DateTimePicker::TYPE_INPUT,
+								'options' => [
+									'class' => 'form',
+									'autocomplete' => 'qwsedrfrgtghyhuj',
+									'id' => 'order-delivery_date',
+									'placeholder' => Yii::t('app', 'Delivery Date')
+								],
+								'pluginOptions' => [
+									'startDate' => date('Y-m-d', strtotime("-1 days")),
+									'daysOfWeekDisabled' => [0],
+									'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
+									'minuteStep' => 30,
+									'autoclose' => true,
+								],
+								'pluginEvents' => [
+                                    'changeDay' => "function (e) { 
+                                        let disabledTime = [0, 1, 2, 3, 4, 5, 6, 7, 8, 14, 15, 16, 17, 18, 9, 20, 21, 22, 23, 24];
+                                        if ( e.date.getDay() == 6 ) {
+                                            let hours = $('.datetimepicker-hours .hour');
+                                            for (let i = 1; i < disabledTime.length; i++) {
+                                                $(`.datetimepicker-hours .hour:nth-child(\${disabledTime[i]})`).addClass('disabled');
+                                                console.log($(`.datetimepicker-hours .hour:nth-child(\${disabledTime[i]})`).html());
+                                            } 
+                                        } 
+                                    }",
+								]
+							]);
+
+							?>
+                        </div>
+                        <div class="form_item">
+                            <input type="text" id="order-address" class="form"
+                                   name="Order[address]" value="" placeholder="Адрес доставки">
+                            <input type="hidden" name="Location[title]" id="location-title" "="">
+                            <input type="hidden" name="Location[latitude]" id="location-latitude">
+                            <input type="hidden" name="Location[longitude]" id="location-logintude">
+                        </div>
+                    </div>
+                    <div id="map" style="height: 250px; min-width: 100%; margin-bottom: 20px;"></div>
+                    <div class="form_btn">
+                        <a href="#" class="btn blue prev" style="float: left;">
+                            Предыдущий шаг
+                        </a>
+                        <button type="submit" class="btn blue next" style="float: right;">
+                            Отправить
+                        </button>
+                    </div>
+                </div>
+                <!--                </form>-->
+				<?= Html::endForm() ?>
             </div>
         </div>
     </section>

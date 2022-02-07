@@ -15,7 +15,7 @@ class TicketController extends \yii\web\Controller
 		{
 			$phone = preg_replace("/[\(\)\ \+]*/", "", $post["Client"]["phone"], -1);
 			$client = Client::find()->where(["phone" => $phone])->one();
-			\Yii::error($client);
+//			\Yii::error($client);
 			if ( empty($client) )
 			{
 				$client = new Client();
@@ -26,6 +26,7 @@ class TicketController extends \yii\web\Controller
 				}
 			}
 			$ticket->client_id = $client->id;
+			$ticket->comment = $post["Ticket"]["comment"];
 			if (isset($post["Ticket"]["service_id"])) {
 				$ticket->service_id = $post["Ticket"]["service_id"];
 			} else {

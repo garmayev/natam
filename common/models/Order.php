@@ -259,8 +259,11 @@ class Order extends ActiveRecord
 		foreach ($this->products as $product) {
 			$result .= "$product->title ($product->value): {$this->getCount($product->id)} шт\n";
 		}
-		$result .= "\nАдрес доставки: {$this->address}\n\n";
+		$result .= "\nАдрес доставки: {$this->address}\n";
 		$result .= "Дата доставки: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
+		if ( !empty($this->comment) ) {
+			$result .= "Комментарий: " . $this->comment . "\n\n";
+		}
 		$result .= "Общая стоимость: {$this->getPrice()}";
 		return $result;
 	}
