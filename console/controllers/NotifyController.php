@@ -115,7 +115,7 @@ class NotifyController extends \yii\console\Controller
 	 */
 	protected function sendMessage($employee, $model)
 	{
-		$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
+		$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "parse_mode" => "HTML", "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
 		if ( !$response->isOk ) {
 			\Yii::error($employee->chat_id);
 			\Yii::error($response->getContent());

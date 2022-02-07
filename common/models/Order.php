@@ -255,16 +255,21 @@ class Order extends ActiveRecord
 
 	public function generateTelegramText()
 	{
-		$result = "Заказ #{$this->id}\n\n";
+		$result = "<h3>Заказ #{$this->id}</h3><table><thead><td>Название</td><td>Объем</td><td>Кол-во</td><td>Цена</td></thead><tbody>";
 		foreach ($this->products as $product) {
-			$result .= "$product->title ($product->value): {$this->getCount($product->id)} шт\n";
+			$result .= "<tr><td>$product->title</td><td>$product->value</td><td>{$this->getCount($product->id)}</td><td>$product->price</td></tr>";
 		}
-		$result .= "\nАдрес доставки: {$this->address}\n";
-		$result .= "Дата доставки: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
+		$result .= "</tbody></table>";
+		if ($this->location) {
+			$result .= "<div><b>Адрес доставки</b>: <a href='https://2gis.ru/routeSearch/rsType/car/from/107.683039,51.835453/to/{$this->location->longitude},{$this->location->latitude}/go'>{$this->address}</a></div>";
+		} else {
+			$result .= "<div><b>Адрес доставки</b>: {$this->address}</div>";
+		}
+		$result .= "<div><b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "</div>";
 		if ( !empty($this->comment) ) {
-			$result .= "Комментарий: " . $this->comment . "\n\n";
+			$result .= "<div><b>Комментарий</b>: " . $this->comment . "</div>";
 		}
-		$result .= "Общая стоимость: {$this->getPrice()}";
+		$result .= "<div><i>Общая стоимость: {$this->getPrice()}</i></div>";
 		return $result;
 	}
 
