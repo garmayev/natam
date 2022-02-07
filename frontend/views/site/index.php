@@ -44,10 +44,10 @@ $this->title = Yii::$app->name;
 				$client = new Client();
 				echo Html::beginTag("div", ["class" => "form_content"]);
 				echo Html::beginTag("div", ["class" => "form_item"]);
-				echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО"]);
-				echo Html::textInput("Client[phone]", "", ["placeholder" => "+ 7 ( ____ ) - ___ - __ - __"]);
-				echo Html::textInput("Client[email]", "", ["placeholder" => "Ваш E-mail", "type" => "email"]);
-				echo Html::textInput("Client[company]", "", ["placeholder" => "Название организации"]);
+				echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО", "id" => "client-name"]);
+				echo Html::textInput("Client[phone]", "", ["placeholder" => "Ваш номер телефона", "id" => "client-phone"]);
+				echo Html::textInput("Client[email]", "", ["placeholder" => "Ваш E-mail", "type" => "email", "id" => "client-email"]);
+				echo Html::textInput("Client[company]", "", ["placeholder" => "Название организации", "id" => "client-company"]);
 				echo Html::endTag("div");
 				?>
                 <div class="form_item">

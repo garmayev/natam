@@ -243,6 +243,8 @@ function next (e) {
     }
 }
 
+$("#client-phone").mask("+7(999)999 9999");
+
 $('.product_order > a.btn').on('click', (e) => {
     if ( !$(e.currentTarget).hasClass('disabled') ) {
         let card = $(e.currentTarget).closest('.product_item');
