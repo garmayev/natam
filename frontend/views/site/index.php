@@ -113,16 +113,16 @@ $this->title = Yii::$app->name;
 									'daysOfWeekDisabled' => [0],
 									'minuteStep' => 30,
 									'autoclose' => true,
+                                    'hoursDisabled' => '0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24',
 								],
 								'pluginEvents' => [
                                     'changeMode' => "function (e) {
                                         let picker = $(this).datetimepicker($(this).attr('data-krajee-datetimepicker'));
                                         if ( (e.newViewMode === 1) && (e.date.getDay() === 6) ) {
-                                            picker.data('datetimepicker').setHoursDisabled('0,1,2,3,4,5,6,7,8,14,15,16,17,18,19,20,21,22,23,24');
+//                                            picker.data('datetimepicker').setHoursDisabled('0,1,2,3,4,5,6,7,8,14,15,16,17,18,19,20,21,22,23,24');
                                         } else {
-                                            picker.data('datetimepicker').setHoursDisabled('0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24');
+//                                            picker.data('datetimepicker').setHoursDisabled('0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24');
                                         }
-                                        console.log(this);
                                     }",
 								]
 							]);
