@@ -106,7 +106,7 @@ function rebuild()
                     container.find(".form_item:last-child").append(select_container);
                 }
                 let btn_container = createElement("div", null, {class: 'form_btn'});
-                let btn = createElement("a", "Следующий шаг", {class: 'btn blue next'}, {click: next});
+                let btn = createElement("a", "Следующий шаг", {class: 'btn blue next', style: "float: right;"}, {click: next});
                 btn_container.appendChild(btn);
                 container.find(".form_item:last-child").append(btn_container);
             } else {
@@ -152,11 +152,12 @@ function next (e) {
         $(`.step[data-index=${step}]`).attr("style", "display: none");
         step++;
         if (step === 3) {
-            myMap = new ymaps.Map('map', {
-                center: [51.76, 107.64],
-                zoom: 12
-            }, {});
-
+            if ( myMap === undefined ) {
+                myMap = new ymaps.Map('map', {
+                    center: [51.76, 107.64],
+                    zoom: 12
+                }, {});
+            }
             $('#order-address').suggestions({
                 token: '2c9418f4fdb909e7469087c681aac4dd7eca158c',
                 type: 'ADDRESS',

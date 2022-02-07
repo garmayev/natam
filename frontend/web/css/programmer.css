@@ -170,7 +170,8 @@
     padding: 0 !important;
 }
 .form_inner .form_block.active {
-    max-height: 300px;
+    max-height: 415px;
+    margin-top: -40px;
     overflow: auto;
 }
 .form_inner form .form_content.step {
@@ -186,7 +187,20 @@
     flex-direction: column;;
 }
 
+@media screen and (max-width: 360px) {
+    .btn.blue {
+        padding: 10px;
+    }
+}
+
 @media screen and (max-width: 670px) {
+    .form_inner {
+        min-height: 580px;
+        max-height: 580px;
+    }
+    .form_inner .form_block.active {
+        max-height: 580px;
+    }
     .form_inner form .form_btn .btn.next, .form_inner form .form_btn .btn.prev {
         width: 46%;
     }
@@ -197,6 +211,7 @@
         flex-direction: column;
     }
 }
+
 .trash {
     margin: 0 10px;
 }
