@@ -84,7 +84,6 @@ function rebuild()
         type: 'GET',
         success: (response) => {
             let container = $('.step[data-index=1]');
-            console.log(container);
             if ( response.length > 0 ) {
                 container.find(".form_item:first-child").html("");
                 container.find(".form_item:last-child").html("");

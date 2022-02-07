@@ -109,22 +109,20 @@ $this->title = Yii::$app->name;
 									'placeholder' => Yii::t('app', 'Delivery Date')
 								],
 								'pluginOptions' => [
-									'startDate' => date('Y-m-d', strtotime("-1 days")),
+									'startDate' => date('Y-m-d'),
 									'daysOfWeekDisabled' => [0],
-									'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
 									'minuteStep' => 30,
 									'autoclose' => true,
 								],
 								'pluginEvents' => [
-                                    'changeDay' => "function (e) { 
-                                        let disabledTime = [0, 1, 2, 3, 4, 5, 6, 7, 8, 14, 15, 16, 17, 18, 9, 20, 21, 22, 23, 24];
-                                        if ( e.date.getDay() == 6 ) {
-                                            let hours = $('.datetimepicker-hours .hour');
-                                            for (let i = 1; i < disabledTime.length; i++) {
-                                                $(`.datetimepicker-hours .hour:nth-child(\${disabledTime[i]})`).addClass('disabled');
-                                                console.log($(`.datetimepicker-hours .hour:nth-child(\${disabledTime[i]})`).html());
-                                            } 
-                                        } 
+                                    'changeMode' => "function (e) {
+                                        let picker = $(this).datetimepicker($(this).attr('data-krajee-datetimepicker'));
+                                        if ( (e.newViewMode === 1) && (e.date.getDay() === 6) ) {
+                                            picker.data('datetimepicker').setHoursDisabled('0,1,2,3,4,5,6,7,8,14,15,16,17,18,19,20,21,22,23,24');
+                                        } else {
+                                            picker.data('datetimepicker').setHoursDisabled('0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24');
+                                        }
+                                        console.log(this);
                                     }",
 								]
 							]);
