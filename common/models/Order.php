@@ -255,21 +255,20 @@ class Order extends ActiveRecord
 
 	public function generateTelegramText()
 	{
-		$result = "<h3>Заказ #{$this->id}</h3><table><thead><td>Название</td><td>Объем</td><td>Кол-во</td><td>Цена</td></thead><tbody>";
+		$result = "<b>Заказ #{$this->id}</b>\n";
 		foreach ($this->products as $product) {
-			$result .= "<tr><td>$product->title</td><td>$product->value</td><td>{$this->getCount($product->id)}</td><td>$product->price</td></tr>";
+			$result .= "<strong>$product->title</strong> ($product->value) {$this->getCount($product->id)} * {$product->price}\n";
 		}
-		$result .= "</tbody></table>";
 		if ($this->location) {
-			$result .= "<div><b>Адрес доставки</b>: <a href='https://2gis.ru/routeSearch/rsType/car/from/107.683039,51.835453/to/{$this->location->longitude},{$this->location->latitude}/go'>{$this->address}</a></div>";
+			$result .= "<b>Адрес доставки</b>: <a href='https://2gis.ru/routeSearch/rsType/car/from/107.683039,51.835453/to/{$this->location->longitude},{$this->location->latitude}/go'>{$this->address}</a>\n";
 		} else {
-			$result .= "<div><b>Адрес доставки</b>: {$this->address}</div>";
+			$result .= "<b>Адрес доставки</b>: {$this->address}\n";
 		}
-		$result .= "<div><b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "</div>";
+		$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
 		if ( !empty($this->comment) ) {
-			$result .= "<div><b>Комментарий</b>: " . $this->comment . "</div>";
+			$result .= "<b>Комментарий</b>: " . $this->comment . "\n";
 		}
-		$result .= "<div><i>Общая стоимость: {$this->getPrice()}</i></div>";
+		$result .= "<i>Общая стоимость: {$this->getPrice()}</i>";
 		return $result;
 	}
 
