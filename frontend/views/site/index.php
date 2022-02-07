@@ -85,10 +85,10 @@ $this->title = Yii::$app->name;
                             <input type="email" name="Client[email]" placeholder="Ваш E-mail">
                             <input type="text" name="Client[company]" placeholder="Название организации">
                             <div class="form_btn">
-                                <a href="#" class="btn blue prev">
+                                <a href="#" class="btn blue prev" style="float: left">
                                     Предыдущий шаг
                                 </a>
-                                <a href="#" class="btn blue next">
+                                <a href="#" class="btn blue next" style="float: right">
                                     Следующий шаг
                                 </a>
                             </div>
@@ -108,8 +108,8 @@ $this->title = Yii::$app->name;
 										'placeholder' => Yii::t('app', 'Delivery Date')
 									],
 									'pluginOptions' => [
-										'startDate' => date('Y-m-d'),
-										'daysOfWeekDisabled' => [0,6],
+										'startDate' => date('Y-m-d',strtotime("-1 days")),
+										'daysOfWeekDisabled' => [0],
                                         'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
 										'minuteStep' => 30,
 //                                        'minView' => 1,
@@ -129,10 +129,10 @@ $this->title = Yii::$app->name;
                         </div>
                         <div id="map" style="height: 250px; min-width: 100%; margin-bottom: 20px;"></div>
                         <div class="form_btn">
-                            <a href="#" class="btn blue prev">
+                            <a href="#" class="btn blue prev" style="float: left;">
                                 Предыдущий шаг
                             </a>
-                            <button type="submit" class="btn blue next">
+                            <button type="submit" class="btn blue next" style="float: right;">
                                 Отправить
                             </button>
                         </div>
