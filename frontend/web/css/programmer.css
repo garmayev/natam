@@ -170,12 +170,15 @@
     padding: 0 !important;
 }
 .form_inner .form_block.active {
-    max-height: 300px;
-    overflow: auto;
+    margin-top: -40px;
+    max-height: 410px;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 .form_inner form .form_content.step {
     display: none;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 .date-address {
 	display: flex;

@@ -62,7 +62,7 @@ class SpikController extends \yii\rest\Controller
 			$error_message = curl_strerror($errno);
 			\Yii::error("cURL error ({$errno}):\n {$error_message}");
 		}
-		\Yii::error($response);
+		// \Yii::error($response);
 		return json_decode($response, true);
 	}
 
