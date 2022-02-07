@@ -74,7 +74,7 @@ $(() => {
     function getAddress(item)
     {
         if ( item.location.title ) {
-            return `<div><b>Адрес доставки</b>: <a target="_blank" href="https://2gis.ru/ulanude/geo/${item.location.longitude}%2C${item.location.latitude}%2F18">${item.location.title}</a></div>`;
+            return `<div><b>Адрес доставки</b>: <a target="_blank" href="https://2gis.ru/ulanude/geo/${item.location.longitude}%2C${item.location.latitude}">${item.location.title}</a></div>`;
         } else {
             return `<div><b>Адрес доставки</b>: ${item.order.address}</div>`;
         }
