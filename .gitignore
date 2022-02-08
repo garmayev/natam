@@ -42,4 +42,9 @@ phpunit.phar
 /backend/web/index-test.php
 /backend/web/robots.txt
 /frontend/web/spik.json
-frontend/web/spik.json
+/frontend/config/params-local.php
+/frontend/config/main-local.php
+/console/config/params-local.php
+/console/config/main-local.php
+/backend/config/params-local.php
+/backend/config/main-local.php
