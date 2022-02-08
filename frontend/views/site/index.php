@@ -114,7 +114,6 @@ $this->title = Yii::$app->name;
 									'daysOfWeekDisabled' => [0],
 									'minuteStep' => 30,
 									'autoclose' => true,
-
                                     'hoursDisabled' => '0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24',
 								],
 								'pluginEvents' => [
