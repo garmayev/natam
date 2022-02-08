@@ -129,7 +129,7 @@ class TelegramController extends \yii\rest\Controller
 					if ( isset($staff) && isset($order) && ($staff->state_id == $order->status) ) {
 						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 						foreach ($updates as $update) {
-							Yii::error($update->attributes);
+							// Yii::error($update->attributes);
 							$response = Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
 							// $update->delete();
 						}
