@@ -28,7 +28,7 @@ class NotifyController extends \yii\console\Controller
 	{
 		$models = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
 		if (!$this->checkHours()) {
-			$this->stdout("Все работники отдыхают");
+			$this->stdout("Все работники отдыхают\n");
 			return false;
 		}
 		foreach ($models as $model) {
@@ -146,7 +146,7 @@ class NotifyController extends \yii\console\Controller
 	{
 		$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "parse_mode" => "HTML", "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
 		if ( !$response->isOk ) {
-			echo "\t\tChat ID: {$employee->chat_id}\n\t\tText: {$text}";
+			echo "\t\tChat ID: {$employee->chat_id}\n\t\tText: {$model->generateTelegramText()}";
 			return false;
 		}
 		$data = $response->getData();
@@ -159,10 +159,5 @@ class NotifyController extends \yii\console\Controller
 		]);
 		$update->save();
 		return true;
-	}
-
-	public function actionCheck()
-	{
-		print_r(\Yii::$app->params["telegram"]);
 	}
 }
