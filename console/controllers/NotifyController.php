@@ -160,4 +160,9 @@ class NotifyController extends \yii\console\Controller
 		$update->save();
 		return true;
 	}
+
+	public function actionCheck()
+	{
+		print_r(\Yii::$app->params["telegram"]);
+	}
 }
