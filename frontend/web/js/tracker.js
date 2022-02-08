@@ -98,6 +98,7 @@ $(() => {
             // console.log(item);
             if (item.order.status < 4) {
                 if (orderCollection[item.id] === undefined) {
+		    if (item.location) {
                     orderCollection[item.id] = {
                         Placemark: new ymaps.Placemark([item.location.latitude, item.location.longitude], {
                             balloonContentHeader: `<h4>Заказ #${item.id}</h4>`,
@@ -109,6 +110,7 @@ $(() => {
                     };
                     orderCollection[item.id].Placemark.orderId = item.id;
                         orderPoints.push(orderCollection[item.id].Placemark);
+		    }
                 } else {
                     orderCollection[item.id].Placemark.geometry.setCoordinates([item.location.latitude, item.location.longitude])
                 }

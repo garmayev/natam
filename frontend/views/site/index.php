@@ -31,8 +31,8 @@ $this->title = Yii::$app->name;
                 <img src="img/journal.png" class="journal" alt="journal">
                 <div class="form_tab">
                     <button class="">
-                        ОСТАВИТЬ <br>
-                        ЗАЯВКУ
+                        ЗАДАТЬ <br>
+                        ВОПРОС
                     </button>
                     <button class="active">ЗАКАЗАТЬ</button>
                 </div>
@@ -81,7 +81,7 @@ $this->title = Yii::$app->name;
                     <div class="form_item">
                         <input type="text" id="order-client-name" name="Client[name]" placeholder="Ваше ФИО">
                         <input type="text" id="order-client-phone" name="Client[phone]" data-inputmask="'mask': '+7(999)999 9999'" placeholder="Ваш номер телефона">
-                        <input type="email" id="order-client-email" name="Client[email]" placeholder="Ваш E-mail">
+                        <input type="email" id="order-client-company" name="Client[company]" placeholder="Название организации">
                     </div>
                     <div class="form_item">
                         <textarea name="Order[comment]" placeholder="Комментарий" rows="5" style="border-radius: 10px; padding: 18px;"></textarea>
