@@ -23,6 +23,7 @@ use yii\widgets\ListView;
  */
 
 $this->title = Yii::$app->name;
+$this->registerJsVar("picker", "");
 ?>
 <main>
     <section class="form" id="form">
@@ -118,13 +119,28 @@ $this->title = Yii::$app->name;
 								],
 								'pluginEvents' => [
                                     'changeMode' => "function (e) {
-                                        let picker = $(this).attr('data-krajee-datetimepicker');
-                                        console.log(picker);
-                                        if ( (e.newViewMode === 1) && (e.date.getDay() === 6) ) {
-                                            picker.data('datetimepicker').setHoursDisabled('0,1,2,3,4,5,6,7,8,14,15,16,17,18,19,20,21,22,23,24');
-                                        } else {
-                                            picker.data('datetimepicker').setHoursDisabled('0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24');
-                                        }
+//                                        let picker = undefined;
+//                                        for ( index in e.delegateTarget) {
+//                                            if ((typeof e.delegateTarget[index] === \"object\") && (e.delegateTarget[index] !== null)) {
+//                                                if (e.delegateTarget[index].hasOwnProperty(\"krajeeDatetimepicker\")) {
+//                                                    picker = e.delegateTarget[index];
+//                                                    break;
+//                                                }
+//                                            }
+//                                        }
+//                                        console.log(picker);
+//                                        if ( picker !== undefined ) {
+//                                            console.log((new Date(e.date)).UTC());
+//                                            if ( (e.newViewMode === 1) && (e.date.getDay() !== 0) ) {
+//                                                picker.datetimepicker.setDate(new Date(e.date));
+//                                                picker.datetimepicker.setHoursDisabled('0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24');
+//                                                console.log(\"Week\");
+//                                            } else if ( (e.newViewMode === 1) && (e.date.getDay() === 0) ) {
+//                                                picker.datetimepicker.setDate(new Date(e.date));
+//                                                picker.datetimepicker.setHoursDisabled('0,1,2,3,4,5,6,7,8,14,15,16,17,18,19,20,21,22,23,24');
+//                                                console.log(\"Saturday\");
+//                                            }
+//                                        }
                                     }",
 								]
 							]);
