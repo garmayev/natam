@@ -31,10 +31,6 @@ class NotifyController extends \yii\console\Controller
 			if ( $this->isNeedNextMessage($model) ) {
 				$this->stdout("\tТребуется отправка сообщения сотруднику\n");
 				$employee = $this->findNextEmployee($model);
-//				print_r($employee->attributes);
-//				$employee->last_message_at = time();
-//				$employee->save();
-//				die;
 				if ( $employee ) {
 					$this->stdout("\tДля уведомления был выбран сотрудник {$employee->family} {$employee->name}\n");
 					$this->sendMessage($employee, $model);
@@ -45,14 +41,15 @@ class NotifyController extends \yii\console\Controller
 				}
 			}
 			if ( $this->isNeedAlert($model) ) {
-				continue;
 				$this->stdout("\tТребуется отправка сообщения начальнику\n");
-				$model->boss_chat_id = $this->settings["alert"][$model->status - 1]["chat_id"];
-				$model->save();
-				Telegram::sendMessage([
+				$response = Telegram::sendMessage([
 					"chat_id" => $this->settings["alert"][$model->status - 1]["chat_id"],
 					"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatus($model->status)} никто не обработал"
 				]);
+				if ($response->isOk) {
+					$model->boss_chat_id = $this->settings["alert"][$model->status - 1]["chat_id"];
+					$model->save();
+				}
 			}
 		}
 	}
@@ -105,6 +102,17 @@ class NotifyController extends \yii\console\Controller
 	protected function isNeedAlert($model)
 	{
 		$timeout = ( time() - ($model->created_at + $this->settings["alert"][$model->status - 1]["time"]) > 0 );
+		if ( $timeout ) {
+			echo "\t\tTime is out\n";
+		} else {
+			echo "\t\tTime is not out\n";
+		}
+		$result = ($timeout && empty($model->boss_chat_id));
+		if (!empty($model->boss_chat_id)) {
+			echo "\t\tMessage already sended\n";
+		} else {
+			echo "\t\tMessage is not sended\n";
+		}
 		return ( $timeout && empty($model->boss_chat_id) );
 	}
 
@@ -117,13 +125,10 @@ class NotifyController extends \yii\console\Controller
 	{
 		$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "parse_mode" => "HTML", "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
 		if ( !$response->isOk ) {
-			\Yii::error($employee->chat_id);
-			\Yii::error($response->getContent());
+			echo "\t\tChat ID: {$employee->chat_id}\n\t\tText: {$text}";
 			return false;
 		}
 		$data = $response->getData();
-// \Yii::error($data);
-		// \Yii::error($data);
 		$update = new Updates([
 			"order_id" => $model->id,
 			"order_status" => $model->status,
@@ -133,5 +138,17 @@ class NotifyController extends \yii\console\Controller
 		]);
 		$update->save();
 		return true;
+	}
+
+	public function actionTest() {
+		$models = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
+		foreach ($models as $model) {
+			echo "Order #{$model->id}\n";
+			if ( $this->isNeedAlert($model) ) {
+				echo "ALERT!\n";
+			} else {
+				echo "SILENT!\n";
+			}
+		}
 	}
 }
