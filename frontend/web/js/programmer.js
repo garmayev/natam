@@ -118,7 +118,7 @@ function rebuild() {
             } else {
                 container.find(".form_item:first-child").html("");
                 container.find(".form_item:last-child").html("");
-                container.find(".form_item:first-child").html("<p style='color: white; font-size: 28px;'>Корзина пуста</p>");
+                container.find(".form_item:first-child").html("<p style='color: white; font-size: 28px;'>Корзина пуста</p><a href='#product' class='btn' style='color: #fff;'>Ознакомтесь с каталогом</a>");
             }
         }
     })
