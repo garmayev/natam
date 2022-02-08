@@ -8,6 +8,7 @@ use frontend\models\Telegram;
 use frontend\models\Updates;
 use frontend\modules\admin\models\Settings;
 use garmayev\staff\models\Employee;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 use yii\httpclient\Client;
@@ -26,6 +27,10 @@ class NotifyController extends \yii\console\Controller
 	public function actionIndex()
 	{
 		$models = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
+		if (!$this->checkHours()) {
+			$this->stdout("Все работники отдыхают");
+			return false;
+		}
 		foreach ($models as $model) {
 			$this->stdout("Заказ #{$model->id}\n", Console::BOLD);
 			if ( $this->isNeedNextMessage($model) ) {
@@ -39,6 +44,8 @@ class NotifyController extends \yii\console\Controller
 				} else {
 					$this->stdout("\tНе найден подходящий сотрудник для уведомления\n");
 				}
+			} else {
+				$this->stdout("\tОтправка уведомления не требуется");
 			}
 			if ( $this->isNeedAlert($model) ) {
 				$this->stdout("\tТребуется отправка сообщения начальнику\n");
@@ -116,6 +123,20 @@ class NotifyController extends \yii\console\Controller
 		return ( $timeout && empty($model->boss_chat_id) );
 	}
 
+	protected function checkHours()
+	{
+		$hour = intval(\Yii::$app->formatter->asDatetime(time(), "H"));
+		$weekDay = date('w', time());
+		if ( $weekDay != 6 ) {
+			if ( $weekDay != 5 ) {
+				if ($hour > 9 && $hour < 17) return true;
+			} else {
+				if ( $hour > 9 && $hour < 13 ) return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * @param $employee
 	 * @param Order $model
@@ -138,17 +159,5 @@ class NotifyController extends \yii\console\Controller
 		]);
 		$update->save();
 		return true;
-	}
-
-	public function actionTest() {
-		$models = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
-		foreach ($models as $model) {
-			echo "Order #{$model->id}\n";
-			if ( $this->isNeedAlert($model) ) {
-				echo "ALERT!\n";
-			} else {
-				echo "SILENT!\n";
-			}
-		}
 	}
 }
