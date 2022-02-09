@@ -264,7 +264,7 @@ class Order extends ActiveRecord
 		} else {
 			$result .= "<b>Адрес доставки</b>: {$this->address}\n";
 		}
-		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: {$this->client->phone}";
+		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:{$this->client->phone}'>{$this->client->phone}</a>\n";
 		$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
 		if ( !empty($this->comment) ) {
 			$result .= "<b>Комментарий</b>: " . $this->comment . "\n";

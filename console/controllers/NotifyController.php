@@ -129,9 +129,9 @@ class NotifyController extends \yii\console\Controller
 		$weekDay = date('w', time());
 		if ( $weekDay != 6 ) {
 			if ( $weekDay != 5 ) {
-				if ($hour > 9 && $hour < 17) return true;
+				if ($hour > 8 && $hour < 17) return true;
 			} else {
-				if ( $hour > 9 && $hour < 13 ) return true;
+				if ( $hour > 8 && $hour < 13 ) return true;
 			}
 		}
 		return false;
