@@ -293,6 +293,7 @@ $(() => {
                                                         // Размеры метки.
                                                         iconImageSize: [50, 50],
                                                         iconImageOffset: [-25, -50],
+
                                                     }
                                                 )
                                             };
