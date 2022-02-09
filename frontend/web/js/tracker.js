@@ -280,12 +280,21 @@ $(() => {
                                             carsCollection[item.DeviceId.SerialId] = {
                                                 DeviceId: item.DeviceId.SerialId,
                                                 Navigation: item.Navigation,
-                                                Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude], {
-                                                    balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
-                                                    balloonContent: "Название: " + item.Name + "<br>" + item.Address,
-                                                }, {
-                                                    preset: 'islands#redIcon',
-                                                })
+                                                Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude],
+                                                    {
+                                                        balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
+                                                        balloonContent: "Название: " + item.Name + "<br>" + item.Address,
+                                                    }, {
+                                                        // Опции.
+                                                        // Необходимо указать данный тип макета.
+                                                        iconLayout: 'default#image',
+                                                        // Своё изображение иконки метки.
+                                                        iconImageHref: '/img/track_icon.png',
+                                                        // Размеры метки.
+                                                        iconImageSize: [50, 50],
+                                                        iconImageOffset: [-25, -50],
+                                                    }
+                                                )
                                             };
                                             points.push(carsCollection[item.DeviceId.SerialId].Placemark);
                                             // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
