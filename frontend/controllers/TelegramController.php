@@ -145,7 +145,7 @@ class TelegramController extends \yii\rest\Controller
 					foreach ($updates as $update) {
 						Telegram::editMessage([
 							"chat_id" => $update->employee->chat_id,
-							"text" => "Стаутус заказа #{$order->id} был изменен",
+							"text" => "Статус заказа #{$order->id} был изменен",
 							"message_id" => $update->message_id
 						]);
 						// $update->delete();
@@ -153,6 +153,13 @@ class TelegramController extends \yii\rest\Controller
 
 					$order->status = Order::STATUS_DELIVERY;
 					$order->save();
+
+					Telegram::sendMessage([
+						"chat_id" => $driver->chat_id,
+						"text" => $order->generateTelegramText(),
+						"parse_mode" => "HTML",
+						"reply_markup" => json_encode(["inline_keyboard" => [$order->generateTelegramKeyboard()]])
+					]);
 					break;
 				case "/order_hold":
 					parse_str($args[0], $argument);
