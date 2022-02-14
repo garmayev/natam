@@ -42,7 +42,11 @@ $this->registerJsVar("picker", "");
                 <input type="hidden" name="Ticket[service_id]" value="0">
 				<?php
 				$ticket = new Ticket();
-				$client = new Client();
+                if ( !isset(Yii::$app->user->identity->client) ) {
+	                $client = new Client();
+                } else {
+                    $client = Yii::$app->user->identity->client;
+                }
 				echo Html::beginTag("div", ["class" => "form_content"]);
 				echo Html::beginTag("div", ["class" => "form_item"]);
 				echo Html::textInput("Client[name]", "", ["placeholder" => "Ваше ФИО", "id" => "ticket-client-name", "required" => true]);

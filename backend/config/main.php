@@ -12,7 +12,7 @@ return [
     'controllerNamespace' => 'backend\controllers',
 	'name' => Yii::t('app', 'Natam Trade'),
     'bootstrap' => ['log'],
-	'defaultRoute' => 'default/index',
+	'defaultRoute' => "default/index",
     'components' => [
 	    'i18n' => [
 		    'translations' => [

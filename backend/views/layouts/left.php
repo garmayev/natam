@@ -8,7 +8,34 @@ use yii\helpers\Url;
  * @var $this View
  */
 
-if (Yii::$app->user->can("person")) {
+if (!Yii::$app->user->can("employee")) {
+	if ( !$clientInfo = Yii::$app->user->identity->client ) {
+		$menu = [
+			[
+				"label" => Yii::t("app", "Control panel"),
+				"url" => Url::to(["/default/index"]),
+				"icon" => "bell",
+			]
+        ];
+	} else {
+		$menu = [
+			[
+				"label" => Yii::t("app", "Control panel"),
+				"url" => Url::to(["/default/index"]),
+				"icon" => "bell",
+			], [
+				"label" => Yii::t("app", "Orders"),
+				"url" => Url::to(["/order/index"]),
+				"icon" => "bell",
+			], [
+				"label" => Yii::t("app", "Tickets"),
+				"url" => Url::to(["/ticket/index"]),
+				"icon" => "ticket",
+			]
+		];
+	}
+} else {
+
 	$menu = [
 		[
 			"label" => Yii::t("app", "Admin Panel"),
@@ -17,14 +44,29 @@ if (Yii::$app->user->can("person")) {
 		], [
 			"label" => Yii::t("app", "Shop"),
 			"icon" => "desktop",
-			"active" => true,
 			"items" => [
 				[
 					"label" => Yii::t("app", "Orders"),
 					"url" => Url::to(["/order/index"]),
 					"icon" => "bell",
+				], [
+					"label" => Yii::t("app", "Products"),
+					"url" => Url::to(["/category/index"]),
+					"icon" => "microchip",
+				], [
+					"label" => Yii::t("app", "Clients"),
+					"url" => Url::to(["/client/index"]),
+					"icon" => "user-circle-o",
 				]
 			],
+		], [
+			"label" => Yii::t("app", "Services"),
+			"url" => Url::to(["/service/index"]),
+			"icon" => "file-code-o"
+		], [
+			"label" => Yii::t("app", "News"),
+			"url" => Url::to(["/post/index"]),
+			"icon" => "circle-o",
 		], [
 			"label" => Yii::t("app", "Tickets"),
 			"url" => Url::to(["/ticket/index"]),
@@ -33,59 +75,17 @@ if (Yii::$app->user->can("person")) {
 			"label" => Yii::t("app", "Vacancy"),
 			"url" => Url::to(["/vacancy/index"]),
 			"icon" => "user",
+		], [
+			"label" => Yii::t("app", "Users"),
+			"url" => Url::to(["/rbac/assignment"]),
+			"icon" => "user-o"
+		], [
+			"label" => Yii::t("app", "Settings"),
+			"url" => Url::to(["/settings/index"]),
+			"icon" => "cog"
 		]
 	];
 }
-
-//$menu = [
-//	[
-//		"label" => Yii::t("app", "Admin Panel"),
-//		"url" => Url::to(["/default/index"]),
-//		"icon" => "dashboard",
-//	], [
-//		"label" => Yii::t("app", "Shop"),
-//		"icon" => "desktop",
-//		"items" => [
-//			[
-//				"label" => Yii::t("app", "Orders"),
-//				"url" => Url::to(["/order/index"]),
-//				"icon" => "bell",
-//			], [
-//				"label" => Yii::t("app", "Products"),
-//				"url" => Url::to(["/category/index"]),
-//				"icon" => "microchip",
-//			], [
-//				"label" => Yii::t("app", "Clients"),
-//				"url" => Url::to(["/client/index"]),
-//				"icon" => "user-circle-o",
-//			]
-//		],
-//	], [
-//		"label" => Yii::t("app", "Services"),
-//		"url" => Url::to(["/service/index"]),
-//		"icon" => "file-code-o"
-//	], [
-//		"label" => Yii::t("app", "News"),
-//		"url" => Url::to(["/post/index"]),
-//		"icon" => "circle-o",
-//	], [
-//		"label" => Yii::t("app", "Tickets"),
-//		"url" => Url::to(["/ticket/index"]),
-//		"icon" => "ticket",
-//	], [
-//		"label" => Yii::t("app", "Vacancy"),
-//		"url" => Url::to(["/vacancy/index"]),
-//		"icon" => "user",
-//	], [
-//		"label" => Yii::t("app", "Users"),
-//		"url" => Url::to(["/rbac/assignment"]),
-//		"icon" => "user-o"
-//	], [
-//		"label" => Yii::t("app", "Settings"),
-//		"url" => Url::to(["/settings/index"]),
-//		"icon" => "cog"
-//	]
-//]
 ?>
 <aside class="main-sidebar">
     <section class="sidebar">

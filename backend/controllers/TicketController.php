@@ -4,9 +4,34 @@ namespace backend\controllers;
 
 use common\models\Ticket;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 
 class TicketController extends BaseController
 {
+	public function behaviors()
+	{
+		return array_merge(parent::behaviors(), [
+			'access' => [
+				'class' => AccessControl::class,
+				'rules' => [
+					[
+						'allow' => function () {
+							return \Yii::$app->user->can("person");
+						},
+					]
+				],
+				'denyCallback' => function () {
+					if ( \Yii::$app->user->isGuest ) {
+						return $this->redirect(["user/login"]);
+					} else {
+						\Yii::$app->session->setFlash("error", \Yii::t("app", "You don`t have any permission to access this section!"));
+						return $this->redirect(["/"]);
+					}
+				}
+			]
+		]);
+	}
+
 	public function beforeAction($action)
 	{
 		$this->view->title = \Yii::t("app", "Tickets");
@@ -15,9 +40,14 @@ class TicketController extends BaseController
 
 	public function actionIndex()
 	{
+		if ( \Yii::$app->user->can("person") ) {
+			$query = Ticket::find()->where(["client_id" => \Yii::$app->user->identity->client->id]);
+		} else {
+			$query = Ticket::find();
+		}
 		return $this->render("index", [
 			"ticketProvider" => new ActiveDataProvider([
-				"query" => Ticket::find()
+				"query" => $query
 			])
 		]);
 	}
