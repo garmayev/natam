@@ -12,19 +12,23 @@ return [
     'controllerNamespace' => 'backend\controllers',
 	'name' => Yii::t('app', 'Natam Trade'),
     'bootstrap' => ['log'],
+	'defaultRoute' => 'default/index',
     'components' => [
-        'request' => [
-            'csrfParam' => '_csrf-backend',
+	    'i18n' => [
+		    'translations' => [
+			    'yii2mod.rbac' => [
+				    'class' => 'yii\i18n\PhpMessageSource',
+				    'basePath' => '@yii2mod/rbac/messages',
+			    ],
+		    ],
+	    ],
+	    'request' => [
+            'csrfParam' => '_csrf-frontend',
 	        'baseUrl' => '/admin',
         ],
-//        'user' => [
-//            'identityClass' => 'common\models\User',
-//            'enableAutoLogin' => true,
-//            'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
-//        ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
-            'name' => 'advanced-backend',
+            'name' => 'advanced-frontend',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -44,6 +48,18 @@ return [
             'rules' => [
             ],
         ],
+	    'authManager' => [
+		    'class' => 'yii\rbac\DbManager',
+		    'defaultRoles' => ['guest', 'user'],
+	    ],
+	    'view' => [
+		    'theme' => [
+			    'pathMap' => [
+				    '@dektrium/user/views' => '@app/views/user',
+				    '@yii2mod/rbac/views' => '@app/views/rbac',
+			    ],
+		    ],
+	    ],
     ],
 	'modules' => [
 		'user' => [
@@ -52,6 +68,9 @@ return [
 				'User' => \common\models\User::className(),
 			],
 		],
+		'rbac' => [
+			'class' => \yii2mod\rbac\Module::class,
+		]
 	],
     'params' => $params,
 ];

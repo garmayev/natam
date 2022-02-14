@@ -1,11 +1,16 @@
 <?php
+
+use backend\assets\AppAsset;
+use dmstr\web\AdminLteAsset;
 use yii\helpers\Html;
+use yii\web\View;
 
-/* @var $this \yii\web\View */
-/* @var $content string */
+/**
+ * @var $this View
+ * @var $content string
+ */
 
-
-if (Yii::$app->controller->action->id === 'login') { 
+if (Yii::$app->user->isGuest) {
 /**
  * Do not use this code in your template. Remove it. 
  * Instead, use the code  $this->layout = '//main-login'; in your controller.
@@ -16,13 +21,8 @@ if (Yii::$app->controller->action->id === 'login') {
     );
 } else {
 
-//    if (class_exists('backend\assets\AppAsset')) {
-//        backend\assets\AppAsset::register($this);
-//    } else {
-//        app\assets\AppAsset::register($this);
-//    }
-
-    dmstr\web\AdminLteAsset::register($this);
+    AppAsset::register($this);
+    AdminLteAsset::register($this);
 
     $directoryAsset = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
     ?>

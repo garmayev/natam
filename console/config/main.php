@@ -46,6 +46,10 @@ return [
 		    'password' => 'rhbcnbyfgfrekjdf',
 		    'charset' => 'utf8',
 	    ],
+	    'authManager' => [
+		    'class' => 'yii\rbac\DbManager',
+		    'defaultRoles' => ['guest', 'user'],
+	    ],
     ],
 	'modules' => [
 		'user' => [
@@ -58,6 +62,9 @@ return [
 					}
 				]
 			]
+		],
+		'rbac' => [
+			'class' => yii2mod\rbac\ConsoleModule::class,
 		],
 	],
     'params' => $params,

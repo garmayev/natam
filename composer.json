@@ -28,7 +28,8 @@
         "ext-curl": "*",
         "kartik-v/yii2-widget-datetimepicker": "*",
         "nhkey/yii2-activerecord-history": "*",
-        "kartik-v/yii2-export": "dev-master"
+        "kartik-v/yii2-export": "dev-master",
+        "yii2mod/yii2-rbac": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

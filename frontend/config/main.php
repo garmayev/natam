@@ -28,7 +28,7 @@ return [
 	    ],
         'request' => [
             'csrfParam' => '_csrf-frontend',
-	        'cookieValidationKey' => 'rhbcnbyfgfrekjdf',
+	        'baseUrl' => '',
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
@@ -45,14 +45,6 @@ return [
 		    ]
 
                 ],
-/*	            [
-		            'class' => \frontend\log\TelegramTarget::class,
-		            'levels' => ['error'],
-		            'logVars' => [],
-		            'except' => [
-			            'yii\web\HttpException:404',
-		            ],
-	            ] */
             ],
         ],
         'errorHandler' => [
@@ -98,7 +90,6 @@ return [
 		    ],
 	    ],
 	    'formatter' => [
-//		    'defaultTimeZone' => 'Etc/Greenwich',
 		    'defaultTimeZone' => 'Asia/Irkutsk',
 		    'dateFormat'     => 'php:d-m-Y',
 		    'datetimeFormat' => 'php:d-m-Y в H:i:s',
@@ -108,9 +99,6 @@ return [
 	'modules' => [
 		'gridview' =>  [
 			'class' => '\kartik\grid\Module',
-		],
-		'admin' => [
-			'class' => 'frontend\modules\admin\Module',
 		],
 		'user' => [
 			'class' => 'dektrium\user\Module',
