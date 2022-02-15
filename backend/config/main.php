@@ -12,10 +12,19 @@ return [
     'controllerNamespace' => 'backend\controllers',
 	'name' => Yii::t('app', 'Natam Trade'),
     'bootstrap' => ['log'],
+	'language' => 'ru',
 	'defaultRoute' => "default/index",
     'components' => [
 	    'i18n' => [
 		    'translations' => [
+			    'app*' => [
+				    'class' => 'yii\i18n\PhpMessageSource',
+				    'basePath' => '@backend/messages',
+				    'fileMap' => [
+					    'app'       => 'app.php',
+					    'natam'     => 'natam.php',
+				    ],
+			    ],
 			    'yii2mod.rbac' => [
 				    'class' => 'yii\i18n\PhpMessageSource',
 				    'basePath' => '@yii2mod/rbac/messages',
