@@ -46,10 +46,10 @@ class OrderController extends BaseController
 
 	public function actionIndex()
 	{
-		if ( Yii::$app->user->can("person") ) {
-			$query = Order::find()->where(["client_id" => Yii::$app->user->identity->client->id]);
-		} else {
+		if ( Yii::$app->user->can("employee") ) {
 			$query = Order::find();
+		} else {
+			$query = Order::find()->where(["client_id" => Yii::$app->user->identity->client->id]);
 		}
 		return $this->render("index", [
 			"orderProvider" => new ActiveDataProvider([

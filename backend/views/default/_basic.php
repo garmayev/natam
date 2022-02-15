@@ -12,4 +12,5 @@ use yii\widgets\ActiveForm;
 
 echo $form->field($client, "name");
 echo $form->field($client, "phone");
-echo $form->field($client, "email");
+echo $form->field($client, "email")->textInput(["value" => Yii::$app->user->identity->email]);
+

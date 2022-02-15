@@ -15,6 +15,7 @@ class CarsController extends \yii\rest\Controller
 		"ALL_UNITS_PAGE" => "spic/units/rest/getAllUnitsPaged",
 		"SUBSCRIBE" => "spic/OnlineDataService/rest/Subscribe",
 		"ONLINE_DATA" => "spic/OnlineDataService/rest/GetOnlineData",
+		"ONLINE_DATA_WITH_SENSOR" => "spic/OnlineDataWithSensorsService/rest/GetOnlineData",
 	];
 
 	public function beforeAction($action)

@@ -38,7 +38,7 @@ class ClientController extends BaseController
 		if ( Yii::$app->request->isPost ) {
 			if ( $model->load(Yii::$app->request->post()) && $model->save() ) {
 				Yii::$app->session->setFlash("success", Yii::t("app", "Client info is saved"));
-				return $this->redirect("client/index");
+				return $this->redirect(["client/index"]);
 			}
 			Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Client info is not saved!"));
 			Yii::error($model->getErrorSummary(true));
