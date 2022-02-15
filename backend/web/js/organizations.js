@@ -22,7 +22,7 @@ $(() => {
                     args.push(`${item.value} (${item.data.inn})`)
                     // console.log(item)
                 }
-                console.log(args);
+                console.log(response);
                 target.autocomplete({
                     source: args
                 })

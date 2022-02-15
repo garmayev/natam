@@ -56,7 +56,7 @@ return [
 			'class' => 'dektrium\user\Module',
 			'modelMap' => [
 				'User' => [
-					'class' => \dektrium\user\models\User::className(),
+					'class' => \common\models\User::className(),
 					'on '.\dektrium\user\models\User::AFTER_REGISTER => function ($e) {
 						Yii::error($e);
 					}
