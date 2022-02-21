@@ -13,6 +13,7 @@ use Yii;
  * @property string $email [varchar(255)]
  * @property string $company [varchar(255)]
  * @property int $chat_id [int(32)]
+ * @property int $user_id
  *
  * @property-read Order[] $orders
  */
@@ -30,8 +31,9 @@ class Client extends \yii\db\ActiveRecord
 			[["name", "phone"], "required"],
 			[["name", "phone", "company"], "string"],
 			[["phone"], "unique"],
-			[["chat_id"], "integer"],
+			[["chat_id", "user_id"], "integer"],
 			[["email"], "email"],
+			[["user_id"], "exist", "targetClass" => User::class, "targetAttribute" => "id"],
 		];
 	}
 

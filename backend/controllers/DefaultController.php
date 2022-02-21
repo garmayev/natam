@@ -17,9 +17,10 @@ class DefaultController extends BaseController
 				'class' => AccessControl::class,
 				'rules' => [
 					[
-						'allow' => true,
-						'roles' => ['@', 'person'],
+						'allow' => \Yii::$app->user->can("person"),
+						'roles' => ['@'],
 						'denyCallback' => function ($rule, $action) {
+//							var_dump(\Yii::$app->user->isGuest); die;
 //							return date('d-m') === '31-10';
 							return $this->redirect(["user/login"]);
 						}

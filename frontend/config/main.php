@@ -95,6 +95,14 @@ return [
 		    'datetimeFormat' => 'php:d-m-Y в H:i:s',
 		    'timeFormat'     => 'php:H:i:s',
 	    ],
+	    'authManager' => [
+		    'class' => 'yii\rbac\DbManager',
+		    'defaultRoles' => ['person'],
+	    ],
+	    'telegram' => [
+		    'class' => 'aki\telegram\Telegram',
+		    'botToken' => '2124338715:AAFEScQu0Ny-_AEdC4e9Ngdvx9O_hnbJVXc',
+	    ]
 	],
 	'modules' => [
 		'gridview' =>  [

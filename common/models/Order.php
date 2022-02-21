@@ -33,7 +33,7 @@ use yii\db\ActiveRecord;
  *
  * @property Client $client
  * @property Product[] $products
- * @property OrderProduct $orderProduct
+ * @property OrderProduct[] $orderProducts
  * @property Updates[] $updates
  * @property-write mixed $count
  * @property Location $location
@@ -66,15 +66,28 @@ class Order extends ActiveRecord
 				'attributes' => [
 					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
 				],
-			], [
-				'class' => UpdateBehavior::className(),
-				'attribute_name' => 'status',
+//			], [
+//				'class' => UpdateBehavior::className(),
+//				'attribute_name' => 'status',
 			], [
 				'class' => SaveRelationsBehavior::class,
 				'relations' => [
-//					'products',
 					'location',
-//					'client'
+					'client',
+					'orderProducts' => [
+						'extraColumns' => function ($model)
+						{
+							Yii::error($model);
+							$data = Yii::$app->request->post();
+							$result = [];
+							foreach ($data["orderProducts"] as $op) {
+								$result[] = [
+									"product_count" => $op["product_count"]
+								];
+							}
+							return $result;
+						}
+					]
 				]
 			], [
 				'class' => ActiveRecordHistoryBehavior::class,
@@ -88,7 +101,8 @@ class Order extends ActiveRecord
 					'created_at',
 					'updated_at',
 					'notify_started_at',
-					'delivery_date'
+					'delivery_date',
+					'boss_chat_id'
 				]
 			]
 		];
@@ -104,6 +118,7 @@ class Order extends ActiveRecord
 			[["status"], "default", "value" => self::STATUS_NEW],
 			[["notify_started_at"], "default", "value" => 0],
 			[["location_id"], "exist", "targetClass" => Location::class, "targetAttribute" => "id"],
+			[['orderProducts'],'safe']
 		];
 	}
 
@@ -117,6 +132,20 @@ class Order extends ActiveRecord
 			"delivery_date" => Yii::t("app", "Delivery Date"),
 			"price" => Yii::t("app", "Price"),
 		];
+	}
+
+	public function load($data, $formName = null)
+	{
+		$parent = parent::load($data, $formName);
+
+		$client = Client::findByPhone($data["Client"]["phone"]);
+		if ( isset($client) ) {
+			$this->client_id = $client->id;
+		} else {
+			$this->client = new Client($data["Client"]);
+		}
+
+		return $parent;
 	}
 
 	public function getStatus($status = null)
@@ -143,7 +172,7 @@ class Order extends ActiveRecord
 
 	public function getProducts()
 	{
-		return $this->hasMany(Product::className(), ["id" => "product_id"])->viaTable(OrderProduct::tableName(), ["order_id" => "id"]);
+		return $this->hasMany(Product::className(), ["id" => "product_id"])->via('orderProducts');
 	}
 
 	public function getPrice()
@@ -168,7 +197,7 @@ class Order extends ActiveRecord
 		return true;
 	}
 
-	public function getOrderProduct()
+	public function getOrderProducts()
 	{
 		return $this->hasMany(OrderProduct::className(), ["order_id" => "id"]);
 	}

@@ -81,24 +81,6 @@ class OrderController extends BaseController
 			Yii::$app->session->remove("ticket_id");
 		}
 		if ( Yii::$app->request->isPost ) {
-			$phone = preg_replace("/[\(\)\ \+]*/", "", $post["Client"]["phone"], -1);
-			$client = Client::find()->where(["phone" => $phone])->one();
-			if ( empty($client) ) {
-				$client = new Client();
-				if ( !$client->load($post) || !$client->save() ) {
-					Yii::error($client->getErrorSummary(true));
-					Yii::$app->session->setFlash("error", "Failed! Client info is not saved!");
-				}
-			}
-			$location = new Location();
-//			var_dump($post["Location"]); die;
-			$location->title = $post["Location"]["title"];
-			$location->latitude = $post["Location"]["latitude"];
-			$location->longitude = $post["Location"]["longitude"];
-			if ( $location->load($post) && $location->save() ) {
-				$order->location_id = $location->id;
-				$order->client_id = $client->id;
-				$order->delivery_date = Yii::$app->formatter->asTimestamp($post["Order"]["delivery_date"]);
 				if ($order->load($post) && $order->save()) {
 					Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
 					return $this->redirect("/");
@@ -106,9 +88,6 @@ class OrderController extends BaseController
 					Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
 					Yii::error($order->getErrorSummary(true));
 				}
-			} else {
-				Yii::error($location->getErrorSummary(true));
-			}
 		}
 		$client = new Client();
 		return $this->render("create", [
@@ -121,18 +100,13 @@ class OrderController extends BaseController
 	{
 		$client = null;
 		$order = Order::findOne($id);
-		if ($client_id = Yii::$app->session->get("client_id")) {
-			Yii::$app->session->remove("client_id");
-		}
 		if (Yii::$app->request->isPost) {
-			$client = Client::findByPhone(Yii::$app->request->post()["Client"]["phone"]);
 			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
-			$order->client_id = $client->id;
 			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
-				return $this->redirect(["/admin/order/view", "id" => $id]);
+				return $this->redirect(["order/view", "id" => $id]);
 			} else {
-				Yii::$app->session->setFlash("success", "Failed! Order information is not updated!");
+				Yii::$app->session->setFlash("error", "Failed! Order information is not updated!");
 				Yii::error($order->getErrorSummary(true));
 			}
 		}

@@ -86,4 +86,5 @@ return [
 
 	'Delivery Date' => 'Дата доставки',
 	'Created At' => 'Дата создания',
+	'Sorry, You don`t have permission to this command' => 'Простите, у Вас нет разрешений для этой команды',
 ];

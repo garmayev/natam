@@ -29,7 +29,8 @@
         "kartik-v/yii2-widget-datetimepicker": "*",
         "nhkey/yii2-activerecord-history": "*",
         "kartik-v/yii2-export": "dev-master",
-        "yii2mod/yii2-rbac": "*"
+        "yii2mod/yii2-rbac": "*",
+        "aki/yii2-bot-telegram": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

@@ -25,11 +25,12 @@ class AppAsset extends AssetBundle
 	    ['https://fonts.gstatic.com', 'rel' => 'preconnected', 'crossorigin' => true],
 	    '//cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css',
 	    '//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/css/suggestions.min.css',
+	    '//unpkg.com/swiper@8/swiper-bundle.min.css',
     ];
     public $js = [
     	'js/slick.min.js',
 	    'js/jquery.maskedinput.min.js',
-	    'js/programmer.js',
+	    'js/programmer_new.js',
 	    'js/main.js',
 	    '//unpkg.com/aos@2.3.1/dist/aos.js',
 	    '//cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js',

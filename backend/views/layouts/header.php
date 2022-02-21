@@ -13,14 +13,13 @@ use yii\web\View;
 $tickets = Ticket::find()->where(["status" => Ticket::STATUS_OPEN])->all();
 $orders = Order::find()->all();
 ?>
-
 <header class="main-header">
 
     <?= Html::a('<span class="logo-mini">APP</span><span class="logo-lg">' . Yii::$app->name . '</span>', Yii::$app->homeUrl, ['class' => 'logo']) ?>
 
     <nav class="navbar navbar-static-top" role="navigation">
 
-        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button" data-widget="pushmenu">
             <span class="sr-only">Toggle navigation</span>
         </a>
 

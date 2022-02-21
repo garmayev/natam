@@ -19,9 +19,7 @@ class UpdateBehavior extends \yii\base\Behavior
 	public function events()
 	{
 		return [
-			ActiveRecord::EVENT_BEFORE_INSERT => "beforeInsert",
 			ActiveRecord::EVENT_AFTER_INSERT => 'afterInsert',
-			ActiveRecord::EVENT_BEFORE_UPDATE => "beforeUpdate",
 			ActiveRecord::EVENT_AFTER_UPDATE => "afterUpdate",
 		];
 	}
@@ -114,97 +112,8 @@ class UpdateBehavior extends \yii\base\Behavior
 		$this->exclude();
 	}
 
-	public function beforeInsert($event)
-	{
-		/**
-		 * @var $owner Order
-		 */
-	}
-
-	public function beforeUpdate($event)
-	{
-//		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
-//
-//		}
-	}
-
 	public function afterUpdate()
 	{
 		$this->exclude();
-//		if ( $this->owner->{$this->attribute_name} >= 0 && $this->owner->{$this->attribute_name} <= 2 ) {
-//		}
-	}
-
-	public function disablePreviousMessage($event)
-	{
-		/**
-		 * @var $owner Order
-		 */
-		/* $owner = $this->owner;
-		/* $update = Updates::find()->where(["order_id" => $owner->getOldAttributes()["id"]])->orderBy(['created_at' => SORT_DESC])->one();
-		if (!empty($update)) {
-			$response = (Telegram::editMessage([
-				"chat_id" => $update->staff->chat_id,
-				"message_id" => $update->message_id,
-				"text" => "Заказ #{$update->order->id} был передан вашему коллеге.",
-			]))->getData();
-			if ($response["ok"]) {
-				$update->per_time = time() - $update->created_at;
-				$update->save();
-
-				$staff = $update->staff;
-				$staff->last_message_at = $response["result"]["date"];
-				if ($staff->save()) {
-					return ["ok" => true];
-				}
-				return ["ok" => false, "message" => $staff->getErrorSummary(true)];
-			}
-			return ["ok" => false, "message" => $response["description"]];
-		}
-		return ["ok" => false, "message" => "Missing Updates for order"]; */
-	}
-
-	public function sendNewMessage()
-	{
-		/**
-		 * @var Order $owner
-		 */
-		// Поиск сотрудника, которому не отправлялось сообщение
-		$staff = Employee::find()->where(["state_id" => $this->owner->{$this->attribute_name}])->orderBy(["last_message_at" => SORT_ASC])->one();
-		$owner = $this->owner;
-
-		// Создание записи в БД (таблица Updates) о наличии изменения заказа
-		$update = new Updates([
-			"order_id" => $owner->id,
-			"order_status" => $owner->{$this->attribute_name},
-			"staff_id" => $staff->id,
-		]);
-
-		// Отправка сообщения в Telegram
-		$response = (Telegram::sendMessage([
-			"chat_id" => $staff->chat_id,
-			"text" => $this->generateHeader() . $this->generateClientInfo() . "Адрес доставки: {$owner->address}\n" . $this->generateProductList(),
-			"reply_markup" => json_encode([
-				"inline_keyboard" => [
-					[
-						["text" => \Yii::t("app", "Complete"), "callback_data" => "/order_complete id={$owner->id}"],
-					]
-				]
-			])
-		]))->getData();
-		// Если отправка успешна
-		if ($response["ok"]) {
-			$update->message_id = $response["result"]["message_id"];
-			$update->message_timestamp = $response["result"]["date"];
-			$update->save(1);
-			// Обновление информации в БД (таблица Staff) об отправке сообщения
-			$staff->last_message_at = $response["result"]["date"];
-			if ($staff->save()) {
-				return ["ok" => true];
-			} else {
-				return ["ok" => false, "message" => $staff->getErrorSummary(true)];
-			}
-		}
-		return ["ok" => false, "message" => $response["description"]];
 	}
 }

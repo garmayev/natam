@@ -210,7 +210,7 @@ $(() => {
             })
         },
         subscribe: () => {
-            if ( app.allUnits === undefined ) {
+            if (app.allUnits === undefined) {
                 spik.units();
             }
             let ids = [];
@@ -231,14 +231,14 @@ $(() => {
             })
         },
         online: (callback) => {
-            if ( app.subscribe === undefined ) {
+            if (app.subscribe === undefined) {
                 spik.subscribe();
             }
             $.ajax({
                 url: "/admin/cars/online",
                 data: {token: app.login.SessionId, subscribe: app.subscribe.SessionId.Id},
                 success: response => {
-                    if ( typeof callback == 'function' ) {
+                    if (typeof callback == 'function') {
                         callback.call(response);
                     } else {
                         app.collection = response;
@@ -247,14 +247,14 @@ $(() => {
             })
         },
         generateCollection: () => {
-            if ( app.collection !== undefined ) {
+            if (app.collection !== undefined) {
                 spik.online();
             }
             let units = [];
             for (const index in app.collection.OnlineDataCollection.DataCollection) {
                 let collectionItem = app.collection.OnlineDataCollection.DataCollection[index];
                 let unitItem = app.allUnits[index];
-                if ( carPoints[index] ) {
+                if (carPoints[index]) {
                     carPoints[index].geometry.setCoordinates([collectionItem.Navigation.Location.Latitude, collectionItem.Navigation.Location.Longitude]);
                 } else {
                     let placemark = new ymaps.Placemark([collectionItem.Navigation.Location.Latitude, collectionItem.Navigation.Location.Longitude], {
@@ -284,6 +284,65 @@ $(() => {
     }
 
     ymaps.ready(() => {
+        let delayed;
+        const ctx = document.getElementById('myChart').getContext('2d');
+        console.log(dataset);
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Заказов за текущий месяц',
+                    data: dataset,
+                    borderColor: 'rgba(153, 102, 255, 0.2)',
+                    backgroundColor: 'rgba(153, 102, 255, 0.8)',
+                    cubicInterpolationMode: 'monotone',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                animation: {
+                    onComplete: () => {
+                        delayed = true;
+                    },
+                    delay: (context) => {
+                        let delay = 0;
+                        if (context.type === 'data' && context.mode === 'default' && !delayed) {
+                            delay = context.dataIndex * 300 + context.datasetIndex * 100;
+                        }
+                        return delay;
+                    },
+                },
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Статистика заказов'
+                    },
+                },
+                interaction: {
+                    intersect: false,
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: false,
+                            text: 'Value'
+                        },
+                        type: 'logarithmic',
+                        suggestedMin: 0,
+                    }
+                }
+            }
+        });
+
         init();
 
         setInterval(() => {
