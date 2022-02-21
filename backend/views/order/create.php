@@ -16,7 +16,7 @@ use yii\widgets\ActiveForm;
 
 $this->title = Yii::t("app", "New Order");
 
-$form = ActiveForm::begin();
+$form = ActiveForm::begin(["action" => \yii\helpers\Url::to(["/order/update", "id" => $model->id])]);
 ?>
     <div class="panel">
         <div class="panel-heading panel-default">
@@ -24,18 +24,11 @@ $form = ActiveForm::begin();
         </div>
 		<?php
 		echo Html::beginTag("div", ["class" => ["panel-body"]]);
-		if (is_null($client)) {
-			if (is_null($model->client)) {
-				$client = new Client();
-			} else {
-				$client = $model->client;
-//				var_dump($model->client); die;
-			}
+		if (is_null($model->client)) {
+			$model->client = new Client();
 		}
-		echo Html::tag("label", $client->getAttributeLabel("name"), ["class" => "control-label", "for" => "client-name"]);
-		echo Html::tag("p", Html::activeTextInput($client, "name", ["class" => "form-control", "placeholder" => $client->getAttributeLabel("name")]));
-		echo Html::tag("label", $client->getAttributeLabel("phone"), ["class" => "control-label", "for" => "client-phone"]);
-		echo Html::tag("p", Html::activeTextInput($client, "phone", ["class" => "form-control", "placeholder" => $client->getAttributeLabel("phone")]));
+		echo $form->field($model->client, "name");
+		echo $form->field($model->client, "phone");
 		echo Html::endTag("div");
 		?>
     </div>
@@ -67,17 +60,17 @@ $(document).on('click', '.panel-heading', function(e){
 });
 $('.add-product').on('click', (e) => {
     e.preventDefault();
-    $(`<div class=\"input-group\">{$selector}<input type=\"text\" name=\"Order[product][count][]\" class=\"form-control\" style='width: 70%;' placeholder=\"Введите количество\"><a class='delete-product input-group-btn fa fa-trash' style='width: 10%; text-align: center; padding-top: 12px;'></a></div>`).insertBefore($(e.currentTarget).parent());
+    $(`<div class=\"input-group\">{$selector}<input type=\"text\" name=\"Order[orderProduct][product_count][]\" class=\"form-control\" style='width: 70%;' placeholder=\"Введите количество\"><a class='delete-product input-group-btn fa fa-trash' style='width: 10%; text-align: center; padding-top: 12px;'></a></div>`).insertBefore($(e.currentTarget).parent());
 });
 $('[name=\'Client[phone]\']').mask('+7(999)999 9999');
 let myMap = myPlacemark = undefined
 ";
-if ( $model->location ) {
-    if ( $model->location->latitude ) {
-        $js .= ",latitude = ".$model->location->latitude.",longitude = ".$model->location->longitude;
-    }
+if ($model->location) {
+	if ($model->location->latitude) {
+		$js .= ",latitude = " . $model->location->latitude . ",longitude = " . $model->location->longitude;
+	}
 } else {
-    $js .= ",latitude = undefined, longitude = undefined";
+	$js .= ",latitude = undefined, longitude = undefined";
 }
 $js .= ";
 ymaps.ready(() => {
@@ -190,41 +183,31 @@ $this->registerCss("
         </div>
         <div class="panel-body">
 			<?php
-            if ( isset( $model->location ) ) {
-	            echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
-	            echo $form->field($model->location, "title")->hiddenInput()->label(false);
-                echo $form->field($model->location, "latitude")->hiddenInput()->label(false);
-	            echo $form->field($model->location, "longitude")->hiddenInput()->label(false);
-            } else {
-                if ( $model->isNewRecord ) {
-                    $model->location = new \common\models\Location();
-	                echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
-	                echo $form->field($model->location, "title")->hiddenInput()->label(false);
-	                echo $form->field($model->location, "latitude")->hiddenInput()->label(false);
-	                echo $form->field($model->location, "longitude")->hiddenInput()->label(false);
-                }
-//	            echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
-            }
+			if (!is_null($model->location)) {
+				$model->location = new \common\models\Location();
+			}
+			echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
+			echo $form->field($model->location, "title")->hiddenInput()->label(false);
+			echo $form->field($model->location, "latitude")->hiddenInput()->label(false);
+			echo $form->field($model->location, "longitude")->hiddenInput()->label(false);
 
-//			echo Html::textInput("Order[address]", $model->address, ["id" => "order-address", "class" => "form-control", "placeholder" => Yii::t("app", "Address"), "style" => "margin-bottom: 15px;"]);
-            echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
+			echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
 			echo $form->field($model, "status")->dropDownList($model->getStatus());
-            echo \kartik\datetime\DateTimePicker::widget([
-
-	            'name' => 'Order[delivery_date]',
-                'value' => ($model->delivery_date > 0) ? Yii::$app->formatter->asDatetime($model->delivery_date, 'php:Y-m-d H:i') : "",
-	            'options' => [
-		            "id" => "order-delivery_date",
-		            "placeholder" => Yii::t("app", "Delivery Date"),
-	            ],
-	            "pluginOptions" => [
-		            'daysOfWeekDisabled' => [0, 6],
-		            'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
-		            'minuteStep' => 30,
-		            'startDate' => date("Y-m-d"),
-		            'autoclose' => true,
-	            ]
-            ])
+			echo \kartik\datetime\DateTimePicker::widget([
+				'name' => 'Order[delivery_date]',
+				'value' => ($model->delivery_date > 0) ? Yii::$app->formatter->asDatetime($model->delivery_date, 'php:Y-m-d H:i') : "",
+				'options' => [
+					"id" => "order-delivery_date",
+					"placeholder" => Yii::t("app", "Delivery Date"),
+				],
+				"pluginOptions" => [
+					'daysOfWeekDisabled' => [0, 6],
+					'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
+					'minuteStep' => 30,
+					'startDate' => date("Y-m-d"),
+					'autoclose' => true,
+				]
+			])
 			?>
         </div>
     </div>
@@ -236,9 +219,9 @@ $this->registerCss("
 			<?php
 			foreach ($model->products as $product) {
 				$result = "<div class='input-group'>" .
-					Html::dropDownList("Order[product][id][]", $product->id, $list, ["class" => ["form-control"], "style" => "width: 20%", "prompt" => "Выберите товар"]) .
-					"<input type='text' name='Order[product][count][]' class='form-control' style='width: 70%;' value='{$model->getCount($product->id)}' placeholder='Введите количество'>".
-                    "<a class='delete-product input-group-btn fa fa-trash' style='width: 10%; text-align: center; padding-top: 12px;'></a></div>";
+					Html::dropDownList("Order[orderProducts][0][product_id]", $product->id, $list, ["class" => ["form-control"], "style" => "width: 20%", "prompt" => "Выберите товар"]) .
+					"<input type='text' name='Order[orderProducts][0][product_count]' class='form-control' style='width: 70%;' value='{$model->getCount($product->id)}' placeholder='Введите количество'>" .
+					"<a class='delete-product input-group-btn fa fa-trash' style='width: 10%; text-align: center; padding-top: 12px;'></a></div>";
 				echo $result;
 			}
 			echo Html::tag("p", Html::a(Yii::t("app", "Append Product"), "#", ["class" => ["btn", "btn-success", "add-product"]]));

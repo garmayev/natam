@@ -58,11 +58,8 @@ $gridColumns = [
 
 //echo $this->render("_search", ["model" => $searchModel]);
 
-echo \yii\grid\GridView::widget([
-	"dataProvider" => $orderProvider,
-	"summary" => "",
-//	"filterModel" => $searchModel,
-	"columns" => [
+if ( Yii::$app->user->can("employee") ) {
+	$columns = [
 		[
 			"attribute" => "id",
 			"headerOptions" => ["style" => "width: 4%;"]
@@ -114,7 +111,52 @@ echo \yii\grid\GridView::widget([
 			'headerOptions' => ["width" => '80'],
 			'template' => '{view} {update} {delete}'
 		]
-	],
+	];
+} else {
+	$columns = [
+		[
+			"attribute" => "id",
+			"headerOptions" => ["style" => "width: 4%;"]
+		], [
+			"attribute" => "location.title",
+			"label" => Yii::t("app", "Address"),
+			"format" => "html",
+			"enableSorting" => true,
+			"content" => function ($model, $key) {
+				if ($model->location) return $model->location->title;
+				return null;
+			}
+		],
+		"price",
+		[
+			"attribute" => "status",
+			"format" => "html",
+			"content" => function ($model, $key) {
+				return $model->getStatus($model->status);
+			}
+		], [
+			"attribute" => "created_at",
+			"content" => function ($model, $key) {
+				return Yii::$app->formatter->asDatetime($model->created_at, "php:d M Y H:i");
+			}
+		], [
+			"attribute" => "delivery_date",
+			"content" => function ($model) {
+				return Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i");
+			}
+		], [
+			'class' => \yii\grid\ActionColumn::className(),
+			'headerOptions' => ["width" => '80'],
+			'template' => '{view} {update}'
+		]
+	];
+}
+
+echo \yii\grid\GridView::widget([
+	"dataProvider" => $orderProvider,
+	"summary" => "",
+//	"filterModel" => $searchModel,
+	"columns" => $columns,
 	"tableOptions" => [
 		"class" => "table table-striped table-bordered",
 	]

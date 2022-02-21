@@ -13,6 +13,7 @@ return [
 	'name' => Yii::t('app', 'Natam Trade'),
     'bootstrap' => ['log'],
 	'language' => 'ru',
+//	'timezone' => 'Asia/Irkutsk',
 	'defaultRoute' => "default/index",
     'components' => [
 	    'i18n' => [
@@ -59,7 +60,7 @@ return [
         ],
 	    'authManager' => [
 		    'class' => 'yii\rbac\DbManager',
-		    'defaultRoles' => ['guest', 'user'],
+		    'defaultRoles' => ['person'],
 	    ],
 	    'view' => [
 		    'theme' => [
@@ -69,10 +70,19 @@ return [
 			    ],
 		    ],
 	    ],
+	    'formatter' => [
+		    'class' => 'yii\i18n\Formatter',
+		    'dateFormat' => 'd MMMM Y',
+		    'locale' => 'ru-RU',
+//		    'timeZone' => 'Asia/Irkutsk',
+	    ],
     ],
 	'modules' => [
 		'user' => [
 			'class' => 'dektrium\user\Module',
+			'enableRegistration' => false,
+			'enableConfirmation' => false,
+			'rememberFor' => 9676800,
 			'modelMap' => [
 				'User' => \common\models\User::className(),
 			],

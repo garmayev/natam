@@ -88,6 +88,12 @@ if (!Yii::$app->user->can("employee")) {
 			"icon" => "cog"
 		]
 	];
+	if ( $clientInfo = Yii::$app->user->identity->client ) {
+		$menu[] = [
+				"label" => Yii::t("app", "Client info"),
+				"url" => Url::to(["client/view", "id" => Yii::$app->user->identity->client->id])
+			];
+	}
 }
 ?>
 <aside class="main-sidebar">
