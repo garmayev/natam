@@ -2,8 +2,19 @@
 /**
  * @var \yii\web\View $this
  */
-$orders = Yii::$app->db
-	->createCommand("select *, COUNT(DAY(FROM_UNIXTIME(`created_at`))) as `count` from `order` where MONTH(FROM_UNIXTIME(`created_at`)) = (MONTH(NOW())) group by DAY(FROM_UNIXTIME(`created_at`))")->queryAll();
+
+use \common\models\Order;
+
+$orders = Order::find()
+	->select(['id', 'COUNT(DAY(FROM_UNIXTIME(`created_at`))) as `count`'])
+	->where(['MONTH(FROM_UNIXTIME(`created_at`))' => 'MONTH(NOW())'])
+	->groupBy(['DAY(FROM_UNIXTIME(`created_at`))'])
+	->all();
+/*	Yii::$app->db
+	->createCommand("select `id`, COUNT(DAY(FROM_UNIXTIME(`created_at`))) as `count` 
+		from `order` where MONTH(FROM_UNIXTIME(`created_at`)) = (MONTH(NOW())) 
+		group by DAY(FROM_UNIXTIME(`created_at`))"
+	)->query()->all(); */
 $label = $data = [];
 foreach ($orders as $order) {
     $label[] = Yii::$app->formatter->asDate($order["created_at"]);

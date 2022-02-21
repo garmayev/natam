@@ -21,7 +21,7 @@ class Command extends \aki\telegram\base\Command
 
 //		Yii::error($inputCommand);
 		if ($inputCommand === $command) {
-			return call_user_func_array($fun, [$telegram, urldecode($args)]);
+			return call_user_func_array($fun, [$telegram, $args]);
 		}
 		return call_user_func_array($fun, [$telegram]);
 	}

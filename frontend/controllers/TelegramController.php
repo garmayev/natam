@@ -296,15 +296,16 @@ class TelegramController extends \yii\rest\Controller
 	{
 		$telegram = Yii::$app->telegram;
 		Command::run("/start", [$this, "start"]);
-		Command::run("/check", function ($telegram, $args) {
+		/* Command::run("/check", function ($telegram) {
 			if ( $this->checkPermission($telegram, "employee") ) {
 				$result = $telegram->sendMessage([
 					'chat_id' => $telegram->input->message->chat->id,
-					"text" => "Check complete\nCommands: ".json_encode($args)
+					"text" => "Check complete\nCommands: "
+						//.json_encode($args)
 				]);
 			}
 		});
-		switch ($telegram->input->callback_query->data) {
+		switch ($telegram->input->callback_query) {
 			case "/check":
 				$callback = $telegram->input->callback_query;
 				Yii::$app->telegram->answerCallbackQuery([
@@ -312,7 +313,7 @@ class TelegramController extends \yii\rest\Controller
 					"text" => "Something wrong?",
 				]);
 				break;
-		}
+		} */
 //		if ( isset($data["callback_query"]) ) {
 //			$chat_id = $data["callback_query"]["from"]["id"];
 //			$employee = Employee::find()->where(["chat_id" => $chat_id])->one();
@@ -325,18 +326,21 @@ class TelegramController extends \yii\rest\Controller
 	public static function start($telegram)
 	{
 		if ( self::checkPermission($telegram, "employee") ) {
-			$result = $telegram->sendMessage([
-				'chat_id' => $telegram->input->message->chat->id,
-				"text" => "hello",
-				"reply_markup" => json_encode([
-					"inline_keyboard" => [
-						[
-							["text" => "Checked?", "callback_data" => "/check"]
+			if ($telegram->input->message) {
+				$result = $telegram->sendMessage([
+					'chat_id' => $telegram->input->message->chat->id,
+					"text" => "hello",
+					"reply_markup" => json_encode([
+						"inline_keyboard" => [
+							[
+								["text" => "Checked?", "callback_data" => "/check"]
+							]
 						]
-					]
-				])
-			]);
+					])
+				]);
+			} else {
+
+			}
 		}
 	}
 }
->>>>>>> 9c37fa3a038660e6a951c74b648dc2e5ed0e12b1
