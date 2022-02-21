@@ -17,8 +17,8 @@ class Command extends \aki\telegram\base\Command
 		$args = explode(' ', $text);
 		$inputCommand = array_shift($args);
 		if($inputCommand === $command){
-			parse_str($args[0], $argument);
-			if ( count($argument) ) {
+			if ( count($args) ) {
+				parse_str($args[0], $argument);
 				return call_user_func_array($fun, [$telegram, $argument]);
 			}
 			return call_user_func_array($fun, [$telegram]);

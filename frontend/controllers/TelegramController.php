@@ -296,38 +296,21 @@ class TelegramController extends \yii\rest\Controller
 	{
 		$telegram = Yii::$app->telegram;
 		Command::run("/start", [$this, "start"]);
-		Yii::error($telegram->input->callback_query->data);
-//		if ( $telegram->input->callback_query ) {
-//		}
 		Command::run("/check", function ($telegram, $args = null) {
-			if ( $this->checkPermission($telegram, "employee") ) {
+			if ( self::checkPermission($telegram, "employee") ) {
+				\Yii::error($telegram->input->callback_query->message["chat"]["id"]);
 				if ( isset($args) ) {
 					$text = "Check complete!\n\n".json_encode($args);
 				} else {
 					$text = "Check complete!";
 				}
-				$result = $telegram->sendMessage([
-					'chat_id' => $telegram->input->callback_query->message->chat->id,
-					"text" => $text
+				$result = $telegram->editMessageText([
+					'message_id' => $telegram->input->callback_query->message["message_id"],
+					'chat_id' => $telegram->input->callback_query->message["chat"]["id"],
+					"text" => $text,
 				]);
 			}
 		});
-		/* switch ($telegram->input->callback_query) {
-			case "/check":
-				$callback = $telegram->input->callback_query;
-				Yii::$app->telegram->answerCallbackQuery([
-					"callback_query_id" => $callback->id,
-					"text" => "Something wrong?",
-				]);
-				break;
-		} */
-//		if ( isset($data["callback_query"]) ) {
-//			$chat_id = $data["callback_query"]["from"]["id"];
-//			$employee = Employee::find()->where(["chat_id" => $chat_id])->one();
-//			$user = $employee->user;
-//			Yii::$app->user->switchIdentity($user, 0);
-//			Yii::error(Yii::$app->user->identity->username);
-//		}
 	}
 
 	public static function start($telegram, $args = null)
@@ -345,12 +328,12 @@ class TelegramController extends \yii\rest\Controller
 					"reply_markup" => json_encode([
 						"inline_keyboard" => [
 							[
-								["text" => "Checked?", "callback_data" => "/check"]
+								["text" => "Checked?", "callback_data" => "/check test=1&complete=1"]
 							]
 						]
 					])
 				]);
-				Yii::error($result->description);
+				// Yii::error($result->description);
 			}
 		}
 	}
