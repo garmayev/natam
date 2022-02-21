@@ -262,4 +262,15 @@ class TelegramController extends \yii\rest\Controller
 		}
 		return ["ok" => false];
 	}
+
+	public function actionTest() {
+		\Yii::error(file_get_contents("php://input"));
+		Telegram::sendMessage([
+			"chat_id" => 443353023, 
+			"text" => "What?", 
+			"reply_markup" => json_encode(["inline_keyboard" => [
+				[["text" => "Test", "callback_data" => "/test"]]
+			]])
+		]);
+	}
 }
