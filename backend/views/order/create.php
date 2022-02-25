@@ -15,8 +15,12 @@ use yii\widgets\ActiveForm;
  */
 
 $this->title = Yii::t("app", "New Order");
-
+$index = 0;
 $form = ActiveForm::begin(["action" => \yii\helpers\Url::to(["/order/update", "id" => $model->id])]);
+$this->registerJsFile("/js/jquery.maskedinput.min.js", ["depends" => \yii\web\JqueryAsset::class]);
+$this->registerJsFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js", ["depends" => \yii\web\JqueryAsset::class]);
+$this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU");
+$this->registerCssFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/css/suggestions.min.css");
 ?>
     <div class="panel">
         <div class="panel-heading panel-default">
@@ -34,17 +38,22 @@ $form = ActiveForm::begin(["action" => \yii\helpers\Url::to(["/order/update", "i
     </div>
 
 <?php
-$allProducts = Product::find()->all();
-$list = [];
-foreach ($allProducts as $product) {
-	$list[$product->id] = "{$product->title} ({$product->value})";
-}
+//$allProducts = Product::find()->all();
+$list = ArrayHelper::map(Product::find()->all(), "id", "title");
+//foreach ($allProducts as $product) {
+//	$list[$product->id] = "{$product->title} ({$product->value})";
+//}
 
-$selector = Html::dropDownList("Order[product][id][]", null, $list, ["class" => ["form-control"], "style" => "width: 20%", "prompt" => "Выберите товар"]);
-$this->registerJsFile("/js/jquery.maskedinput.min.js", ["depends" => \yii\web\JqueryAsset::class]);
-$this->registerJsFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js", ["depends" => \yii\web\JqueryAsset::class]);
-$this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU");
-$this->registerCssFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/css/suggestions.min.css");
+$selector = Html::dropDownList(
+	"Order[orderProducts][{$index}][product_id]",
+	null,
+	$list,
+	[
+		"class" => ["form-control"],
+		"style" => "width: 20%",
+		"prompt" => "Выберите товар"
+	]
+);
 $js = "
 $(document).on('click', '.panel-heading', function(e){
     var that = $(this);
@@ -57,10 +66,6 @@ $(document).on('click', '.panel-heading', function(e){
 		that.removeClass('panel-collapsed');
 		that.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
 	}
-});
-$('.add-product').on('click', (e) => {
-    e.preventDefault();
-    $(`<div class=\"input-group\">{$selector}<input type=\"text\" name=\"Order[orderProduct][product_count][]\" class=\"form-control\" style='width: 70%;' placeholder=\"Введите количество\"><a class='delete-product input-group-btn fa fa-trash' style='width: 10%; text-align: center; padding-top: 12px;'></a></div>`).insertBefore($(e.currentTarget).parent());
 });
 $('[name=\'Client[phone]\']').mask('+7(999)999 9999');
 let myMap = myPlacemark = undefined
@@ -104,7 +109,6 @@ ymaps.ready(() => {
         }
     })
     if (longitude && latitude) {
-//        console.log(longitude);
         myMap = new ymaps.Map('map', {
             center: [latitude, longitude],
             zoom: 12
@@ -178,10 +182,10 @@ $this->registerCss("
 ");
 ?>
     <div class="panel panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" data-toggle="collapse" aria-controls="order-info">
 			<?= Yii::t("app", "Information about Order") ?>
         </div>
-        <div class="panel-body">
+        <div class="panel-body" id="order-info">
 			<?php
 			if (!is_null($model->location)) {
 				$model->location = new \common\models\Location();
@@ -212,19 +216,44 @@ $this->registerCss("
         </div>
     </div>
     <div class="panel panel-default">
-        <div class="panel-heading">
+        <div class="panel-heading" data-toggle="collapse" aria-controls="order-controls">
 			<?= Yii::t("app", "Order content") ?>
         </div>
-        <div class="panel-body">
+        <div class="panel-body" id="order-controls">
 			<?php
-			foreach ($model->products as $product) {
-				$result = "<div class='input-group'>" .
-					Html::dropDownList("Order[orderProducts][0][product_id]", $product->id, $list, ["class" => ["form-control"], "style" => "width: 20%", "prompt" => "Выберите товар"]) .
-					"<input type='text' name='Order[orderProducts][0][product_count]' class='form-control' style='width: 70%;' value='{$model->getCount($product->id)}' placeholder='Введите количество'>" .
-					"<a class='delete-product input-group-btn fa fa-trash' style='width: 10%; text-align: center; padding-top: 12px;'></a></div>";
-				echo $result;
-			}
+            $op = new \common\models\OrderProduct();
+			\wbraganca\dynamicform\DynamicFormWidget::begin([
+				'widgetContainer' => 'dynamicform_wrapper',
+				'widgetBody' => '.container-items',
+				'widgetItem' => '.item',
+                'model' => ($model->orderProducts) ? $model->orderProducts[0] : new \common\models\OrderProduct(),
+                'formId' => "w0",
+                'insertButton' => '.add-product',
+                'deleteButton' => '.delete',
+				"min" => 1,
+				'formFields' => [
+					'product_id',
+					'product_count',
+                    'order_id',
+				],
+			]);
+			// necessary for update action.
+            echo Html::beginTag("div", ["class" => "container-items"]);
+//            var_dump($model->orderProducts); die;
+            foreach ($model->orderProducts as $index => $orderProduct) {
+	            echo Html::beginTag("div", ["class" => "item"]);
+	            echo Html::activeHiddenInput($orderProduct, "[{$index}]order_id", ["value" => $model->id]);
+	            echo $form->field($orderProduct, "[{$index}]product_id")->dropDownList($list, [
+		            "class" => ["form-control"],
+		            "style" => "width: 20%",
+		            "prompt" => "Выберите товар"
+	            ])->label(false);
+	            echo $form->field($orderProduct, "[{$index}]product_count")->textInput(["placeholder" => "Введите количество"])->label(false);
+	            echo Html::endTag("div");
+            }
+			echo Html::endTag("div");
 			echo Html::tag("p", Html::a(Yii::t("app", "Append Product"), "#", ["class" => ["btn", "btn-success", "add-product"]]));
+            \wbraganca\dynamicform\DynamicFormWidget::end();
 			echo Html::submitButton(Yii::t("app", "Save"), ["class" => ["btn", "btn-primary"], "style" => "margin-right: 10px;"]);
 			echo Html::a(Yii::t("app", "Cancel"), Yii::$app->request->referrer, ["class" => ["btn", "btn-danger"]]);
 			?>

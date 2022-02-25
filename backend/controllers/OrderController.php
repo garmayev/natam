@@ -47,9 +47,9 @@ class OrderController extends BaseController
 	public function actionIndex()
 	{
 		if ( Yii::$app->user->can("employee") ) {
-			$query = Order::find();
+			$query = Order::find()->where(["<", "status", Order::STATUS_COMPLETE]);
 		} else {
-			$query = Order::find()->where(["client_id" => Yii::$app->user->identity->client->id]);
+			$query = Order::find()->where(["client_id" => Yii::$app->user->identity->client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE]);
 		}
 		return $this->render("index", [
 			"orderProvider" => new ActiveDataProvider([
@@ -101,7 +101,9 @@ class OrderController extends BaseController
 		$client = null;
 		$order = Order::findOne($id);
 		if (Yii::$app->request->isPost) {
+
 			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
+			$order->loadRelations(Yii::$app->request->post());
 			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 				return $this->redirect(["order/view", "id" => $id]);

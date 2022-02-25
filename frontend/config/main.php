@@ -74,7 +74,14 @@ return [
 				    'fileMap' => [
 					    'natam'     => 'natam.php',
 				    ],
+			    ],
+			    'telegram' => [
+				    'class' => 'yii\i18n\PhpMessageSource',
+				    'fileMap' => [
+					    'telegram'     => 'telegram.php',
+				    ],
 			    ]
+
 		    ],
 	    ],
 	    'cart' => [

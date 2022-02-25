@@ -70,6 +70,11 @@ class OrderProduct extends \yii\db\ActiveRecord
         return $this->hasOne(Product::className(), ['id' => 'product_id']);
     }
 
+	public function getCount()
+	{
+		return $this->product_count;
+	}
+
     public function extraFields()
     {
 	    return ["product_count"];

@@ -89,6 +89,9 @@ return [
 		],
 		'rbac' => [
 			'class' => \yii2mod\rbac\Module::class,
+		],
+		'staff' => [
+			'class' => \garmayev\staff\Module::class,
 		]
 	],
     'params' => $params,
