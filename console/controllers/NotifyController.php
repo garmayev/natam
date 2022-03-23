@@ -37,10 +37,14 @@ class NotifyController extends \yii\console\Controller
 				$this->stdout("\tТребуется отправка сообщения сотруднику\n");
 				$employee = $this->findNextEmployee($model);
 				if ( $employee ) {
-					$this->stdout("\tДля уведомления был выбран сотрудник {$employee->family} {$employee->name}\n");
+					//if (isset($employee->family)) {
+					//	$this->stdout("\tДля уведомления был выбран сотрудник {$employee->family} {$employee->name}\n");
+					//} else {
+					//	$this->stdout("\tДля уведомления был выбран сотрудник {$employee->id}\n");
+					//}
 					$this->sendMessage($employee, $model);
-					$employee->last_message_at = time();
-					$employee->save();
+					//$employee->last_message_at = time();
+					//$employee->save();
 				} else {
 					$this->stdout("\tНе найден подходящий сотрудник для уведомления\n");
 				}
@@ -74,7 +78,11 @@ class NotifyController extends \yii\console\Controller
 				$usedEmployees[] = $update->employee->id;
 			}
 		}
-		return Employee::find()->where(["not in", "id", $usedEmployees])->andWhere(["state_id" => $model->status])->orderBy(["last_message_at" => SORT_ASC])->one();
+		return Employee::find()
+			->where(["not in", "id", $usedEmployees])
+			->andWhere(["state_id" => $model->status])
+			->orderBy(["last_message_at" => SORT_ASC])
+			->all();
 	}
 
 	/**
@@ -127,8 +135,8 @@ class NotifyController extends \yii\console\Controller
 	{
 		$hour = intval(\Yii::$app->formatter->asDatetime(time(), "H"));
 		$weekDay = date('w', time());
-		if ( $weekDay != 6 ) {
-			if ( $weekDay != 5 ) {
+		if ( ($weekDay != 0)) {
+			if ( $weekDay != 6 ) {
 				if ($hour > 8 && $hour < 17) return true;
 			} else {
 				if ( $hour > 8 && $hour < 13 ) return true;
@@ -142,22 +150,24 @@ class NotifyController extends \yii\console\Controller
 	 * @param Order $model
 	 * @return bool
 	 */
-	protected function sendMessage($employee, $model)
+	protected function sendMessage($employees, $model)
 	{
-		$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "parse_mode" => "HTML", "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
-		if ( !$response->isOk ) {
-			echo "\t\tChat ID: {$employee->chat_id}\n\t\tText: {$model->generateTelegramText()}";
-			return false;
+		foreach ($employees as $employee) {
+			$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "parse_mode" => "HTML", "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
+			if ( !$response->isOk ) {
+				echo "\t\tChat ID: {$employee->chat_id}\n\t\tText: {$model->generateTelegramText()}";
+				return false;
+			}
+			$data = $response->getData();
+			$update = new Updates([
+				"order_id" => $model->id,
+				"order_status" => $model->status,
+				"employee_id" => $employee->id,
+				"message_id" => $data["result"]["message_id"],
+				"message_timestamp" => $data["result"]["date"],
+			]);
+			$update->save();
 		}
-		$data = $response->getData();
-		$update = new Updates([
-			"order_id" => $model->id,
-			"order_status" => $model->status,
-			"employee_id" => $employee->id,
-			"message_id" => $data["result"]["message_id"],
-			"message_timestamp" => $data["result"]["date"],
-		]);
-		$update->save();
 		return true;
 	}
 }

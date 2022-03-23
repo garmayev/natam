@@ -49,6 +49,15 @@ echo $content;
 echo $this->render("_footer", ["menu" => $menu]);
 $this->endBody();
 ?>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-221543085-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-221543085-1');
+</script>
 </body>
 </html>
 <?php $this->endPage();

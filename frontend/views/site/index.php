@@ -72,7 +72,7 @@ $this->registerJsVar("picker", "");
 				?>
                 <!-- </form> -->
 				<?= Html::endForm() ?>
-				<?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"]]) ?>
+				<?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"], "novalidate" => true]) ?>
                 <!--                <form class="form_block form_order active">-->
                 <div class="form_content step" data-index="1">
                     <div class="form_item"></div>

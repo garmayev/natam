@@ -154,12 +154,29 @@ class TelegramController extends \yii\rest\Controller
 					$order->status = Order::STATUS_DELIVERY;
 					$order->save();
 
-					Telegram::sendMessage([
+					$response = Telegram::sendMessage([
 						"chat_id" => $driver->chat_id,
 						"text" => $order->generateTelegramText(),
 						"parse_mode" => "HTML",
-						"reply_markup" => json_encode(["inline_keyboard" => [$order->generateTelegramKeyboard()]])
+						"reply_markup" => json_encode(["inline_keyboard" => $order->generateTelegramKeyboard()])
 					]);
+
+					if ( $response->isOk ) {
+						$data = $response->getData();
+						$update = new Updates();
+						if ($update->load(["Updates" => [
+							"order_id" => $order->id,
+							"order_status" => $order->status,
+							"employee_id" => $driver->id,
+							"message_id" => $data["result"]["message_id"],
+							"message_timestamp" => $data["result"]["date"],
+						]]) && $update->save()) {
+							return ["ok" => true];
+						} else {
+							Yii::error($update->getErrorSummary(true));
+						}
+					}
+
 					break;
 				case "/order_hold":
 					parse_str($args[0], $argument);
