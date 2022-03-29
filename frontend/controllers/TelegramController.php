@@ -164,13 +164,13 @@ class TelegramController extends \yii\rest\Controller
 					if ( $response->isOk ) {
 						$data = $response->getData();
 						$update = new Updates();
-						if ($update->load(["Updates" => [
+						if ($update->load([
 							"order_id" => $order->id,
 							"order_status" => $order->status,
 							"employee_id" => $driver->id,
 							"message_id" => $data["result"]["message_id"],
 							"message_timestamp" => $data["result"]["date"],
-						]]) && $update->save()) {
+						]) && $update->save()) {
 							return ["ok" => true];
 						} else {
 							Yii::error($update->getErrorSummary(true));
