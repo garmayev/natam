@@ -14,30 +14,6 @@ use yii\web\Response;
 
 class OrderController extends BaseController
 {
-	public function behaviors()
-	{
-		return array_merge(parent::behaviors(), [
-			'access' => [
-				'class' => AccessControl::class,
-				'rules' => [
-					[
-						'allow' => function () {
-							return \Yii::$app->user->can("person");
-						},
-					]
-				],
-				'denyCallback' => function () {
-					if ( \Yii::$app->user->isGuest ) {
-						return $this->redirect(["user/login"]);
-					} else {
-						\Yii::$app->session->setFlash("error", \Yii::t("app", "You don`t have any permission to access this section!"));
-						return $this->redirect(["/"]);
-					}
-				}
-			]
-		]);
-	}
-
 	public function beforeAction($action)
 	{
 		$this->view->title = Yii::t("app", "Order");

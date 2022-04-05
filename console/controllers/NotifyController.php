@@ -27,6 +27,7 @@ class NotifyController extends \yii\console\Controller
 	public function actionIndex()
 	{
 		$models = Order::find()->where(["<", "status", Order::STATUS_DELIVERY])->all();
+
 		if (!$this->checkHours()) {
 			$this->stdout("Все работники отдыхают\n");
 			return false;
@@ -160,4 +161,10 @@ class NotifyController extends \yii\console\Controller
 		$update->save();
 		return true;
 	}
+
+	public function auth()
+	{
+
+	}
+
 }

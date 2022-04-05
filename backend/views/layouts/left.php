@@ -9,14 +9,14 @@ use yii\helpers\Url;
  */
 
 if (!Yii::$app->user->can("employee")) {
-	if ( !$clientInfo = Yii::$app->user->identity->client ) {
+	if (!$clientInfo = Yii::$app->user->identity->client) {
 		$menu = [
 			[
 				"label" => Yii::t("app", "Control panel"),
 				"url" => Url::to(["/default/index"]),
 				"icon" => "bell",
 			]
-        ];
+		];
 	} else {
 		$menu = [
 			[
@@ -32,9 +32,9 @@ if (!Yii::$app->user->can("employee")) {
 				"url" => Url::to(["/ticket/index"]),
 				"icon" => "ticket",
 			], [
-                    "label" => Yii::t("app", "Client info"),
-                "url" => Url::to(["client/view", "id" => Yii::$app->user->identity->client->id])
-            ]
+				"label" => Yii::t("app", "Client info"),
+				"url" => Url::to(["client/view", "id" => Yii::$app->user->identity->client->id])
+			]
 		];
 	}
 } else {
@@ -83,16 +83,33 @@ if (!Yii::$app->user->can("employee")) {
 			"url" => Url::to(["/rbac/assignment"]),
 			"icon" => "user-o"
 		], [
+			"label" => Yii::t("app", "Analytic"),
+			"icon" => "bar-chart-o",
+			"items" => [
+				[
+					"label" => Yii::t("app", "Analytics by month"),
+					"url" => Url::to(["/analytics/month"])
+				],
+				[
+					"label" => Yii::t("app", "Analytics by orders"),
+					"url" => Url::to(["/analytics/orders"])
+				],
+                [
+                        "label" => Yii::t("app", "Analytics by employee"),
+                    "url" => Url::to(["/analytics/employee"])
+                ]
+			]
+		], [
 			"label" => Yii::t("app", "Settings"),
 			"url" => Url::to(["/settings/index"]),
 			"icon" => "cog"
 		]
 	];
-	if ( $clientInfo = Yii::$app->user->identity->client ) {
+	if ($clientInfo = Yii::$app->user->identity->client) {
 		$menu[] = [
-				"label" => Yii::t("app", "Client info"),
-				"url" => Url::to(["client/view", "id" => Yii::$app->user->identity->client->id])
-			];
+			"label" => Yii::t("app", "Client info"),
+			"url" => Url::to(["client/view", "id" => Yii::$app->user->identity->client->id])
+		];
 	}
 }
 ?>

@@ -10,26 +10,6 @@ use yii\filters\AccessControl;
  */
 class DefaultController extends BaseController
 {
-	public function behaviors()
-	{
-		return [
-			'access' => [
-				'class' => AccessControl::class,
-				'rules' => [
-					[
-						'allow' => \Yii::$app->user->can("person"),
-						'roles' => ['@'],
-						'denyCallback' => function ($rule, $action) {
-//							var_dump(\Yii::$app->user->isGuest); die;
-//							return date('d-m') === '31-10';
-							return $this->redirect(["user/login"]);
-						}
-					],
-				],
-			],
-		];
-	}
-
 	/**
      * Renders the index view for the module
      * @return string

@@ -13,3 +13,8 @@ modules:
     config:
         Yii2:
             configFile: 'config/codeception-local.php'
+        Db:
+            dsn: 'sqlite:tests/_output/temp.db'
+            user: ''
+            password: ''
+            dump: 'tests/_data/dump.sql'

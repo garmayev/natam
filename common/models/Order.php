@@ -123,7 +123,7 @@ class Order extends ActiveRecord
 
 	public function afterSave($insert, $changedAttributes)
 	{
-		Yii::error( $this->isAttributeChanged("status") );
+//		Yii::error( $this->isAttributeChanged("status") );
 		$employee = Employee::findOne(["user_id" => Yii::$app->user->id]);
 		if ( $this->isAttributeChanged("status") ) {
 			$employees = Employee::find()->where(["state_id" => $this->status])->all();
@@ -134,7 +134,7 @@ class Order extends ActiveRecord
 					"reply_keyboard" => json_encode($this->generateTelegramKeyboard()),
 				]);
 				$data = $response->getContent();
-				if ( $response->isOk && $response->getContent()["ok"] ) {
+				if ( $response->isOk && $data["ok"] ) {
 					$update = new Updates([
 						"order_id" => $this->id,
 						"order_status" => $this->status,

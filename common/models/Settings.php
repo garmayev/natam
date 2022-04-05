@@ -24,4 +24,10 @@ class Settings extends \yii\db\ActiveRecord
 	{
 		$this->content = json_encode($value);
 	}
+
+	public static function getInterval($index)
+	{
+		$value = json_decode(Settings::findOne(1)->content, true);
+		return (isset($value["notify"]["limit"][$index])) ? $value["notify"]["limit"][$index] : 0;
+	}
 }
