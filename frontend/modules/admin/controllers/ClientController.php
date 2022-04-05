@@ -27,7 +27,7 @@ class ClientController extends BaseController
 			Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Client info is not saved!"));
 			Yii::error($model->getErrorSummary(true));
 		}
-		return $this->render("create", [
+		return $this->render("update", [
 			"model" => $model
 		]);
 	}

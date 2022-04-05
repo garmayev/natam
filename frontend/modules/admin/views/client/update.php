@@ -10,7 +10,7 @@ use yii\helpers\Html;
  * @var $model Client|null
  */
 
-$this->title = Yii::t("app", "Create Client");
+$this->title = Yii::t("app", "Update Client");
 
 $this->render('_form', [
 	'model' => $model
