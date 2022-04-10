@@ -95,7 +95,10 @@ class SpikController extends \yii\rest\Controller
 
 	public function actionSubscribe()
 	{
-		$response = $this->send(["UnitIds" => $this->data["units"]], $this->actions["SUBSCRIBE"], $this->data["token"]["id"]);
+		$response = $this->send([
+			"UnitIds" => $this->data["units"],
+			"SensorTypes" => [10000, 20000, 30000, 30004, 30005, 30006, 30006],
+		], $this->actions["SUBSCRIBE"], $this->data["token"]["id"]);
 		if ( is_null($response) ) {
 			return $this->data["subscribe"];
 		}
@@ -142,6 +145,14 @@ class SpikController extends \yii\rest\Controller
 
 	public function actionTest()
 	{
+		\Yii::$app->response->format = Response::FORMAT_JSON;
 		return $this->data;
+	}
+
+	public function actionGetOnline()
+	{
+		$this->actionToken();
+		$this->actionSubscribe();
+		return $this->actionOnline();
 	}
 }

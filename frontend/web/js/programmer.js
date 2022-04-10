@@ -158,6 +158,17 @@ let myMap = undefined,
 
 function next(e) {
     e.preventDefault();
+    console.log( $(e.currentTarget) );
+    let container = $(e.currentTarget).closest("[data-index]");
+    let required = container.find("input[data-required=true]");
+
+    for (let i = 0; i < required.length; i++) {
+        if ( $(required[i]).val() === "" ) {
+            $(required[i]).val()
+            return false;
+        }
+    }
+
     let prev_element = $(`.step[data-index=${step}]`);
     let next_element = $(`.step[data-index=${step + 1}]`);
 
@@ -341,3 +352,6 @@ $(".btn.recall").on("click", (e) => {
             scrollTop: $('#form').offset().top
         });
 });
+
+$(".form-order .form_btn .next").on("click", (e) => {
+})

@@ -46,18 +46,25 @@ return [
 		    'password' => 'rhbcnbyfgfrekjdf',
 		    'charset' => 'utf8',
 	    ],
+	    'authManager' => [
+		    'class' => 'yii\rbac\DbManager',
+		    'defaultRoles' => ['person'],
+	    ],
     ],
 	'modules' => [
 		'user' => [
 			'class' => 'dektrium\user\Module',
 			'modelMap' => [
 				'User' => [
-					'class' => \dektrium\user\models\User::className(),
+					'class' => \common\models\User::className(),
 					'on '.\dektrium\user\models\User::AFTER_REGISTER => function ($e) {
 						Yii::error($e);
 					}
 				]
 			]
+		],
+		'rbac' => [
+			'class' => yii2mod\rbac\ConsoleModule::class,
 		],
 	],
     'params' => $params,

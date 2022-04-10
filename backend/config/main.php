@@ -12,19 +12,33 @@ return [
     'controllerNamespace' => 'backend\controllers',
 	'name' => Yii::t('app', 'Natam Trade'),
     'bootstrap' => ['log'],
+	'language' => 'ru',
+	'timezone' => 'Asia/Irkutsk',
+	'defaultRoute' => "default/index",
     'components' => [
-        'request' => [
-            'csrfParam' => '_csrf-backend',
+	    'i18n' => [
+		    'translations' => [
+			    'app*' => [
+				    'class' => 'yii\i18n\PhpMessageSource',
+				    'basePath' => '@backend/messages',
+				    'fileMap' => [
+					    'app'       => 'app.php',
+					    'natam'     => 'natam.php',
+				    ],
+			    ],
+			    'yii2mod.rbac' => [
+				    'class' => 'yii\i18n\PhpMessageSource',
+				    'basePath' => '@yii2mod/rbac/messages',
+			    ],
+		    ],
+	    ],
+	    'request' => [
+            'csrfParam' => '_csrf-frontend',
 	        'baseUrl' => '/admin',
         ],
-//        'user' => [
-//            'identityClass' => 'common\models\User',
-//            'enableAutoLogin' => true,
-//            'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
-//        ],
         'session' => [
             // this is the name of the session cookie used for login on the backend
-            'name' => 'advanced-backend',
+            'name' => 'advanced-frontend',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -44,14 +58,45 @@ return [
             'rules' => [
             ],
         ],
+	    'authManager' => [
+		    'class' => 'yii\rbac\DbManager',
+		    'defaultRoles' => ['person'],
+	    ],
+	    'view' => [
+		    'theme' => [
+			    'pathMap' => [
+				    '@dektrium/user/views' => '@app/views/user',
+				    '@yii2mod/rbac/views' => '@app/views/rbac',
+			    ],
+		    ],
+	    ],
+	    'formatter' => [
+		    'class' => 'yii\i18n\Formatter',
+		    'dateFormat' => 'd MMMM Y',
+		    'locale' => 'ru-RU',
+//		    'timeZone' => 'Asia/Irkutsk',
+	    ],
     ],
 	'modules' => [
+		'gridview' => [
+			'class' => 'kartik\grid\Module',
+			// other module settings
+		],
 		'user' => [
 			'class' => 'dektrium\user\Module',
+			'enableRegistration' => false,
+			'enableConfirmation' => false,
+			'rememberFor' => 9676800,
 			'modelMap' => [
 				'User' => \common\models\User::className(),
 			],
 		],
+		'rbac' => [
+			'class' => \yii2mod\rbac\Module::class,
+		],
+		'staff' => [
+			'class' => \garmayev\staff\Module::class,
+		]
 	],
     'params' => $params,
 ];

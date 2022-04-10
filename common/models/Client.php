@@ -13,8 +13,17 @@ use Yii;
  * @property string $email [varchar(255)]
  * @property string $company [varchar(255)]
  * @property int $chat_id [int(32)]
+ * @property int $user_id
  *
  * @property-read Order[] $orders
+ * @property User $user
+ *
+ * @property string $inn [varchar(255)]
+ * @property string $bik [varchar(255)]
+ * @property string $kpp [varchar(255)]
+ * @property string $ogrn [varchar(255)]
+ * @property string $address [varchar(255)]
+ * @property int $location_id [int(11)]
  */
 class Client extends \yii\db\ActiveRecord
 {
@@ -30,8 +39,9 @@ class Client extends \yii\db\ActiveRecord
 			[["name", "phone"], "required"],
 			[["name", "phone", "company"], "string"],
 			[["phone"], "unique"],
-			[["chat_id"], "integer"],
+			[["chat_id", "user_id"], "integer"],
 			[["email"], "email"],
+			[["user_id"], "exist", "targetClass" => User::class, "targetAttribute" => "id"],
 		];
 	}
 
@@ -83,5 +93,10 @@ class Client extends \yii\db\ActiveRecord
 	public function getOrders()
 	{
 		return $this->hasMany(Order::className(), ["client_id" => "id"]);
+	}
+
+	public function getUser()
+	{
+		return $this->hasOne(User::className(), ["id" => "user_id"]);
 	}
 }

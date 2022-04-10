@@ -28,7 +28,7 @@ return [
 	    ],
         'request' => [
             'csrfParam' => '_csrf-frontend',
-	        'cookieValidationKey' => 'rhbcnbyfgfrekjdf',
+	        'baseUrl' => '',
         ],
         'session' => [
             // this is the name of the session cookie used for login on the frontend
@@ -45,14 +45,6 @@ return [
 		    ]
 
                 ],
-/*	            [
-		            'class' => \frontend\log\TelegramTarget::class,
-		            'levels' => ['error'],
-		            'logVars' => [],
-		            'except' => [
-			            'yii\web\HttpException:404',
-		            ],
-	            ] */
             ],
         ],
         'errorHandler' => [
@@ -82,7 +74,14 @@ return [
 				    'fileMap' => [
 					    'natam'     => 'natam.php',
 				    ],
+			    ],
+			    'telegram' => [
+				    'class' => 'yii\i18n\PhpMessageSource',
+				    'fileMap' => [
+					    'telegram'     => 'telegram.php',
+				    ],
 			    ]
+
 		    ],
 	    ],
 	    'cart' => [
@@ -98,19 +97,23 @@ return [
 		    ],
 	    ],
 	    'formatter' => [
-//		    'defaultTimeZone' => 'Etc/Greenwich',
 		    'defaultTimeZone' => 'Asia/Irkutsk',
 		    'dateFormat'     => 'php:d-m-Y',
 		    'datetimeFormat' => 'php:d-m-Y в H:i:s',
 		    'timeFormat'     => 'php:H:i:s',
 	    ],
+	    'authManager' => [
+		    'class' => 'yii\rbac\DbManager',
+		    'defaultRoles' => ['person'],
+	    ],
+	    'telegram' => [
+		    'class' => 'aki\telegram\Telegram',
+		    'botToken' => '2124338715:AAFEScQu0Ny-_AEdC4e9Ngdvx9O_hnbJVXc',
+	    ]
 	],
 	'modules' => [
 		'gridview' =>  [
 			'class' => '\kartik\grid\Module',
-		],
-		'admin' => [
-			'class' => 'frontend\modules\admin\Module',
 		],
 		'user' => [
 			'class' => 'dektrium\user\Module',

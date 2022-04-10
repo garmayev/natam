@@ -19,28 +19,22 @@ class SiteController extends Controller
      */
     public function behaviors()
     {
-        return [
-            'access' => [
-                'class' => AccessControl::className(),
-                'rules' => [
-                    [
-                        'actions' => ['login', 'error'],
-                        'allow' => true,
-                    ],
-                    [
-                        'actions' => ['logout', 'index'],
-                        'allow' => true,
-                        'roles' => ['@'],
-                    ],
-                ],
-            ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
-        ];
+	    return array_merge(parent::behaviors(), [
+		    'access' => [
+			    'class' => AccessControl::class,
+			    'rules' => [
+				    [
+					    'allow' => true,
+					    'actions' => ['@'],
+				    ]
+			    ],
+			    'denyCallback' => function () {
+				    if ( \Yii::$app->user->isGuest ) {
+					    return $this->redirect(["user/security/login"]);
+				    }
+			    }
+		    ]
+	    ]);
     }
 
     /**

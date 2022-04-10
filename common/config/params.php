@@ -7,7 +7,7 @@ return [
     'user.passwordResetTokenExpire' => 3600,
     'user.passwordMinLength' => 8,
     'telegram' => [
-	"bot_id" => '1989845524:AAGaba1o5Koc8PTAKuSM6HKFOfdkjTvG8Sc',
+	"bot_id" => '2124338715:AAFEScQu0Ny-_AEdC4e9Ngdvx9O_hnbJVXc',
 //		'manager' => [443353023, /* 581330380 */]
     ],
 ];

@@ -1,12 +1,13 @@
 let map, cars, orders, carCluster, orderCluster, home, objects,
     carsCollection = [], orderCollection = [],
-    points = [],
+    carPoints = [],
     orderPoints = [],
     interval = 1000,
     initialMapPosition = [51.819879855767255, 107.60937851186925],
     initialMapZoom = 12,
     iteration = 0,
     count = 0, token = '', subscribe = '';
+let index = 0, app = {};
 
 $(() => {
     function ajax(url, data = null) {
@@ -36,99 +37,7 @@ $(() => {
         });
     }
 
-    function getContentBody(order)
-    {
-        let result = "<table style='margin-bottom: 15px;'><thead><td style=\"padding: 0 5px;\"><b>Название</b></td><td style=\"padding: 0 5px;\"><b>Объем</b></td><td style=\"padding: 0 5px;\"><b>Количество</b></td><td style=\"padding: 0 5px;\"><b>Цена</b></td></thead><tbody>";
-        for ( let i = 0; i < order.length; i++ ) {
-            result += `<tr>
-                    <td style="padding: 0 5px;">${order[i].product.title}</td>
-                    <td style="padding: 0 5px;">${order[i].product.value}</td>
-                    <td style="padding: 0 5px;">${order[i].count}</td>
-                    <td style="padding: 0 5px;">${order[i].product.price}</td></tr>`;
-        }
-        result += "</tbody></table>";
-        return result;
-    }
-
-    function getStatus(order)
-    {
-        switch (order.status) {
-            case 1:
-                return "<div><b>Статус</b>: Новый заказ</div>";
-            case 2:
-                return "<div><b>Статус</b>: Подготовлен для доставки</div>";
-            case 3:
-                return "<div><b>Статус</b>: В процессе доставки</div>";
-            case 4:
-                return "<div><b>Статус</b>: Выполнен</div>";
-            case 5:
-                return "<div><b>Статус</b>: Отменен</div>";
-        }
-    }
-
-    function getClientInfo(client)
-    {
-        return `<div><b>ФИО клиента</b>: ${client.name}</div><div><b>Номер телефона</b>: <a href="tel:${client.phone}">${client.phone}</a></div>`;
-    }
-
-    function getAddress(item)
-    {
-        if ( item.location.title ) {
-            return `<div><b>Адрес доставки</b>: <a target="_blank" href="https://2gis.ru/ulanude/geo/${item.location.longitude}%2C${item.location.latitude}">${item.location.title}</a></div>`;
-        } else {
-            return `<div><b>Адрес доставки</b>: ${item.order.address}</div>`;
-        }
-    }
-
-    function getPreset(order)
-    {
-        switch (order.status) {
-            case 1: return "islands#blueIcon";
-            case 2: return "islands#darkgreenIcon";
-            case 3: return "islands#darkorangeIcon";
-            case 4: return "islands#pinkIcon";
-            case 5: return "islands#blackIcon";
-        }
-    }
-
-    function generatePoints(response) {
-        response = JSON.parse(response);
-        for (const index in response) {
-            let item = response[index];
-            // console.log(item);
-            if (item.order.status < 4) {
-                if (orderCollection[item.id] === undefined) {
-		    if (item.location) {
-                    orderCollection[item.id] = {
-                        Placemark: new ymaps.Placemark([item.location.latitude, item.location.longitude], {
-                            balloonContentHeader: `<h4>Заказ #${item.id}</h4>`,
-                            balloonContentBody: getContentBody(item.cart) + getClientInfo(item.client) + getStatus(item.order) + getAddress(item),
-                            balloonContentFooter: `<h5>Общая стоимость заказа: ${item.cost}</h5>`,
-                        }, {
-                            preset: getPreset(item.order),
-                        })
-                    };
-                    orderCollection[item.id].Placemark.orderId = item.id;
-                        orderPoints.push(orderCollection[item.id].Placemark);
-		    }
-                } else {
-                    orderCollection[item.id].Placemark.geometry.setCoordinates([item.location.latitude, item.location.longitude])
-                }
-                // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
-            } else {
-                // console.log(orderPoints);
-                orderPoints.find((element, index) => {
-                    if ( element.orderId === item.id ) {
-                        orderCluster.remove(element);
-                        orderPoints.splice(index, 1);
-                    }
-                })
-            }
-        }
-        return orderPoints;
-    }
-
-    ymaps.ready(() => {
+    function init() {
         var customItemContentLayout = ymaps.templateLayoutFactory.createClass(
             // Флаг "raw" означает, что данные вставляют "как есть" без экранирования html.
             '<div class=ballon_body>{{ properties.balloonContentBody|raw }}</div>' +
@@ -142,8 +51,8 @@ $(() => {
         carCluster = new ymaps.Clusterer({
             preset: "islands#invertedRedClusterIcons",
             groupByCoordinates: false,
-            clusterHideIconOnBalloonOpen: false,
-            geoObjectHideIconOnBalloonOpen: false,
+            clusterHideIconOnBalloonOpen: true,
+            geoObjectHideIconOnBalloonOpen: true,
         })
         map.geoObjects.add(carCluster)
         orderCluster = new ymaps.Clusterer({
@@ -173,7 +82,206 @@ $(() => {
             gridSize: 180,
         })
         map.geoObjects.add(orderCluster);
-        let request = [];
+    }
+
+    function getContentBody(order) {
+        let result = "<table style='margin-bottom: 15px;'><thead><td style=\"padding: 0 5px;\"><b>Название</b></td><td style=\"padding: 0 5px;\"><b>Объем</b></td><td style=\"padding: 0 5px;\"><b>Количество</b></td><td style=\"padding: 0 5px;\"><b>Цена</b></td></thead><tbody>";
+        for (let i = 0; i < order.length; i++) {
+            result += `<tr>
+                    <td style="padding: 0 5px;">${order[i].product.title}</td>
+                    <td style="padding: 0 5px;">${order[i].product.value}</td>
+                    <td style="padding: 0 5px;">${order[i].count}</td>
+                    <td style="padding: 0 5px;">${order[i].product.price}</td></tr>`;
+        }
+        result += "</tbody></table>";
+        return result;
+    }
+
+    function getStatus(order) {
+        switch (order.status) {
+            case 1:
+                return "<div><b>Статус</b>: Новый заказ</div>";
+            case 2:
+                return "<div><b>Статус</b>: Подготовлен для доставки</div>";
+            case 3:
+                return "<div><b>Статус</b>: В процессе доставки</div>";
+            case 4:
+                return "<div><b>Статус</b>: Выполнен</div>";
+            case 5:
+                return "<div><b>Статус</b>: Отменен</div>";
+        }
+    }
+
+    function getClientInfo(client) {
+        return `<div><b>ФИО клиента</b>: ${client.name}</div><div><b>Номер телефона</b>: <a href="tel:${client.phone}">${client.phone}</a></div>`;
+    }
+
+    function getAddress(item) {
+        if (item.location.title) {
+            return `<div><b>Адрес доставки</b>: <a target="_blank" href="https://2gis.ru/ulanude/geo/${item.location.longitude}%2C${item.location.latitude}">${item.location.title}</a></div>`;
+        } else {
+            return `<div><b>Адрес доставки</b>: ${item.order.address}</div>`;
+        }
+    }
+
+    function getPreset(order) {
+        switch (order.status) {
+            case 1:
+                return "islands#blueIcon";
+            case 2:
+                return "islands#darkgreenIcon";
+            case 3:
+                return "islands#darkorangeIcon";
+            case 4:
+                return "islands#pinkIcon";
+            case 5:
+                return "islands#blackIcon";
+        }
+    }
+
+    function generatePoints(response) {
+        response = JSON.parse(response);
+        for (const index in response) {
+            let item = response[index];
+            // console.log(item);
+            if (item.order.status < 4) {
+                if (orderCollection[item.id] === undefined) {
+                    if (item.location) {
+                        orderCollection[item.id] = {
+                            Placemark: new ymaps.Placemark([item.location.latitude, item.location.longitude], {
+                                balloonContentHeader: `<h4>Заказ #${item.id}</h4>`,
+                                balloonContentBody: getContentBody(item.cart) + getClientInfo(item.client) + getStatus(item.order) + getAddress(item),
+                                balloonContentFooter: `<h5>Общая стоимость заказа: ${item.cost}</h5>`,
+                            }, {
+                                preset: getPreset(item.order),
+                            })
+                        };
+                        orderCollection[item.id].Placemark.orderId = item.id;
+                        orderPoints.push(orderCollection[item.id].Placemark);
+                    }
+                } else {
+                    orderCollection[item.id].Placemark.geometry.setCoordinates([item.location.latitude, item.location.longitude])
+                }
+                // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
+            } else {
+                // console.log(orderPoints);
+                orderPoints.find((element, index) => {
+                    if (element.orderId === item.id) {
+                        orderCluster.remove(element);
+                        orderPoints.splice(index, 1);
+                    }
+                })
+            }
+        }
+        return orderPoints;
+    }
+
+    function openBalloon(e) {
+        console.log(e.originalEvent.currentTarget.properties);
+    }
+
+    let spik = {
+        login: () => {
+            $.ajax({
+                url: "/admin/cars/login",
+                async: false,
+                success: (response) => {
+                    app.login = response;
+                },
+                error: (e) => {
+                    console.error(e);
+                }
+            })
+        },
+        units: () => {
+            if (app.login === undefined) {
+                spik.login();
+            }
+            $.ajax({
+                url: "/admin/cars/units",
+                async: false,
+                data: {token: app.login.SessionId},
+                success: (response) => {
+                    app.allUnits = response.Units;
+                },
+                error: (e) => {
+                    console.error(e);
+                }
+            })
+        },
+        subscribe: () => {
+            if ( app.allUnits === undefined ) {
+                spik.units();
+            }
+            let ids = [];
+            for (const index in app.allUnits) {
+                let item = app.allUnits[index];
+                ids.push(item.UnitId);
+            }
+            $.ajax({
+                url: "/admin/cars/subscribe",
+                async: false,
+                data: {token: app.login.SessionId, ids: JSON.stringify(ids)},
+                success: (response) => {
+                    app.subscribe = response;
+                },
+                error: (e) => {
+                    console.error(e);
+                }
+            })
+        },
+        online: (callback) => {
+            if ( app.subscribe === undefined ) {
+                spik.subscribe();
+            }
+            $.ajax({
+                url: "/admin/cars/online",
+                data: {token: app.login.SessionId, subscribe: app.subscribe.SessionId.Id},
+                success: response => {
+                    if ( typeof callback == 'function' ) {
+                        callback.call(response);
+                    } else {
+                        app.collection = response;
+                    }
+                }
+            })
+        },
+        generateCollection: () => {
+            if ( app.collection !== undefined ) {
+                spik.online();
+            }
+            let units = [];
+            for (const index in app.collection.OnlineDataCollection.DataCollection) {
+                let collectionItem = app.collection.OnlineDataCollection.DataCollection[index];
+                let unitItem = app.allUnits[index];
+                if ( carPoints[index] ) {
+                    carPoints[index].geometry.setCoordinates();
+                } else {
+                    carPoints.push(new ymaps.Placemark([collectionItem.Navigation.Location.Latitude, collectionItem.Navigation.Location.Longitude], {
+                        balloonContentHeader: `<h4>Заказ #${unitItem.Name}</h4>`,
+                        balloonContentBody: `<p>${(collectionItem.Address !== '') ? collectionItem.Address : 'Unknown'}</p><p>Текущая скорость: ${collectionItem.Navigation.Speed}</p>`,
+                    }, {
+                        preset: "islands#blueIcon",
+                    }));
+                    units.push({
+                        Name: unitItem.Name,
+                        UnitId: unitItem.UnitId,
+                        CompanyId: unitItem.CompanyId,
+                        ConnectionDateTime: collectionItem.ConnectionDateTime,
+                        LastMessageTime: collectionItem.LastMessageTime,
+                        DeviceId: collectionItem.DeviceId,
+                        Navigation: collectionItem.Navigation,
+
+                    });
+                }
+            }
+            return units;
+        }
+    }
+
+    ymaps.ready(() => {
+        init();
+
         // request.push(ajax("/admin/spik/token"));
         // request.push(ajax("/admin/spik/subscribe"));
         // request.push(ajax("/admin/spik/online"));
@@ -221,6 +329,7 @@ $(() => {
             });
         }, 1000);
         orderCluster.add(orderPoints);
+        spik.online();
         // ajax("/admin/order/get-list").then(response => {
         //     let orders = JSON.parse(response);
         //     for (const index in orders) {
@@ -253,64 +362,70 @@ $(() => {
         //     clearInterval(data)
         //     window.location.reload();
         // }, 30000)
-
-        ajax("/admin/spik/test").then(response => {
-            let regexp = /Date\(([0-9]*)/;
-            let now = new Date(Date.now())
-            let expireDate = new Date(parseInt(regexp.exec(JSON.parse(response).token.expireDate)[1]));
-            console.log(now, expireDate);
-            ajax("/admin/spik/token").then(response => {
-                console.log("GET TOKEN");
-                console.log(response);
-                ajax("/admin/spik/get-units-page").then(response => {
-                    console.log("GET UNITS PAGE");
-                    console.log(JSON.parse(response))
-                    ajax("/admin/spik/subscribe").then(response => {
-                        console.log("GET SUBSCRIBE");
-                        console.log(JSON.parse(response));
-                    }).then(() => {
-                        let data = setInterval(() => {
-                            ajax("/admin/spik/online").then(response => {
-                                cars = JSON.parse(response);
-                                console.log(cars);
-                                for (const carsKey in cars) {
-                                    let item = cars[carsKey];
-                                    if (item.DeviceId.SerialId !== "231790") {
-                                        if (carsCollection[item.DeviceId.SerialId] === undefined) {
-                                            carsCollection[item.DeviceId.SerialId] = {
-                                                DeviceId: item.DeviceId.SerialId,
-                                                Navigation: item.Navigation,
-                                                Placemark: new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude],
-                                                    {
-                                                        balloonContentHeader: `Устройство #${item.DeviceId.SerialId}`,
-                                                        balloonContent: "Название: " + item.Name + "<br>" + item.Address,
-                                                    }, {
-                                                        // Опции.
-                                                        // Необходимо указать данный тип макета.
-                                                        iconLayout: 'default#image',
-                                                        // Своё изображение иконки метки.
-                                                        iconImageHref: '/img/track_icon.png',
-                                                        // Размеры метки.
-                                                        iconImageSize: [50, 50],
-                                                        iconImageOffset: [-25, -50],
-
-                                                    }
-                                                )
-                                            };
-                                            points.push(carsCollection[item.DeviceId.SerialId].Placemark);
-                                            // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
-                                        } else {
-                                            carsCollection[item.DeviceId.SerialId].Placemark.geometry.setCoordinates([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude])
-                                        }
-                                    }
-                                }
-                                carCluster.add(points);
-                            })
-                        }, interval)
-                    });
-                })
-            })
-
-        });
+        setInterval(() => {
+            index++;
+            let collection = spik.generateCollection();
+            console.log(carPoints)
+            carCluster.add(carPoints);
+        }, 1000);
+        // ajax("/admin/spik/test").then(response => {
+        //     let regexp = /Date\(([0-9]*)/;
+        //     let now = new Date(Date.now())
+        //     let expireDate = new Date(parseInt(regexp.exec(JSON.parse(response).token.expireDate)[1]));
+        //     console.log(now, expireDate);
+        //     ajax("/admin/spik/token").then(response => {
+        //         console.log("GET TOKEN");
+        //         console.log(response);
+        //         ajax("/admin/spik/get-units-page").then(response => {
+        //             console.log("GET UNITS PAGE");
+        //             console.log(JSON.parse(response))
+        //             ajax("/admin/spik/subscribe").then(response => {
+        //                 console.log("GET SUBSCRIBE");
+        //                 console.log(JSON.parse(response));
+        //             }).then(() => {
+        //                 let data = setInterval(() => {
+        //                     ajax("/admin/spik/online").then(response => {
+        //                         cars = JSON.parse(response);
+        //                         console.log(cars);
+        //                         for (const carsKey in cars) {
+        //                             let item = cars[carsKey];
+        //                             if (item.DeviceId.SerialId !== "231790") {
+        //                                 if (carsCollection[item.DeviceId.SerialId] === undefined) {
+        //                                     let placemark = new ymaps.Placemark([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude],
+        //                                         {
+        //                                             balloonContentHeader: `<p data-key="${item.id}">Устройство #${item.DeviceId.SerialId}</p>`,
+        //                                             balloonContent: "Название: " + item.Name + "<br>" + item.Address,
+        //                                         }, {
+        //                                             // Опции.
+        //                                             // Необходимо указать данный тип макета.
+        //                                             iconLayout: 'default#image',
+        //                                             // Своё изображение иконки метки.
+        //                                             iconImageHref: '/img/track_icon.png',
+        //                                             // Размеры метки.
+        //                                             iconImageSize: [50, 50],
+        //                                             iconImageOffset: [-25, -50],
+        //                                         }
+        //                                     );
+        //                                     placemark.events.add('balloonopen', openBalloon);
+        //                                     carsCollection[item.DeviceId.SerialId] = {
+        //                                         DeviceId: item.DeviceId.SerialId,
+        //                                         Navigation: item.Navigation,
+        //                                         Placemark: placemark,
+        //                                     };
+        //                                     points.push(carsCollection[item.DeviceId.SerialId].Placemark);
+        //                                     // map.geoObjects.add(carsCollection[item.DeviceId.SerialId].Placemark);
+        //                                 } else {
+        //                                     carsCollection[item.DeviceId.SerialId].Placemark.geometry.setCoordinates([item.Navigation.Location.Latitude, item.Navigation.Location.Longitude])
+        //                                 }
+        //                             }
+        //                         }
+        //                         carCluster.add(points);
+        //                     })
+        //                 }, interval)
+        //             });
+        //         })
+        //     })
+        //
+        // });
     })
 })

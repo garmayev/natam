@@ -5,7 +5,6 @@ namespace common\models;
 use Yii;
 
 /**
- * @property Staff $staff
  * @property string $Host [char(60)]
  * @property string $User [char(80)]
  * @property string $Password [char(41)]
@@ -53,48 +52,15 @@ use Yii;
  * @property string $is_role [enum('N', 'Y')]
  * @property string $default_role [char(80)]
  * @property string $max_statement_time [decimal(12,6)]
+ *
+ * @property Client $client
  */
 
 class User extends \dektrium\user\models\User
 {
-	public function beforeDelete()
+	public function getClient()
 	{
-		if ( $this->staff ) {
-			$this->staff->delete();
-		}
-
-		return parent::beforeDelete();
+		return $this->hasOne(Client::class, ["user_id" => "id"]);
 	}
 
-	public function getStaff()
-	{
-		return $this->hasOne(Staff::className(), ["user_id" => "id"]);
-	}
-
-	public static function findByPhone($phone)
-	{
-		$staff = Staff::findOne(["phone" => $phone]);
-		if ( $staff ) {
-			return $staff->user;
-		}
-		return null;
-	}
-
-	public static function findByChatId($chat_id)
-	{
-		$staff = Staff::findOne(["chat_id" => $chat_id]);
-		if ( $staff ) {
-			return $staff->user;
-		}
-		return null;
-	}
-
-	public static function findByPhoneOrChatId($args)
-	{
-		$user = self::findByPhone($args);
-		if ( !isset($user) ) {
-			return $user;
-		}
-		return self::findByChatId($args);
-	}
 }
