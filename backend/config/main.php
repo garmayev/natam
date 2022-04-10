@@ -13,7 +13,7 @@ return [
 	'name' => Yii::t('app', 'Natam Trade'),
     'bootstrap' => ['log'],
 	'language' => 'ru',
-//	'timezone' => 'Asia/Irkutsk',
+	'timezone' => 'Asia/Irkutsk',
 	'defaultRoute' => "default/index",
     'components' => [
 	    'i18n' => [
@@ -78,6 +78,10 @@ return [
 	    ],
     ],
 	'modules' => [
+		'gridview' => [
+			'class' => 'kartik\grid\Module',
+			// other module settings
+		],
 		'user' => [
 			'class' => 'dektrium\user\Module',
 			'enableRegistration' => false,

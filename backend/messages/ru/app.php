@@ -86,4 +86,5 @@ return [
 
 	'Delivery Date' => 'Дата доставки',
 	'Created At' => 'Дата создания',
+	'Generated at: {datetime}' => 'Сгенерировано: {datetime}'
 ];
