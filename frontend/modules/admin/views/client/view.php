@@ -12,6 +12,9 @@ use yii\widgets\DetailView;
 
 $this->title = $model->name;
 
+echo Html::a(\Yii::t('app', 'Update client'), ['/admin/client/update', 'id' => $model->id], ['class' => ['btn', 'btn-success']]);
+echo Html::a(\Yii::t('app', 'Cancel'), ['/admin/client/index'], ['class' => ['btn', 'btn-danger']]);
+
 echo DetailView::widget([
 	"model" => $model,
 	"template" => "<tr><th style='width: 20%'>{label}</th><td>{value}</td></tr>",

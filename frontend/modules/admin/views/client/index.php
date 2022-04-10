@@ -14,6 +14,8 @@ use yii\grid\GridView;
 
 $this->title = "Клиенты";
 
+echo Html::a(\Yii::t('app', 'Create Client'), ['/admin/client/create'], ['class' => ['btn', 'btn-success']]);
+
 echo GridView::widget([
 	"dataProvider" => $clientProvider,
 	"summary" => "",

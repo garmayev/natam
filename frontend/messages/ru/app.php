@@ -86,4 +86,7 @@ return [
 
 	'Delivery Date' => 'Дата доставки',
 	'Created At' => 'Дата создания',
+
+	'Create Client' => 'Создать нового клиента',
+	'Update Client' => 'Обновить информацию клиента',
 ];

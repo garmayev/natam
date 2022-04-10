@@ -12,6 +12,6 @@ use yii\helpers\Html;
 
 $this->title = Yii::t("app", "Create Client");
 
-$this->render('_form', [
+echo $this->render('_form', [
 	'model' => $model
 ]);
