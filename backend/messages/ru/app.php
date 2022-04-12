@@ -86,5 +86,8 @@ return [
 
 	'Delivery Date' => 'Дата доставки',
 	'Created At' => 'Дата создания',
-	'Generated at: {datetime}' => 'Сгенерировано: {datetime}'
+	'Generated at: {datetime}' => 'Сгенерировано: {datetime}',
+	'Analytic' => 'Аналитика',
+	'Analytics by employee' => 'Аналитика по сотрудникам',
+	'Analytics by orders' => 'Аналитика по заказам',
 ];

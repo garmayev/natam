@@ -23,7 +23,7 @@
         "dmstr/yii2-adminlte-asset": "^2.1",
         "la-haute-societe/yii2-save-relations-behavior": "^1.7",
         "ext-json": "*",
-        "garmayev/yii2-staff": "dev-master",
+	"garmayev/yii2-staff": "dev-master",
         "devanych/yii2-cart": "*",
         "ext-curl": "*",
         "kartik-v/yii2-widget-datetimepicker": "*",

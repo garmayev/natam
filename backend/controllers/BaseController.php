@@ -22,10 +22,10 @@ class BaseController extends Controller
 				],
 				'denyCallback' => function () {
 					if ( \Yii::$app->user->isGuest ) {
-						return $this->redirect(["user/login"]);
+						return $this->redirect(["/user/login"]);
 					} else {
 						\Yii::$app->session->setFlash("error", \Yii::t("app", "You don`t have any permission to access this section!"));
-						return $this->redirect(["/"]);
+						return $this->redirect(['/']);
 					}
 				}
 			],

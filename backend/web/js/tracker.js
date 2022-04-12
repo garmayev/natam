@@ -285,7 +285,7 @@ $(() => {
 
     ymaps.ready(() => {
         let delayed;
-        const ctx = document.getElementById('myChart').getContext('2d');
+/*        const ctx = document.getElementById('myChart').getContext('2d');
         console.log(dataset);
         const myChart = new Chart(ctx, {
             type: 'bar',
@@ -341,7 +341,7 @@ $(() => {
                     }
                 }
             }
-        });
+        }); */
 
         init();
 

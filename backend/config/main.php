@@ -82,15 +82,6 @@ return [
 			'class' => 'kartik\grid\Module',
 			// other module settings
 		],
-		'user' => [
-			'class' => 'dektrium\user\Module',
-			'enableRegistration' => false,
-			'enableConfirmation' => false,
-			'rememberFor' => 9676800,
-			'modelMap' => [
-				'User' => \common\models\User::className(),
-			],
-		],
 		'rbac' => [
 			'class' => \yii2mod\rbac\Module::class,
 		],

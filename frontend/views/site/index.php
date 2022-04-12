@@ -72,40 +72,7 @@ $this->registerJsVar("picker", "");
 				?>
                 <!-- </form> -->
 				<?= Html::endForm() ?>
-				<?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"], "novalidate" => true]) ?>
-                <!--                <form class="form_block form_order active">-->
-                <div class="form_content step" data-index="1">
-                    <div class="form_item"></div>
-                    <div class="form_item"></div>
-                </div>
-                <div class="form_content step" data-index="2">
-                    <div class="form_item">
-                        <input type="text" id="order-client-name" name="Client[name]" placeholder="Ваше ФИО">
-                        <input type="text" id="order-client-phone" name="Client[phone]" data-inputmask="'mask': '+7(999)999 9999'" placeholder="Ваш номер телефона">
-                        <input type="email" id="order-client-company" name="Client[company]" placeholder="Название организации">
-                    </div>
-                    <div class="form_item">
-						<?= Html::textarea("Ticket[comment]", "", ["placeholder" => "Ваш комментарий", "style" => "width: 100%; height: 185px; border-radius: 10px; padding: 18px;"]) ?>
-                        <div class="form_btn">
-                            <div class="form_policy">
-                                <input type="checkbox" id="form_policy">
-                                <label for="form_policy">
-                                    Даю согласие на обработку
-                                    персональных данных
-                                </label>
-                            </div>
-                            <button type="submit" class="btn blue">
-                                отправить
-                            </button>
-                        </div>
-                    </div>
-					<?php
-					echo Html::endTag("div");
-
-					?>
-                    <!-- </form> -->
-					<?= Html::endForm() ?>
-					<?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"]]) ?>
+					<?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"], "novalidate" => true]) ?>
                     <div class="order-slide swiper-wrapper">
                         <!--                <form class="form_block form_order active">-->
                         <div class="form_content step swiper-slide" data-index="1">

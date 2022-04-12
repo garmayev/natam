@@ -24,7 +24,7 @@ $this->registerJsVar("dataset", $data);
 $this->registerJsVar("labels", $label);
 ?>
 <div class="col-md-6">
-    <canvas id="myChart" style="height: 350px"></canvas>
+<!--    <canvas id="myChart" style="height: 350px"></canvas> -->
 </div>
 <script>
     document.addEventListener("DOMContentLoaded", () => {

@@ -105,7 +105,8 @@ function asItem($model, $current, $previous = null)
 	if (!is_null($previous)) {
 		if (isset($model[$current]['author']) && isset($model[$previous]['author'])) {
 			$employee = Employee::findOne(['user_id' => intval($model[$current]['author'])]);
-			return "<p>{$employee->getFullname()}</p><p>" . Yii::$app->formatter->asDuration(
+			$username = (($employee !== null) && method_exists($employee, 'getFullname')) ? $employee->getFullname() : '';
+			return "<p>{$username}</p><p>" . Yii::$app->formatter->asDuration(
 					$model[$current]['date'] -
 					$model[$previous]['date']) .
 				"</p>";
@@ -113,7 +114,8 @@ function asItem($model, $current, $previous = null)
 	} else {
 		if (isset($model[$current]['author'])) {
 			$employee = Employee::findOne(['user_id' => intval($model[$current]['author'])]);
-			return "<p>{$employee->getFullname()}</p><p>" . Yii::$app->formatter->asDatetime($model[$current]['date']) . "</p>";
+			$username = (($employee !== null) && method_exists($employee, 'getFullname')) ? $employee->getFullname() : '';
+			return "<p>{$username}</p><p>" . Yii::$app->formatter->asDatetime($model[$current]['date']) . "</p>";
 		}
 	}
 	return Html::tag('span', Yii::t('yii', '(not set)'), ['class' => 'not-set']);

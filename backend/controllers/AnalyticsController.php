@@ -32,13 +32,13 @@ class AnalyticsController extends BaseController
 	public function actionEmployee($startDate = null, $finishDate = null, $export = false)
 	{
 		if ( is_null($startDate) && is_null($finishDate) ) {
-			$models = Order::find()->all();
+			$models = Order::find()->orderBy('id DESC')->all();
 		} else {
 			$models = Order::find()
 				->where(['>', 'created_at', \Yii::$app->formatter->asTimestamp($startDate)])
-				->andWhere(['<', 'created_at', \Yii::$app->formatter->asTimestamp($finishDate)]);
-			\Yii::error($models->createCommand()->getRawSql());
-			$models = $models->all();
+				->andWhere(['<', 'created_at', \Yii::$app->formatter->asTimestamp($finishDate)])
+				->orderBy('id DESC')
+				->all();
 		}
 		if ( isset($_GET['export']) ) {
 			$content = $this->renderPartial('employee', [

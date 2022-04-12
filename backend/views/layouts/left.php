@@ -86,10 +86,10 @@ if (!Yii::$app->user->can("employee")) {
 			"label" => Yii::t("app", "Analytic"),
 			"icon" => "bar-chart-o",
 			"items" => [
-				[
-					"label" => Yii::t("app", "Analytics by month"),
-					"url" => Url::to(["/analytics/month"])
-				],
+//				[
+//					"label" => Yii::t("app", "Analytics by month"),
+//					"url" => Url::to(["/analytics/month"])
+//				],
 				[
 					"label" => Yii::t("app", "Analytics by orders"),
 					"url" => Url::to(["/analytics/orders"])
