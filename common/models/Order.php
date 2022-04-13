@@ -45,6 +45,7 @@ class Order extends ActiveRecord
 
 	public $name;
 	public $locationTitle;
+	public $orderProduct;
 
 	const STATUS_NEW = 1;
 	const STATUS_PREPARE = 2;
@@ -72,8 +73,12 @@ class Order extends ActiveRecord
 				'relations' => [
 					'location',
 					'client',
-					'orderProducts'
-				]
+//					'orderProducts'
+				],
+			],
+			'rel' => [
+				'class' => UpdateBehavior::className(),
+			
 			],
 			'history' => [
 				'class' => ActiveRecordHistoryBehavior::class,
@@ -91,7 +96,7 @@ class Order extends ActiveRecord
 			[["status"], "default", "value" => self::STATUS_NEW],
 			[["notify_started_at"], "default", "value" => 0],
 			[["location_id"], "exist", "targetClass" => Location::class, "targetAttribute" => "id"],
-			[['orderProducts'],'safe']
+			[['orderProducts', 'orderProduct'],'safe']
 		];
 	}
 

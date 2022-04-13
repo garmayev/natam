@@ -104,5 +104,6 @@ $this->params['breadcrumbs'][] = $this->title;
 		<?= Connect::widget([
 			'baseAuthUrl' => ['/user/security/auth'],
 		]) ?>
+		<div class="text-center">Created by <a href='https://amgcompany.ru'>AMG Systems</a></div>
 	</div>
 </div>

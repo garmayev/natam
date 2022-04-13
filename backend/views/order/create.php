@@ -187,13 +187,15 @@ $this->registerCss("
         </div>
         <div class="panel-body" id="order-info">
 			<?php
-			if (!is_null($model->location)) {
-				$model->location = new \common\models\Location();
+			if ($model->isNewRecord) {
+				$location = new \common\models\Location();
+			} else {
+				$location = $model->location;
 			}
 			echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
-			echo $form->field($model->location, "title")->hiddenInput()->label(false);
-			echo $form->field($model->location, "latitude")->hiddenInput()->label(false);
-			echo $form->field($model->location, "longitude")->hiddenInput()->label(false);
+			echo $form->field($location, "title")->hiddenInput(['name' => 'Order[location][title]'])->label(false);
+			echo $form->field($location, "latitude")->hiddenInput(['name' => 'Order[location][latitude]'])->label(false);
+			echo $form->field($location, "longitude")->hiddenInput(['name' => 'Order[location][longitude]'])->label(false);
 
 			echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
 			echo $form->field($model, "status")->dropDownList($model->getStatus());
@@ -226,7 +228,7 @@ $this->registerCss("
 				'widgetContainer' => 'dynamicform_wrapper',
 				'widgetBody' => '.container-items',
 				'widgetItem' => '.item',
-                'model' => ($model->orderProducts) ? $model->orderProducts[0] : new \common\models\OrderProduct(),
+                'model' => (!$model->isNewRecord) ? $model->orderProducts[0] : [new \common\models\OrderProduct()],
                 'formId' => "w0",
                 'insertButton' => '.add-product',
                 'deleteButton' => '.delete',
