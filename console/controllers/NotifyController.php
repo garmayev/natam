@@ -3,6 +3,7 @@
 namespace console\controllers;
 
 use common\models\Order;
+use common\models\User;
 use console\models\Alert;
 use frontend\models\Telegram;
 use frontend\models\Updates;
@@ -59,6 +60,7 @@ class NotifyController extends \yii\console\Controller
 					"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatus($model->status)} никто не обработал"
 				]);
 				if ($response->isOk) {
+					\Yii::$app->user->switchIdentity(User::findOne(1));
 					$model->boss_chat_id = $this->settings["alert"][$model->status - 1]["chat_id"];
 					$model->save();
 				}
