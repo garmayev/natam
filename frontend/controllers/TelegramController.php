@@ -23,7 +23,13 @@ class TelegramController extends \yii\rest\Controller
 		if ( $employee ) {
 			$user = $employee->user;
 		} else {
-			$user = Client::findOne(["chat_id" => $chat_id])->user;
+			$client = Client::findOne(['chat_id' => $chat_id]);
+			if ($client) {
+				$user = Client::findOne(["chat_id" => $chat_id])->user;
+			} else {
+				return null;
+			}
+//			$user = Client::findOne(["chat_id" => $chat_id])->user;
 		}
 		return $user;
 	}
@@ -46,6 +52,17 @@ class TelegramController extends \yii\rest\Controller
 			$user = $this->findUser($data["callback_query"]["from"]["id"]);
 		} else {
 			$user = $this->findUser($data["message"]["from"]["id"]);
+		}
+		if ( empty($user) ) {
+			$this->asJson([
+				'code' => 'ERROR',
+				'message' => 'You are not logged',
+			]);
+			Yii::error([
+				"input_data" => $data,
+				"message" => 'user is not logged',
+			]);
+			return false;
 		}
 		Yii::$app->user->switchIdentity($user, 0);
 		$this->enableCsrfValidation = false;
