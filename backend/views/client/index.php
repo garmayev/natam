@@ -1,6 +1,7 @@
 <?php
 
 use common\models\Client;
+use yii\bootstrap\ActiveForm;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
 use yii\helpers\Html;
@@ -55,21 +56,19 @@ echo GridView::widget([
 				return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-question-sign"]]), ["client/invite", "id" => $model->id]);
 			}
 		], [
-//			"attribute" => "notify",
-//			"label" => "Notify",
-//			"content" => function ($model) {
-//				/**
-//				 * @var $model Client
-//				 */
-//				if ( $model->notify === Client::NOTIFY_SMS ) {
-//					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-phone"]]));
-//				} else if ($model->notify === Client::NOTIFY_EMAIL) {
-//					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-envelope"]]));
-//				} else {
-//					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-envelope"]]));
-//				}
-//			}
-//		], [
+			"attribute" => "notify",
+			"label" => "Notify",
+			"content" => function ($model) {
+				/**
+				 * @var $model Client
+				 */
+//				$form = ActiveForm::begin(["action" => ["/client/update", "id" => $model->id]]);
+//				$result = Html::beginForm(["/client/update", "id" => $model->id], 'post', ["class" => 'client-notify-ajax']);
+				$result = Html::activeDropDownList($model, 'notify', $model->getNotifyList(), ["class" => "form-control client-notify-ajax", "data-key" => $model->id, "id" => "client-notify-{$model->id}"]);
+//				$result .= Html::endForm();
+				return $result;
+			}
+		], [
 			'class' => \yii\grid\ActionColumn::class,
 			'headerOptions' => [
 				'width' => '80px'
@@ -78,3 +77,16 @@ echo GridView::widget([
 		]
 	]
 ]);
+
+$this->registerJs("
+$('form').submit((e) => {
+	e.preventDefault();
+})
+$('.client-notify-ajax').on('change', (e) => {
+	$.ajax({
+		url: '/admin/client/update?id='+$(e.currentTarget).attr('data-key'),
+		method: 'post',
+		data: {'Client[notify]' :$(e.currentTarget).val()},
+	});
+})
+", View::POS_LOAD);

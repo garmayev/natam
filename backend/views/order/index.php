@@ -184,6 +184,4 @@ $('.status').on('change', function (e) {
 			}
 		});
 });
-$('td').on('click', function (e) {
-	console.log(e);
-})", View::POS_LOAD);
+", View::POS_LOAD);

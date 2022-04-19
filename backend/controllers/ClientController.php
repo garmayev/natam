@@ -6,6 +6,7 @@ use common\models\Client;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Url;
+use yii\web\Response;
 
 class ClientController extends BaseController
 {
@@ -20,6 +21,15 @@ class ClientController extends BaseController
 	public function actionUpdate($id)
 	{
 		$model = Client::findOne($id);
+		if ( Yii::$app->request->isAjax ) {
+			$this->enableCsrfValidation = false;
+			Yii::$app->response->format = Response::FORMAT_JSON;
+			if ( $model->load(Yii::$app->request->post()) && $model->save() ) {
+				return ["ok" => true];
+			}
+			Yii::error($model->getErrorSummary(true));
+			return ["ok" => false, "errors" => $model->getErrorSummary(true)];
+		}
 		if ( Yii::$app->request->isPost ) {
 			if ( $model->load(Yii::$app->request->post()) && $model->save() ) {
 				Yii::$app->session->setFlash("success", Yii::t("app", "Client info is saved"));
