@@ -117,13 +117,14 @@ $totalCost = 0;
 							}
 						}
 					],
-					[
-                        'label' => Yii::t('app', 'Created By'),
-                        'value' => function ($model) {
-                            $client = Client::findOne(["user_id" => $model->user_id]);
-                            return ($client) ? $client->name : $model->user->username;
-                        }
-					],
+//					[
+//                        'label' => Yii::t('app', 'Created By'),
+//                        'value' => function ($model) {
+//                            $client = Client::findOne(["user_id" => $model->user_id]);
+//                            return ($client) ? $client->name : $model->user->username;
+//                        }
+//					],
+					'user.username',
 					[
 						"label" => "Дата события",
 						"content" => function ($model) {
