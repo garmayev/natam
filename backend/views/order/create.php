@@ -23,22 +23,22 @@ $this->registerJsFile("/js/jquery.maskedinput.min.js", ["depends" => \yii\web\Jq
 $this->registerJsFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js", ["depends" => \yii\web\JqueryAsset::class]);
 $this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU");
 $this->registerCssFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/css/suggestions.min.css");
-echo Html::beginTag("div", ["class" => ["panel-body"]]);
 if (Yii::$app->user->can('employee')) {
 	?>
-    <div class="panel">
-        <div class="panel-heading panel-default">
+    <div class="panel panel-default">
+        <div class="panel-heading">
 			<?= Yii::t("app", "Information about Client") ?>
         </div>
-		<?php
-		if (is_null($model->client)) {
-			$model->client = new Client();
-		}
-		echo $form->field($model->client, "name");
-		echo $form->field($model->client, "phone");
-		echo $form->field($model->client, "email");
-		echo Html::endTag("div");
-		?>
+        <div class="panel-body">
+			<?php
+			if (is_null($model->client)) {
+				$model->client = new Client();
+			}
+			echo $form->field($model->client, "name");
+			echo $form->field($model->client, "phone");
+			echo $form->field($model->client, "email");
+			?>
+        </div>
     </div>
 
 	<?php
