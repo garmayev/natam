@@ -52,12 +52,15 @@ use Yii;
  * @property string $is_role [enum('N', 'Y')]
  * @property string $default_role [char(80)]
  * @property string $max_statement_time [decimal(12,6)]
+ * @property string $password
  *
  * @property Client $client
  */
 
 class User extends \dektrium\user\models\User
 {
+	public $password = '';
+
 	public function getClient()
 	{
 		return $this->hasOne(Client::class, ["user_id" => "id"]);

@@ -2,7 +2,7 @@
 
 namespace common\models;
 
-use common\behaviors\PhoneNormalizeBehaviors;
+use common\models\User;
 use Yii;
 
 /**
@@ -24,9 +24,14 @@ use Yii;
  * @property string $ogrn [varchar(255)]
  * @property string $address [varchar(255)]
  * @property int $location_id [int(11)]
+ * @property int $type [int(11)]
+ * @property int $notify [int(11)]
  */
 class Client extends \yii\db\ActiveRecord
 {
+	const NOTIFY_NONE = 0;
+	const NOTIFY_SMS = 1;
+	const NOTIFY_EMAIL = 2;
 
 	public static function tableName()
 	{
@@ -39,10 +44,56 @@ class Client extends \yii\db\ActiveRecord
 			[["name", "phone"], "required"],
 			[["name", "phone", "company"], "string"],
 			[["phone"], "unique"],
-			[["chat_id", "user_id"], "integer"],
+			[["chat_id", "user_id", "notify"], "integer"],
 			[["email"], "email"],
 			[["user_id"], "exist", "targetClass" => User::class, "targetAttribute" => "id"],
+			[["notify"], "default", "value" => self::NOTIFY_NONE],
 		];
+	}
+
+	public function beforeSave($insert)
+	{
+		$valid = parent::beforeSave($insert);
+		if ($valid) {
+			$user = Yii::createObject([
+				'class' => User::className(),
+				'scenario' => 'register',
+				'username' => $this->phone,
+				'email' => $this->email,
+				'password' => $this->phone,
+			]);
+			if ($user->save()) {
+				return $valid && $this->sendNotify();
+			} else {
+				Yii::error($user->getErrorSummary(true));
+			}
+		}
+		return $valid;
+	}
+
+	public function sendNotify()
+	{
+		switch ($this->notify) {
+			case self::NOTIFY_SMS:
+				$httpClient = new \yii\httpclient\Client();
+				$response = $httpClient->createRequest()
+					->setUrl("https://platform.clickatell.com/messages/http/send?apiKey=".Yii::$app->params["clickatell"]["apiKey"])
+					->setData([
+						"to" => "$this->phone",
+						"content" => "Your Login: $this->phone\nYour Password: $this->phone",
+					])
+					->send();
+				if ($response->isOk) {
+					return true;
+				} else {
+					Yii::error($response->getContent());
+					return false;
+				}
+				break;
+			case self::NOTIFY_EMAIL:
+				break;
+		}
+		return true;
 	}
 
 	public function beforeValidate()
@@ -63,7 +114,7 @@ class Client extends \yii\db\ActiveRecord
 
 	public function setPhone()
 	{
-		$this->phone = preg_replace("/[\(\)\ \+]*/", "", $this->phone, -1);
+		$this->phone = preg_replace("/[\(\)\ \+\-]*/", "", $this->phone, -1);
 	}
 
 	public static function findByPhone($mixed)
