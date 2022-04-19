@@ -30,13 +30,15 @@ class UpdateBehavior extends \yii\base\Behavior
 		 */
 
 		$owner = $this->owner;
-		foreach ($owner->orderProduct as $product) {
-			$link = new OrderProduct([
-				"order_id" => $owner->id,
-				"product_id" => $product["product_id"],
-				"product_count" => $product["product_count"]
-			]);
-			$link->save();
+		if ( count($owner->orderProduct) ) {
+			foreach ($owner->orderProduct as $product) {
+				$link = new OrderProduct([
+					"order_id" => $owner->id,
+					"product_id" => $product["product_id"],
+					"product_count" => $product["product_count"]
+				]);
+				$link->save();
+			}
 		}
 	}
 
