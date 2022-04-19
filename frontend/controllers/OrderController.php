@@ -27,6 +27,7 @@ class OrderController extends \yii\web\Controller
 			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
 			$order->loadRelations($data);
 			if ($order->load($data) && $order->save()) {
+				Yii::$app->cart->clear();
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 			} else {
 				Yii::$app->session->setFlash("error", "Failed! Order information is not updated!");
