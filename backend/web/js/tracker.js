@@ -85,7 +85,7 @@ $(() => {
     }
 
     function getContentBody(order) {
-        let result = "<table style='margin-bottom: 15px;'><thead><td style=\"padding: 0 5px;\"><b>Название</b></td><td style=\"padding: 0 5px;\"><b>Объем</b></td><td style=\"padding: 0 5px;\"><b>Количество</b></td><td style=\"padding: 0 5px;\"><b>Цена</b></td></thead><tbody>";
+        let result = "<p></p><table style='margin-bottom: 15px;'><thead><td style=\"padding: 0 5px;\"><b>Название</b></td><td style=\"padding: 0 5px;\"><b>Объем</b></td><td style=\"padding: 0 5px;\"><b>Количество</b></td><td style=\"padding: 0 5px;\"><b>Цена</b></td></thead><tbody>";
         for (let i = 0; i < order.length; i++) {
             result += `<tr>
                     <td style="padding: 0 5px;">${order[i].product.title}</td>
@@ -150,7 +150,7 @@ $(() => {
                         orderCollection[item.id] = {
                             Placemark: new ymaps.Placemark([item.location.latitude, item.location.longitude], {
                                 balloonContentHeader: `<h4>Заказ #${item.id}</h4>`,
-                                balloonContentBody: getContentBody(item.cart) + getClientInfo(item.client) + getStatus(item.order) + getAddress(item),
+                                balloonContentBody: getClientInfo(item.client) + getStatus(item.order) + getContentBody(item.cart) + getAddress(item),
                                 balloonContentFooter: `<h5>Общая стоимость заказа: ${item.cost}</h5>`,
                             }, {
                                 preset: getPreset(item.order),

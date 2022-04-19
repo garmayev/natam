@@ -190,11 +190,11 @@ class TelegramController extends \yii\rest\Controller
 					$driver = Employee::findOne($argument["driver_id"]);
 					$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 					foreach ($updates as $update) {
-//						Telegram::editMessage([
-//							"chat_id" => $update->employee->chat_id,
-//							"text" => "Статус заказа #{$order->id} был изменен",
-//							"message_id" => $update->message_id
-//						]);
+						Telegram::editMessage([
+							"chat_id" => $update->employee->chat_id,
+							"text" => "Статус заказа #{$order->id} был изменен",
+							"message_id" => $update->message_id
+						]);
 						// $update->delete();
 					}
 

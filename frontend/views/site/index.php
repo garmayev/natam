@@ -151,9 +151,9 @@ $this->registerJsVar("picker", "");
                                 <div class="form_item">
                                     <input type="text" id="order-address" class="form" data-required="true"
                                            name="Order[address]" value="" placeholder="Адрес доставки">
-                                    <input type="hidden" name="Location[title]" id="location-title" "="">
-                                    <input type="hidden" name="Location[latitude]" id="location-latitude">
-                                    <input type="hidden" name="Location[longitude]" id="location-logintude">
+                                    <input type="hidden" name="Order[location][title]" id="location-title" "="">
+                                    <input type="hidden" name="Order[location][latitude]" id="location-latitude">
+                                    <input type="hidden" name="Order[location][longitude]" id="location-logintude">
                                 </div>
                             </div>
                             <div id="map" style="height: 330px; min-width: 100%; margin-bottom: 35px;"></div>

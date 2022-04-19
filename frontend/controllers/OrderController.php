@@ -18,29 +18,18 @@ class OrderController extends \yii\web\Controller
 		$post = Yii::$app->request->post();
 		// Yii::error($post);
 		if (Yii::$app->request->isPost) {
-			$client = Client::findByPhone($post["Client"]["phone"]);
-			if ( !isset($client) ) {
-				$client = new Client();
-				if (!$client->load($post) || !$client->save()) {
-					Yii::error($client->getErrorSummary(true));
-					Yii::$app->session->setFlash("error", Yii::t('app', 'Failed! Client info is not saved!'));
-					return $this->redirect("/");
-				}
-			}
-			$order->client_id = $client->id;
-			$location = new Location();
-			if (!$location->load($post) || !$location->save()) {
-				Yii::error($location->getErrorSummary(true));
-				Yii::$app->session->setFlash("error", Yii::t('app', 'Failed! Delivery info is not saved!'));
-				return $this->redirect("/");
-			}
-			$order->location_id = $location->id;
-			$order->delivery_date = Yii::$app->formatter->asTimestamp($post["Order"]["delivery_date"]);
-			if ($order->load($post) && $order->save()) {
-				Yii::$app->cart->clear();
-				Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
+			if ( isset($post["OrderProduct"]) ) {
+				$order->orderProduct = $_POST["OrderProduct"];
+				$data = array_merge_recursive($post, ["Order" => ["orderProduct" => $_POST["OrderProduct"]]]);
 			} else {
-				Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
+				$data = $post;
+			}
+			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
+			$order->loadRelations($data);
+			if ($order->load($data) && $order->save()) {
+				Yii::$app->session->setFlash("success", "Order information successfully updated!");
+			} else {
+				Yii::$app->session->setFlash("error", "Failed! Order information is not updated!");
 				Yii::error($order->getErrorSummary(true));
 			}
 		}
