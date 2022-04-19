@@ -22,7 +22,7 @@ class OrderController extends BaseController
 
 	public function actionIndex()
 	{
-		if ( Yii::$app->user->can("employee") ) {
+		if (Yii::$app->user->can("employee")) {
 			$query = Order::find()->where(["<", "status", Order::STATUS_COMPLETE]);
 		} else {
 			$query = Order::find()->where(["client_id" => Yii::$app->user->identity->client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE]);
@@ -56,14 +56,18 @@ class OrderController extends BaseController
 			Yii::$app->session->remove("client_id");
 			Yii::$app->session->remove("ticket_id");
 		}
-		if ( Yii::$app->request->isPost ) {
-				if ($order->load($post) && $order->save()) {
-					Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
-					return $this->redirect("/");
-				} else {
-					Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
-					Yii::error($order->getErrorSummary(true));
-				}
+		if (Yii::$app->request->isPost) {
+			$order->orderProduct = $_POST["OrderProduct"];
+			$data = array_merge_recursive($post, ["Order" => ["orderProduct" => $_POST["OrderProduct"]]]);
+			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
+			$order->loadRelations($data);
+			if ($order->load($data) && $order->save()) {
+				Yii::$app->session->setFlash("success", "Order information successfully updated!");
+				return $this->redirect(["order/view", "id" => $order->id]);
+			} else {
+				Yii::$app->session->setFlash("error", "Failed! Order information is not updated!");
+				Yii::error($order->getErrorSummary(true));
+			}
 		}
 		$client = new Client();
 		return $this->render("create", [
@@ -76,11 +80,14 @@ class OrderController extends BaseController
 	{
 		$client = null;
 		$order = Order::findOne($id);
+		$post = Yii::$app->request->post();
 		if (Yii::$app->request->isPost) {
 
+			$order->orderProduct = $_POST["OrderProduct"];
+			$data = array_merge_recursive($post, ["Order" => ["orderProduct" => $_POST["OrderProduct"]]]);
 			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
-			$order->loadRelations(Yii::$app->request->post());
-			if ($order->load(Yii::$app->request->post()) && $order->save()) {
+			$order->loadRelations($data);
+			if ($order->load($post) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 				return $this->redirect(["order/view", "id" => $id]);
 			} else {

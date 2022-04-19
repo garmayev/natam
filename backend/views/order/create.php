@@ -2,7 +2,9 @@
 
 use common\models\Client;
 use common\models\Order;
+use common\models\OrderProduct;
 use common\models\Product;
+use common\models\search\OrderSearch;
 use yii\helpers\ArrayHelper;
 use yii\web\View;
 use yii\helpers\Html;
@@ -16,7 +18,7 @@ use yii\widgets\ActiveForm;
 
 $this->title = Yii::t("app", "New Order");
 $index = 0;
-$form = ActiveForm::begin(["action" => \yii\helpers\Url::to(["/order/update", "id" => $model->id])]);
+$form = ActiveForm::begin(["action" => ($model->isNewRecord) ? \yii\helpers\Url::to(["/order/create"]) : \yii\helpers\Url::to(["/order/update", "id" => $model->id])]);
 $this->registerJsFile("/js/jquery.maskedinput.min.js", ["depends" => \yii\web\JqueryAsset::class]);
 $this->registerJsFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js", ["depends" => \yii\web\JqueryAsset::class]);
 $this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU");
@@ -38,11 +40,12 @@ $this->registerCssFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/cs
     </div>
 
 <?php
-//$allProducts = Product::find()->all();
-$list = ArrayHelper::map(Product::find()->all(), "id", "title");
-//foreach ($allProducts as $product) {
-//	$list[$product->id] = "{$product->title} ({$product->value})";
-//}
+$allProducts = Product::find()->all();
+//$list = ArrayHelper::map(Product::find()->all(), "id", "title");
+$list = [];
+foreach ($allProducts as $product) {
+	$list[$product->id] = "{$product->title} ({$product->value})";
+}
 
 $selector = Html::dropDownList(
 	"Order[orderProducts][{$index}][product_id]",
@@ -187,7 +190,7 @@ $this->registerCss("
         </div>
         <div class="panel-body" id="order-info">
 			<?php
-			if ($model->isNewRecord) {
+			if ($model->isNewRecord || is_null($model->location_id)) {
 				$location = new \common\models\Location();
 			} else {
 				$location = $model->location;
@@ -223,12 +226,12 @@ $this->registerCss("
         </div>
         <div class="panel-body" id="order-controls">
 			<?php
-            $op = new \common\models\OrderProduct();
+            $op = ($model->orderProducts) ? $model->orderProducts[0] : new \common\models\OrderProduct();
 			\wbraganca\dynamicform\DynamicFormWidget::begin([
 				'widgetContainer' => 'dynamicform_wrapper',
 				'widgetBody' => '.container-items',
 				'widgetItem' => '.item',
-                'model' => (!$model->isNewRecord) ? $model->orderProducts[0] : [new \common\models\OrderProduct()],
+                'model' => $op,
                 'formId' => "w0",
                 'insertButton' => '.add-product',
                 'deleteButton' => '.delete',
@@ -242,7 +245,8 @@ $this->registerCss("
 			// necessary for update action.
             echo Html::beginTag("div", ["class" => "container-items"]);
 //            var_dump($model->orderProducts); die;
-            foreach ($model->orderProducts as $index => $orderProduct) {
+            $ops = ($model->orderProducts) ? $model->orderProducts : [new OrderProduct()];
+            foreach ($ops as $index => $orderProduct) {
 	            echo Html::beginTag("div", ["class" => "item"]);
 	            echo Html::activeHiddenInput($orderProduct, "[{$index}]order_id", ["value" => $model->id]);
 	            echo $form->field($orderProduct, "[{$index}]product_id")->dropDownList($list, [
