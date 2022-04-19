@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Client;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\helpers\Url;
@@ -9,7 +10,8 @@ use yii\helpers\Url;
  */
 
 if (!Yii::$app->user->can("employee")) {
-	if (!$clientInfo = Yii::$app->user->identity->client) {
+	$clientInfo = Client::findOne(['phone' => Yii::$app->user->identity->username]);
+	if (!$clientInfo) {
 		$menu = [
 			[
 				"label" => Yii::t("app", "Admin Panel"),
@@ -33,7 +35,7 @@ if (!Yii::$app->user->can("employee")) {
 				"icon" => "ticket",
 			], [
 				"label" => Yii::t("app", "Client info"),
-				"url" => Url::to(["client/view", "id" => Yii::$app->user->identity->client->id])
+				"url" => Url::to(["client/view", "id" => $clientInfo->id])
 			]
 		];
 	}

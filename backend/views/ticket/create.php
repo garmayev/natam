@@ -13,7 +13,9 @@ use yii\widgets\ActiveForm;
  */
 $this->title = Yii::t("app", "Edit ticket #{n}", ["n" => $model->id]);
 $form = ActiveForm::begin();
-?>
+$client = Client::findOne(['phone' => Yii::$app->user->identity->username]);
+if (Yii::$app->user->can('employee')) {
+	?>
 
     <div class="panel">
         <div class="panel-heading panel-default">
@@ -37,14 +39,27 @@ $form = ActiveForm::begin();
 		echo Html::endTag("div");
 		?>
     </div>
-
+	<?php
+} else {
+	echo $form->field($client, 'client_id')->hiddenInput(['value' => $client->id])->label(false);
+}
+?>
     <div class="panel">
         <div class="panel-heading panel-default">
 			<?= Yii::t("app", "Information about Ticket") ?>
         </div>
         <div class="panel-body">
+            <?php
+			echo $form->field($model, 'comment')->textarea();
+			$options = [
+				"class" => ["form-control"],
+			];
+            if ( !Yii::$app->user->can('employee') ) {
+                $options = array_merge_recursive($options, ["disabled" => "disabled"]);
+            }
+			?>
             <p>Статус
-                запроса: <?= Html::tag("div", Html::activeDropDownList($model, "status", $model->getStatus(), ["class" => "form-control"]), ["class" => "form-group"]) ?></p>
+                запроса: <?= Html::tag("div", Html::activeDropDownList($model, "status", $model->getStatus(), $options), ["class" => ["form-group"]]) ?></p>
 			<?= Html::a(Yii::t("app", "Convert to Order"), ["ticket/convert", "client_id" => $model->client->id, "id" => $model->id], ["class" => ["btn", "btn-success"]]) ?>
         </div>
     </div>

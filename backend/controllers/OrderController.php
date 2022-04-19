@@ -25,7 +25,8 @@ class OrderController extends BaseController
 		if (Yii::$app->user->can("employee")) {
 			$query = Order::find()->where(["<", "status", Order::STATUS_COMPLETE]);
 		} else {
-			$query = Order::find()->where(["client_id" => Yii::$app->user->identity->client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE]);
+			$client = Client::findOne(["phone" => Yii::$app->user->identity->username]);
+			$query = Order::find()->where(["client_id" => $client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE]);
 		}
 		return $this->render("index", [
 			"orderProvider" => new ActiveDataProvider([

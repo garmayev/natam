@@ -1,5 +1,7 @@
 <?php
 
+use common\models\Client;
+use common\models\HistoryEvent;
 use common\models\Order;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
@@ -76,12 +78,15 @@ $totalCost = 0;
         </div>
         <div class="panel-body">
 			<?php
+			$query = HistoryEvent::find();
+			$query->filterWhere(['field_id' => $model->id])->andFilterWhere(['table' => Order::tableName()]);
+			$query->andFilterWhere(["or", ["field_name" => "status"], ["field_name" => "id"]]);
 			$updates = new ActiveDataProvider([
-				'query' => \common\models\HistoryEvent::find()->where(["field_id" => $model->id])->andWhere(["table" => Order::tableName()])->andWhere(["field_name" => "status"])->orWhere(["field_name" => "id"])
+				'query' => $query
 			]);
 			echo \yii\grid\GridView::widget([
 				"dataProvider" => $updates,
-                "summary" => "",
+				"summary" => "",
 				"columns" => [
 					[
 						"label" => "Название события",
@@ -89,9 +94,9 @@ $totalCost = 0;
 							/**
 							 * @var \common\models\HistoryEvent $model
 							 */
-                            if ($model->field_name === "id") {
-                                return Html::tag("span", "Новый заказ");
-                            }
+							if ($model->field_name === "id") {
+								return Html::tag("span", "Новый заказ");
+							}
 							return Html::tag("span", "Статус изменен");
 						}
 					], [
@@ -102,20 +107,30 @@ $totalCost = 0;
 							 */
 							if (isset($model->old_value) && isset($model->new_value)) {
 								switch ($model->new_value) {
-									case 2: return "Подготовлен для отправки";
-									case 3: return "В процессе доставки";
+									case 2:
+										return "Подготовлен для отправки";
+									case 3:
+										return "В процессе доставки";
 								}
 							} else {
 								return Html::tag("span", "Заказ #{$model->field_id} создан");
 							}
 						}
 					],
+					[
+                        'label' => Yii::t('app', 'Created By'),
+                        'value' => function ($model) {
+                            $client = Client::findOne(["user_id" => $model->user_id]);
+                            var_dump($model);
+                            return ($client) ? $client->name : $model->user->username;
+                        }
+					],
 					"user.username",
 					[
 						"label" => "Дата события",
-                        "content" => function ($model) {
-                            return Yii::$app->formatter->asDatetime($model->date);
-                        }
+						"content" => function ($model) {
+							return Yii::$app->formatter->asDatetime($model->date);
+						}
 					]
 				]
 			])

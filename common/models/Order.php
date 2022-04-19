@@ -115,11 +115,13 @@ class Order extends ActiveRecord
 	{
 		$parent = parent::load($data, $formName);
 
-		$client = Client::findByPhone($data["Client"]["phone"]);
-		if ( isset($client) ) {
-			$this->client = $client;
-		} else {
-			$this->client = new Client($data["Client"]);
+		if ( isset($data["Client"]["phone"]) ) {
+			$client = Client::findByPhone($data["Client"]["phone"]);
+			if ( isset($client) ) {
+				$this->client = $client;
+			} else {
+				$this->client = new Client($data["Client"]);
+			}
 		}
 
 		$location = Location::findOne(['title' => $data['Order']['location']['title']]);

@@ -3,6 +3,7 @@
  * @var $this View
  */
 
+use common\models\Client;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -18,7 +19,8 @@ if (Yii::$app->user->can("employee")) {
     </div>
 	<?php
 } else {
-	if (!$clientInfo = Yii::$app->user->identity->client) {
+    $clientInfo = Client::findOne(['phone' => Yii::$app->user->identity->username]);
+	if (!$clientInfo) {
 		$client = new \common\models\Client();
 		$form = ActiveForm::begin(["action" => ["client/create"]]);
 		echo $form->field($client, "user_id")->hiddenInput(["value" => Yii::$app->user->id])->label(false);

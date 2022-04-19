@@ -83,10 +83,11 @@ class Client extends \yii\db\ActiveRecord
 				if ($user->save()) {
 					$auth = Yii::$app->authManager;
 					$role = $auth->getRole('person');
-					Yii::error($role);
+//					Yii::error($role);
 					$auth->assign($role, $user->id);
 					$user->profile->name = $this->name;
 					$user->profile->public_email = $this->email;
+					$this->user = $user;
 					return $valid && $user->profile->save();
 				} else {
 					Yii::error($user->getErrorSummary(true));

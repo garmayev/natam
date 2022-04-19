@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use common\models\Client;
 use common\models\Ticket;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
@@ -40,8 +41,9 @@ class TicketController extends BaseController
 
 	public function actionIndex()
 	{
-		if ( \Yii::$app->user->can("person") ) {
-			$query = Ticket::find()->where(["client_id" => \Yii::$app->user->identity->client->id]);
+		if ( !\Yii::$app->user->can("employee") ) {
+			$client = Client::findOne(['phone' => \Yii::$app->user->identity->username]);
+			$query = Ticket::find()->where(["client_id" => $client->id]);
 		} else {
 			$query = Ticket::find();
 		}

@@ -23,13 +23,14 @@ $this->registerJsFile("/js/jquery.maskedinput.min.js", ["depends" => \yii\web\Jq
 $this->registerJsFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js", ["depends" => \yii\web\JqueryAsset::class]);
 $this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU");
 $this->registerCssFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/css/suggestions.min.css");
-?>
+echo Html::beginTag("div", ["class" => ["panel-body"]]);
+if (Yii::$app->user->can('employee')) {
+	?>
     <div class="panel">
         <div class="panel-heading panel-default">
 			<?= Yii::t("app", "Information about Client") ?>
         </div>
 		<?php
-		echo Html::beginTag("div", ["class" => ["panel-body"]]);
 		if (is_null($model->client)) {
 			$model->client = new Client();
 		}
@@ -40,6 +41,12 @@ $this->registerCssFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/cs
 		?>
     </div>
 
+	<?php
+} else {
+	$client = Client::findOne(['phone' => Yii::$app->user->identity->username]);
+	echo $form->field($model, 'client_id')->hiddenInput(['value' => $client->id])->label(false);
+}
+?>
 <?php
 $allProducts = Product::find()->all();
 //$list = ArrayHelper::map(Product::find()->all(), "id", "title");
@@ -227,40 +234,40 @@ $this->registerCss("
         </div>
         <div class="panel-body" id="order-controls">
 			<?php
-            $op = ($model->orderProducts) ? $model->orderProducts[0] : new \common\models\OrderProduct();
+			$op = ($model->orderProducts) ? $model->orderProducts[0] : new \common\models\OrderProduct();
 			\wbraganca\dynamicform\DynamicFormWidget::begin([
 				'widgetContainer' => 'dynamicform_wrapper',
 				'widgetBody' => '.container-items',
 				'widgetItem' => '.item',
-                'model' => $op,
-                'formId' => "w0",
-                'insertButton' => '.add-product',
-                'deleteButton' => '.delete',
+				'model' => $op,
+				'formId' => "w0",
+				'insertButton' => '.add-product',
+				'deleteButton' => '.delete',
 				"min" => 1,
 				'formFields' => [
 					'product_id',
 					'product_count',
-                    'order_id',
+					'order_id',
 				],
 			]);
 			// necessary for update action.
-            echo Html::beginTag("div", ["class" => "container-items"]);
-//            var_dump($model->orderProducts); die;
-            $ops = ($model->orderProducts) ? $model->orderProducts : [new OrderProduct()];
-            foreach ($ops as $index => $orderProduct) {
-	            echo Html::beginTag("div", ["class" => "item"]);
-	            echo Html::activeHiddenInput($orderProduct, "[{$index}]order_id", ["value" => $model->id]);
-	            echo $form->field($orderProduct, "[{$index}]product_id")->dropDownList($list, [
-		            "class" => ["form-control"],
-		            "style" => "width: 20%",
-		            "prompt" => "Выберите товар"
-	            ])->label(false);
-	            echo $form->field($orderProduct, "[{$index}]product_count")->textInput(["placeholder" => "Введите количество"])->label(false);
-	            echo Html::endTag("div");
-            }
+			echo Html::beginTag("div", ["class" => "container-items"]);
+			//            var_dump($model->orderProducts); die;
+			$ops = ($model->orderProducts) ? $model->orderProducts : [new OrderProduct()];
+			foreach ($ops as $index => $orderProduct) {
+				echo Html::beginTag("div", ["class" => "item"]);
+				echo Html::activeHiddenInput($orderProduct, "[{$index}]order_id", ["value" => $model->id]);
+				echo $form->field($orderProduct, "[{$index}]product_id")->dropDownList($list, [
+					"class" => ["form-control"],
+					"style" => "width: 20%",
+					"prompt" => "Выберите товар"
+				])->label(false);
+				echo $form->field($orderProduct, "[{$index}]product_count")->textInput(["placeholder" => "Введите количество"])->label(false);
+				echo Html::endTag("div");
+			}
 			echo Html::endTag("div");
 			echo Html::tag("p", Html::a(Yii::t("app", "Append Product"), "#", ["class" => ["btn", "btn-success", "add-product"]]));
-            \wbraganca\dynamicform\DynamicFormWidget::end();
+			\wbraganca\dynamicform\DynamicFormWidget::end();
 			echo Html::submitButton(Yii::t("app", "Save"), ["class" => ["btn", "btn-primary"], "style" => "margin-right: 10px;"]);
 			echo Html::a(Yii::t("app", "Cancel"), Yii::$app->request->referrer, ["class" => ["btn", "btn-danger"]]);
 			?>
