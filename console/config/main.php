@@ -50,6 +50,15 @@ return [
 		    'class' => 'yii\rbac\DbManager',
 		    'defaultRoles' => ['person'],
 	    ],
+	    'user' => [
+		    'class' => 'yii\web\User',
+		    'identityClass' => 'app\models\User',
+		    'enableSession' => false,
+		    //'enableAutoLogin' => true,
+	    ],
+	    'session' => [ // for use session in console application
+		    'class' => 'yii\web\Session'
+	    ],
     ],
 	'modules' => [
 		'user' => [
