@@ -78,7 +78,6 @@ class Order extends ActiveRecord
 			],
 			'rel' => [
 				'class' => UpdateBehavior::className(),
-			
 			],
 			'history' => [
 				'class' => ActiveRecordHistoryBehavior::class,
@@ -89,7 +88,7 @@ class Order extends ActiveRecord
 	public function rules()
 	{
 		return [
-			[["address"], "required"],
+//			[["address"], "required"],
 			[["address", "comment"], "string"],
 			[["client_id"], "integer"],
 			[["client_id"], "exist", "targetClass" => Client::className(), "targetAttribute" => "id"],
@@ -123,12 +122,18 @@ class Order extends ActiveRecord
 			$this->client = new Client($data["Client"]);
 		}
 
+		$location = Location::findOne(['title' => $data['Order']['location']['title']]);
+		if ( isset($location) ) {
+			$this->location = $location;
+		} else {
+			$this->location = new Location($data["Order"]['location']);
+		}
+
 		return $parent;
 	}
 
 	public function afterSave($insert, $changedAttributes)
 	{
-//		Yii::error( $this->isAttributeChanged("status") );
 		$employee = Employee::findOne(["user_id" => Yii::$app->user->id]);
 		if ( $this->isAttributeChanged("status") ) {
 			$employees = Employee::find()->where(["state_id" => $this->status])->all();
