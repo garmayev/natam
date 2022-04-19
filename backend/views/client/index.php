@@ -55,21 +55,21 @@ echo GridView::widget([
 				return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-question-sign"]]), ["client/invite", "id" => $model->id]);
 			}
 		], [
-			"attribute" => "notify",
-			"label" => "Notify",
-			"content" => function ($model) {
-				/**
-				 * @var $model Client
-				 */
-				if ( $model->notify === Client::NOTIFY_SMS ) {
-					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-phone"]]));
-				} else if ($model->notify === Client::NOTIFY_EMAIL) {
-					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-envelope"]]));
-				} else {
-					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-envelope"]]));
-				}
-			}
-		], [
+//			"attribute" => "notify",
+//			"label" => "Notify",
+//			"content" => function ($model) {
+//				/**
+//				 * @var $model Client
+//				 */
+//				if ( $model->notify === Client::NOTIFY_SMS ) {
+//					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-phone"]]));
+//				} else if ($model->notify === Client::NOTIFY_EMAIL) {
+//					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-envelope"]]));
+//				} else {
+//					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-envelope"]]));
+//				}
+//			}
+//		], [
 			'class' => \yii\grid\ActionColumn::class,
 			'headerOptions' => [
 				'width' => '80px'
