@@ -35,6 +35,7 @@ $this->registerCssFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/cs
 		}
 		echo $form->field($model->client, "name");
 		echo $form->field($model->client, "phone");
+		echo $form->field($model->client, "email");
 		echo Html::endTag("div");
 		?>
     </div>

@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\models\User;
+use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 
 /**
@@ -33,6 +34,18 @@ class Client extends \yii\db\ActiveRecord
 	const NOTIFY_SMS = 1;
 	const NOTIFY_EMAIL = 2;
 
+	public function behaviors()
+	{
+		return array_merge(parent::behaviors(), [
+			'relations' => [
+				'class' => SaveRelationsBehavior::className(),
+				'relations' => [
+					'user'
+				]
+			]
+		]);
+	}
+
 	public static function tableName()
 	{
 		return "{{%client}}";
@@ -48,6 +61,7 @@ class Client extends \yii\db\ActiveRecord
 			[["email"], "email"],
 			[["user_id"], "exist", "targetClass" => User::class, "targetAttribute" => "id"],
 			[["notify"], "default", "value" => self::NOTIFY_NONE],
+			[['user'], 'safe']
 		];
 	}
 
@@ -55,17 +69,28 @@ class Client extends \yii\db\ActiveRecord
 	{
 		$valid = parent::beforeSave($insert);
 		if ($valid) {
-			$user = Yii::createObject([
-				'class' => User::className(),
-				'scenario' => 'register',
-				'username' => $this->phone,
-				'email' => $this->email,
-				'password' => $this->phone,
-			]);
-			if ($user->save()) {
-				return $valid && $this->sendNotify();
+			$user = User::findOne(['username' => $this->phone]);
+			if ( isset($user) ) {
+				$this->user = $user;
 			} else {
-				Yii::error($user->getErrorSummary(true));
+				$user = Yii::createObject([
+					'class' => User::className(),
+					'scenario' => 'register',
+					'username' => $this->phone,
+					'email' => $this->email,
+					'password' => $this->phone,
+				]);
+				if ($user->save()) {
+					$auth = Yii::$app->authManager;
+					$role = $auth->getRole('person');
+					Yii::error($role);
+					$auth->assign($role, $user->id);
+					$user->profile->name = $this->name;
+					$user->profile->public_email = $this->email;
+					return $valid && $user->profile->save();
+				} else {
+					Yii::error($user->getErrorSummary(true));
+				}
 			}
 		}
 		return $valid;

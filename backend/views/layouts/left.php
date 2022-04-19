@@ -12,7 +12,7 @@ if (!Yii::$app->user->can("employee")) {
 	if (!$clientInfo = Yii::$app->user->identity->client) {
 		$menu = [
 			[
-				"label" => Yii::t("app", "Control panel"),
+				"label" => Yii::t("app", "Admin Panel"),
 				"url" => Url::to(["/default/index"]),
 				"icon" => "bell",
 			]
@@ -20,7 +20,7 @@ if (!Yii::$app->user->can("employee")) {
 	} else {
 		$menu = [
 			[
-				"label" => Yii::t("app", "Control panel"),
+				"label" => Yii::t("app", "Admin Panel"),
 				"url" => Url::to(["/default/index"]),
 				"icon" => "bell",
 			], [
@@ -127,7 +127,7 @@ if (!Yii::$app->user->can("employee")) {
 				if ($employee !== null) {
 					echo Html::tag("p", "{$employee->name} {$employee->family}");
 				} else {
-					echo Html::tag("p", Yii::$app->user->identity->username);
+					echo Html::tag("p", (Yii::$app->user->identity->profile->name) ? Yii::$app->user->identity->profile->name : Yii::$app->user->identity->username );
 				}
 				?>
 

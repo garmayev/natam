@@ -15,7 +15,7 @@ $orders = Order::find()->all();
 ?>
 <header class="main-header">
 
-    <?= Html::a('<span class="logo-mini">APP</span><span class="logo-lg">' . Yii::$app->name . '</span>', Yii::$app->homeUrl, ['class' => 'logo']) ?>
+    <?= Html::a('<span class="logo-mini">APP</span><span class="logo-lg">' . Yii::$app->name . '</span>', '/', ['class' => 'logo']) ?>
 
     <nav class="navbar navbar-static-top" role="navigation">
 
@@ -40,7 +40,6 @@ $orders = Order::find()->all();
                             <ul class="menu">
                                 <?php
                                     foreach ($tickets as $ticket) {
-//                                        Yii::error($ticket->client->name);
 					if (isset($ticket->client)) {
                                         $message = "<div class='pull-left'><img src='{$directoryAsset}/img/user3-128x128.jpg'></div>
 <h4>{$ticket->client->name}</h4>
@@ -82,7 +81,7 @@ $orders = Order::find()->all();
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                         <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="user-image" alt="User Image"/>
-                        <span class="hidden-xs"><?= Yii::$app->user->identity->username ?></span>
+                        <span class="hidden-xs"><?= (Yii::$app->user->identity->profile->name) ? Yii::$app->user->identity->profile->name : Yii::$app->user->identity->username ?></span>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->

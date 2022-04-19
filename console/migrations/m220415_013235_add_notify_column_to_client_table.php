@@ -12,6 +12,7 @@ class m220415_013235_add_notify_column_to_client_table extends Migration
      */
     public function safeUp()
     {
+	    $this->addColumn('{{%client}}', 'notify', $this->integer());
     }
 
     /**
@@ -19,5 +20,6 @@ class m220415_013235_add_notify_column_to_client_table extends Migration
      */
     public function safeDown()
     {
+		$this->dropColumn('{{%client}}', 'notify');
     }
 }
