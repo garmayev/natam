@@ -300,10 +300,11 @@ class Order extends ActiveRecord
 
 	public function generateTelegramText()
 	{
-		$result = "<b>Заказ #{$this->id}</b>\n";
+		$result = "<b>Заказ #{$this->id}</b>\n\n";
 		foreach ($this->products as $product) {
 			$result .= "<strong>$product->title</strong> ($product->value) {$this->getCount($product->id)} * {$product->price}\n";
 		}
+		$result .= "\n";
 		if ($this->location) {
 			$result .= "<b>Адрес доставки</b>: <a href='https://2gis.ru/routeSearch/rsType/car/from/107.683039,51.835453/to/{$this->location->longitude},{$this->location->latitude}/go'>{$this->address}</a>\n";
 		} else {

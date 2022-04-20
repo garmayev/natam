@@ -170,7 +170,6 @@ class TelegramController extends \yii\rest\Controller
 					break;
 				case "/order_complete":
 					parse_str($args[0], $argument);
-					Yii::error($args);
 					$order = Order::findOne($argument["id"]);
 					$staff = Employee::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
 					if ( isset($staff) && isset($order) && ($staff->state_id == $order->status) ) {
