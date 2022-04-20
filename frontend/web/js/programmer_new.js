@@ -145,4 +145,14 @@ $('.product_order > a.btn').on('click', (e) => {
     e.preventDefault();
 })
 
+if ($('.alert').html() !== '') {
+    setTimeout(function () {
+        $('.alert').animate({
+            opacity: 0,
+        }, 2000, function () {
+            $(this).hide();
+        })
+    }, 5000);
+}
+
 $("#order-client-phone, #ticket-client-phone").mask("+7(999) 999 9999")
