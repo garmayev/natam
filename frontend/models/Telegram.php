@@ -41,6 +41,7 @@ class Telegram extends \yii\base\Model
 			->setData($args)
 			->send();
 		if ( !$response->isOk ) {
+			\Yii::error($args);
 			\Yii::error($response->getData());
 		}
 		return $response;
