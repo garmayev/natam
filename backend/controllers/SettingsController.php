@@ -23,6 +23,6 @@ class SettingsController extends Controller
 		$setting = Settings::findOne(["name" => "notify"]);
 		$setting->content = json_encode($post["Settings"]);
 		$setting->save();
-		return $this->redirect(["/admin/settings/index"]);
+		return $this->redirect(["/settings/index"]);
 	}
 }

@@ -12,7 +12,7 @@ use yii\helpers\Html;
  */
 
 //var_dump($model->getContent());
-echo Html::beginForm("/admin/settings/update", "post");
+echo Html::beginForm(["/settings/update"], "post");
 echo Html::beginTag("div", ["class" => "panel panel-default"]);
 echo Html::tag("div", "Уведомления для сотрудников", ["class" => "panel-heading"]);
 

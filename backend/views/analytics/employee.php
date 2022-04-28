@@ -69,31 +69,31 @@ foreach ($models as $model) {
 		switch ($event->new_value) {
 			case 2:
 				$result[$index]["status_prepare"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date),
+					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
 					'author' => $event->user_id,
 				];
 				break;
 			case 3:
 				$result[$index]["status_delivery"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date),
+					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
 					'author' => $event->user_id,
 				];
 				break;
 			case 4:
 				$result[$index]["status_complete"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date),
+					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
 					'author' => $event->user_id,
 				];
 				break;
 			case 5:
 				$result[$index]["status_cancel"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date),
+					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
 					'author' => $event->user_id,
 				];
 				break;
 			case 6:
 				$result[$index]["status_hold"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date),
+					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
 					'author' => $event->user_id,
 				];
 				break;

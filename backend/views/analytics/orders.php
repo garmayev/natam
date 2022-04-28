@@ -30,10 +30,10 @@ foreach ($models as $model) :
 				$employee = \garmayev\staff\models\Employee::findOne(["user_id" => $event->user_id]);
 				if (isset($employee)) {
 					if ($created) {
-						$ago = Yii::$app->formatter->asTimestamp($event->date) - $created;
+						$ago = (Yii::$app->formatter->asTimestamp($event->date) - 28800) - $created;
 						$created = null;
 					} else {
-						$ago = Yii::$app->formatter->asTimestamp($event->date) - Yii::$app->formatter->asTimestamp($previous->date);
+						$ago = (Yii::$app->formatter->asTimestamp($event->date) - 28800) - Yii::$app->formatter->asTimestamp($previous->date);
 					}
 					$interval = \common\models\Settings::getInterval($index - 1);
 					if ($interval < $ago) {
