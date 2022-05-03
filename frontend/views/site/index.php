@@ -317,7 +317,7 @@ $this->registerJsVar("picker", "");
                         })
                         $("#delivery_type").on('change', (e) => {
                             if ($(e.currentTarget).is(":checked")) {
-                                $("#order-address").addClass("disabled").attr({disabled: "disabled"});
+                                $("#order-address").addClass("disabled").attr({disabled: "disabled"}).val('');
                                 myMap.destroy();
                                 myMap = undefined;
                             } else {
@@ -328,7 +328,8 @@ $this->registerJsVar("picker", "");
                         $('.product_order > a.btn').on('click', (e) => {
                             if (!$(e.currentTarget).hasClass('disabled')) {
                                 let card = $(e.currentTarget).closest('.product_item');
-                                data = `id=${card.find('.cart_product_id').val()}&count=${card.find('.cart_product_count').val()}`
+                                let data = `id=${card.find('.cart_product_id').val()}&count=${card.find('.cart_product_count').val()}`;
+				console.log(data);
                                 $.ajax({
                                     url: '/cart/add',
                                     data: data,

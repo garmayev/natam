@@ -138,20 +138,21 @@ class Order extends ActiveRecord
 			}
 		}
 
-		if ( $data["Order"]["delivery_type"] != 'on' ) {
-			Yii::error("DELIVERY COMPANY");
+		if ( !empty($data["Order"]["location"]["title"]) ) {
+//			Yii::error("DELIVERY COMPANY");
 			$location = Location::findOne(['title' => $data['Order']['location']['title']]);
 			if (isset($location)) {
 				$this->location = $location;
 			} else {
 				$this->location = new Location($data["Order"]['location']);
+				$this->location->save();
 			}
-			$this->delivery_type = 1;
+			$this->delivery_type = self::DELIVERY_COMPANY;
 		} else {
-			Yii::error("SELF DELIVERY");
+//			Yii::error("SELF DELIVERY");
 			$this->scenario = self::SCENARIO_DELIVERY_SELF;
 			$this->location = null;
-			$this->delivery_type = 0;
+			$this->delivery_type = self::DELIVERY_SELF;
 		}
 
 		return $parent;
@@ -328,10 +329,14 @@ class Order extends ActiveRecord
 			$result .= "<strong>$product->title</strong> ($product->value) {$this->getCount($product->id)} * {$product->price}\n";
 		}
 		$result .= "\n";
-		if ($this->location) {
-			$result .= "<b>Адрес доставки</b>: <a href='https://2gis.ru/routeSearch/rsType/car/from/107.683039,51.835453/to/{$this->location->longitude},{$this->location->latitude}/go'>{$this->address}</a>\n";
+		if ($this->delivery_type !== self::DELIVERY_SELF) {
+			if ($this->location) {
+				$result .= "<b>Адрес доставки</b>: <a href='https://2gis.ru/routeSearch/rsType/car/from/107.683039,51.835453/to/{$this->location->longitude},{$this->location->latitude}/go'>{$this->location->title}</a>\n";
+			} else {
+				$result .= "<b>Адрес доставки</b>: {$this->address}\n";
+			}
 		} else {
-			$result .= "<b>Адрес доставки</b>: {$this->address}\n";
+			$result .= "<b>Адрес доставки</b>: Самовывоз\n";
 		}
 		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:{$this->client->phone}'>{$this->client->phone}</a>\n";
 		$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
@@ -361,7 +366,7 @@ class Order extends ActiveRecord
 				];
 				break;
 			case self::STATUS_PREPARE:
-				if ( $this->delivery_type === self::DELIVERY_COMPANY ) {
+				if ( $this->delivery_type == self::DELIVERY_COMPANY ) {
 					$employees = Employee::find()->where(["state_id" => $this->status + 1])->limit(5)->all();
 					foreach ($employees as $employee) {
 						$keyboard[] = [
@@ -374,8 +379,8 @@ class Order extends ActiveRecord
 				} else {
 					$keyboard[] = [
 						[
-							"text" => Yii::t('app', 'Complete'),
-							"callback_data" => "/order_driver order_id={$this->id}&driver_id=",
+							"text" => "Выполнено",
+							"callback_data" => "/order_driver order_id={$this->id}",
 						]
 					];
 				}

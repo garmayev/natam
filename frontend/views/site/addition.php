@@ -54,6 +54,7 @@ $this->registerJs('
     });
                         $(".product_order > a.btn").on("click", (e) => {
                             if (!$(e.currentTarget).hasClass("disabled")) {
+				$(e.currentTarget).addClass("disabled");
                                 let card = $(e.currentTarget).closest(".product_item");
                                 data = `id=${card.find(".cart_product_id").val()}&count=${card.find(".cart_product_count").val()}`
                                 $.ajax({

@@ -91,12 +91,6 @@ foreach ($models as $model) {
 					'author' => $event->user_id,
 				];
 				break;
-			case 6:
-				$result[$index]["status_hold"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
-					'author' => $event->user_id,
-				];
-				break;
 		}
 	}
 }
@@ -169,14 +163,6 @@ if (count($result)) {
 			'format' => 'html',
 			'value' => function ($model) {
 				return asItem($model, 'status_cancel');
-			}
-		],
-		[
-			'attribute' => 'status_cancel',
-			'label' => $model->getStatus(5),
-			'format' => 'html',
-			'value' => function ($model) {
-				return asItem($model, 'status_hold');
 			}
 		],
 	];

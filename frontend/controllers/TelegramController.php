@@ -172,16 +172,14 @@ class TelegramController extends \yii\rest\Controller
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["id"]);
 					$staff = Employee::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
-					if ( isset($staff) && isset($order) && ($staff->state_id == $order->status) ) {
-						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
-						foreach ($updates as $update) {
-							// Yii::error($update->attributes);
-							$response = Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
-							// $update->delete();
-						}
-						$order->status++;
-						$order->save();
+					$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
+					foreach ($updates as $update) {
+						// Yii::error($update->attributes);
+						$response = Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
+						// $update->delete();
 					}
+					$order->status++;
+					$order->save();
 					break;
 				case "/order_driver":
 					parse_str($args[0], $argument);
@@ -196,7 +194,7 @@ class TelegramController extends \yii\rest\Controller
 						// $update->delete();
 					}
 
-					if (is_null($argument["driver_id"])) {
+					if (isset($argument["driver_id"])) {
 						$driver = Employee::findOne($argument["driver_id"]);
 
 						$order->status = Order::STATUS_DELIVERY;

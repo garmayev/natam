@@ -32,8 +32,8 @@ foreach ($models as $model) :
 					if ($created) {
 						$ago = (Yii::$app->formatter->asTimestamp($event->date) - 28800) - $created;
 						$created = null;
-					} else {
-						$ago = (Yii::$app->formatter->asTimestamp($event->date) - 28800) - Yii::$app->formatter->asTimestamp($previous->date);
+					} else if (isset($previous)) {
+						// $ago = (Yii::$app->formatter->asTimestamp($event->date) - 28800) - Yii::$app->formatter->asTimestamp($previous->date);
 					}
 					$interval = \common\models\Settings::getInterval($index - 1);
 					if ($interval < $ago) {
