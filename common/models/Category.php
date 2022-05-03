@@ -11,6 +11,7 @@ use Yii;
  * @property string|null $title
  * @property string|null $content
  * @property string|null $thumbs
+ * @property int $main [int(11)]
  *
  * @property Product[] $products
  */
@@ -34,6 +35,8 @@ class Category extends \yii\db\ActiveRecord
         return [
             [['content'], 'string'],
             [['title', 'thumbs'], 'string', 'max' => 255],
+	        [['main'], 'integer'],
+	        [['main'], 'default', 'value' => true],
         ];
     }
 
@@ -54,7 +57,7 @@ class Category extends \yii\db\ActiveRecord
 	{
 		if ( $this->validate() ) {
 			if ( isset($this->image) ) {
-				$this->image->saveAs("img/uploads/{$this->image->baseName}.{$this->image->extension}");
+				$this->image->saveAs(Yii::getAlias('@frontend')."/web/img/uploads/{$this->image->baseName}.{$this->image->extension}");
 				$this->thumbs = "/img/uploads/{$this->image->baseName}.{$this->image->extension}";
 			}
 			return true;

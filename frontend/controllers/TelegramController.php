@@ -186,7 +186,6 @@ class TelegramController extends \yii\rest\Controller
 				case "/order_driver":
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["order_id"]);
-					$driver = Employee::findOne($argument["driver_id"]);
 					$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
 					foreach ($updates as $update) {
 						Telegram::editMessage([
@@ -197,31 +196,38 @@ class TelegramController extends \yii\rest\Controller
 						// $update->delete();
 					}
 
-					$order->status = Order::STATUS_DELIVERY;
-					$order->save();
+					if (is_null($argument["driver_id"])) {
+						$driver = Employee::findOne($argument["driver_id"]);
 
-					$response = Telegram::sendMessage([
-						"chat_id" => $driver->chat_id,
-						"text" => $order->generateTelegramText(),
-						"parse_mode" => "HTML",
-						"reply_markup" => json_encode(["inline_keyboard" => $order->generateTelegramKeyboard()])
-					]);
+						$order->status = Order::STATUS_DELIVERY;
+						$order->save();
 
-					if ( $response->isOk ) {
-						$data = $response->getData();
-						$update = new Updates();
-						if ($update->load(["Updates" => [
-							"order_id" => $order->id,
-							"order_status" => $order->status,
-							"employee_id" => $driver->id,
-							"message_id" => $data["result"]["message_id"],
-							"message_timestamp" => $data["result"]["date"],
-						]]) && $update->save()) {
-							return ["ok" => true];
-						} else {
-							Yii::error($driver->id);
-							Yii::error($update->getErrorSummary(true));
+						$response = Telegram::sendMessage([
+							"chat_id" => $driver->chat_id,
+							"text" => $order->generateTelegramText(),
+							"parse_mode" => "HTML",
+							"reply_markup" => json_encode(["inline_keyboard" => $order->generateTelegramKeyboard()])
+						]);
+
+						if ($response->isOk) {
+							$data = $response->getData();
+							$update = new Updates();
+							if ($update->load(["Updates" => [
+									"order_id" => $order->id,
+									"order_status" => $order->status,
+									"employee_id" => $driver->id,
+									"message_id" => $data["result"]["message_id"],
+									"message_timestamp" => $data["result"]["date"],
+								]]) && $update->save()) {
+								return ["ok" => true];
+							} else {
+								Yii::error($driver->id);
+								Yii::error($update->getErrorSummary(true));
+							}
 						}
+					} else {
+						$order->status = Order::STATUS_COMPLETE;
+						$order->save();
 					}
 
 					break;

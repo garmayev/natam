@@ -38,6 +38,7 @@ use yii\db\ActiveRecord;
  * @property Updates[] $updates
  * @property-write mixed $count
  * @property Location $location
+ * @property int $delivery_type [int(11)]
  */
 class Order extends ActiveRecord
 {
@@ -53,6 +54,11 @@ class Order extends ActiveRecord
 	const STATUS_COMPLETE = 4;
 	const STATUS_CANCEL = 5;
 	const STATUS_HOLD = 6;
+
+	const DELIVERY_SELF = 0;
+	const DELIVERY_COMPANY = 1;
+
+	const SCENARIO_DELIVERY_SELF = 'delivery_self';
 
 	public static function tableName()
 	{
@@ -85,17 +91,25 @@ class Order extends ActiveRecord
 		];
 	}
 
+	public function scenarios()
+	{
+		$scenarios = parent::scenarios();
+		$scenarios[self::SCENARIO_DEFAULT] = ['!address', 'orderProduct', 'status', 'delivery_type', 'notify_started_at'];
+		$scenarios[self::SCENARIO_DELIVERY_SELF] = ['address', 'orderProduct', 'status', 'delivery_type', 'notify_started_at'];
+		return $scenarios;
+	}
+
 	public function rules()
 	{
 		return [
-//			[["address"], "required"],
 			[["address", "comment"], "string"],
 			[["client_id"], "integer"],
 			[["client_id"], "exist", "targetClass" => Client::className(), "targetAttribute" => "id"],
 			[["status"], "default", "value" => self::STATUS_NEW],
+			[['delivery_type'], "default", "value" => self::DELIVERY_COMPANY],
 			[["notify_started_at"], "default", "value" => 0],
 			[["location_id"], "exist", "targetClass" => Location::class, "targetAttribute" => "id"],
-			[['orderProducts', 'orderProduct'],'safe']
+			[['orderProducts', 'orderProduct'],'safe'],
 		];
 	}
 
@@ -124,11 +138,20 @@ class Order extends ActiveRecord
 			}
 		}
 
-		$location = Location::findOne(['title' => $data['Order']['location']['title']]);
-		if ( isset($location) ) {
-			$this->location = $location;
+		if ( $data["Order"]["delivery_type"] != 'on' ) {
+			Yii::error("DELIVERY COMPANY");
+			$location = Location::findOne(['title' => $data['Order']['location']['title']]);
+			if (isset($location)) {
+				$this->location = $location;
+			} else {
+				$this->location = new Location($data["Order"]['location']);
+			}
+			$this->delivery_type = 1;
 		} else {
-			$this->location = new Location($data["Order"]['location']);
+			Yii::error("SELF DELIVERY");
+			$this->scenario = self::SCENARIO_DELIVERY_SELF;
+			$this->location = null;
+			$this->delivery_type = 0;
 		}
 
 		return $parent;
@@ -338,12 +361,21 @@ class Order extends ActiveRecord
 				];
 				break;
 			case self::STATUS_PREPARE:
-				$employees = Employee::find()->where(["state_id" => $this->status + 1])->limit(5)->all();
-				foreach ($employees as $employee) {
+				if ( $this->delivery_type === self::DELIVERY_COMPANY ) {
+					$employees = Employee::find()->where(["state_id" => $this->status + 1])->limit(5)->all();
+					foreach ($employees as $employee) {
+						$keyboard[] = [
+							[
+								"text" => "{$employee->family} {$employee->name}",
+								"callback_data" => "/order_driver order_id={$this->id}&driver_id={$employee->id}",
+							]
+						];
+					}
+				} else {
 					$keyboard[] = [
 						[
-							"text" => "{$employee->family} {$employee->name}",
-							"callback_data" => "/order_driver order_id={$this->id}&driver_id={$employee->id}",
+							"text" => Yii::t('app', 'Complete'),
+							"callback_data" => "/order_driver order_id={$this->id}&driver_id=",
 						]
 					];
 				}

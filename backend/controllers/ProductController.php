@@ -43,7 +43,7 @@ class ProductController extends BaseController
 		{
 			$model->file = UploadedFile::getInstance($model, "file");
 			if ( $model->load(Yii::$app->request->post()) && $model->upload() && $model->save() ) {
-				return $this->redirect(["/admin/category/view", "id" => $model->category_id]);
+				return $this->redirect(["category/view", "id" => $model->category_id]);
 			} else {
 				Yii::error($model->getErrorSummary(true));
 			}
@@ -60,7 +60,7 @@ class ProductController extends BaseController
 		{
 			$model->file = UploadedFile::getInstance($model, "file");
 			if ( $model->load(Yii::$app->request->post()) && $model->upload() && $model->save() ) {
-				return $this->redirect(["/admin/category/view", "id" => $model->category_id]);
+				return $this->redirect(["category/view", "id" => $model->category_id]);
 			} else {
 				Yii::error($model->getErrorSummary(true));
 			}
@@ -74,6 +74,6 @@ class ProductController extends BaseController
 	{
 		$model = Product::findOne($id);
 		$model->delete();
-		return $this->redirect(["/admin/category/view", "id" => $model->category_id]);
+		return $this->redirect(["category/view", "id" => $model->category_id]);
 	}
 }

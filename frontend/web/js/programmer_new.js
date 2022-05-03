@@ -128,23 +128,6 @@ function remove(e) {
     counter--;
 }
 
-$('.product_order > a.btn').on('click', (e) => {
-    if (!$(e.currentTarget).hasClass('disabled')) {
-        let card = $(e.currentTarget).closest('.product_item');
-        data = `id=${card.find('.cart_product_id').val()}&count=${card.find('.cart_product_count').val()}`
-        $.ajax({
-            url: '/cart/add',
-            data: data,
-            type: 'GET',
-            success: (response) => {
-                window.location.href = '/#form';
-                rebuild();
-            }
-        })
-    }
-    e.preventDefault();
-})
-
 if ($('.alert').html() !== '') {
     setTimeout(function () {
         $('.alert').animate({

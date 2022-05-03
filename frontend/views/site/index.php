@@ -157,6 +157,10 @@ $this->registerJsVar("picker", "");
                                 </div>
                             </div>
                             <div id="map" style="height: 330px; min-width: 100%; margin-bottom: 35px;"></div>
+                            <div class="form-group" style="display: flex; flex-direction: row;">
+                                <label for="delivery_type" style="font-size: 18px; font-weight: bold; text-transform: uppercase;">Самовывоз</label>
+                                <input type="checkbox" name="Order[delivery_type]" id="delivery_type" style="margin: 0 10px; height: 18px; width: 18px;">
+                            </div>
                         </div>
                     </div>
                     <div class="swiper-button-next swiper-button btn blue">Следующий шаг</div>
@@ -202,7 +206,6 @@ $this->registerJsVar("picker", "");
                                 }
                             }
                         });
-
                         function checkForm(dom) {
                             let fields = $(dom).find("[data-required=true]");
                             let result = true;
@@ -210,13 +213,17 @@ $this->registerJsVar("picker", "");
                                 if ($(fields[i]).val() !== "") {
                                     $(fields[i]).addClass("has-success")
                                 } else {
-                                    $(fields[i]).addClass("has-error")
-                                    result = false;
+                                    if ( $("#delivery_type").is(":checked") ) {
+                                        let address_field = $("#order-address");
+                                        address_field.addClass('has-success').removeClass('has-error');
+                                    } else {
+                                        $(fields[i]).addClass("has-error")
+                                        result = false;
+                                    }
                                 }
                             }
                             return result;
                         }
-
                         function createPlacemark(coords) {
                             return new ymaps.Placemark(coords, {
                                 iconCaption: 'поиск...'
@@ -225,7 +232,6 @@ $this->registerJsVar("picker", "");
                                 draggable: true
                             });
                         }
-
                         function getAddress(coords) {
                             myPlacemark.properties.set('iconCaption', 'поиск...');
                             ymaps.geocode(coords).then(function (res) {
@@ -246,7 +252,6 @@ $this->registerJsVar("picker", "");
                             $('#location-latitude').val(coords[0]);
                             $('#location-logintude').val(coords[1]);
                         }
-
                         function initMap() {
                             if (myMap === undefined) {
                                 myMap = new ymaps.Map('map', {
@@ -299,18 +304,44 @@ $this->registerJsVar("picker", "");
                                 getAddress(coords);
                             });
                         }
-
                         $("div.swiper-button-next").on('click', (e) => {
                             index++;
-                            // console.log(index);
                             if (index === 3) {
                                 let checked = checkForm($(`[data-index=${index--}]`));
+                                console.log(checked);
                                 if (checked) {
                                     $(".form_order").submit();
                                     console.log("Submit form");
                                 }
                             }
                         })
+                        $("#delivery_type").on('change', (e) => {
+                            if ($(e.currentTarget).is(":checked")) {
+                                $("#order-address").addClass("disabled").attr({disabled: "disabled"});
+                                myMap.destroy();
+                                myMap = undefined;
+                            } else {
+                                $("#order-address").removeClass("disabled").removeAttr("disabled");
+                                initMap();
+                            }
+                        })
+                        $('.product_order > a.btn').on('click', (e) => {
+                            if (!$(e.currentTarget).hasClass('disabled')) {
+                                let card = $(e.currentTarget).closest('.product_item');
+                                data = `id=${card.find('.cart_product_id').val()}&count=${card.find('.cart_product_count').val()}`
+                                $.ajax({
+                                    url: '/cart/add',
+                                    data: data,
+                                    type: 'GET',
+                                    success: (response) => {
+                                        window.location.href = '/#form';
+                                        rebuild();
+                                    }
+                                })
+                            }
+                            e.preventDefault();
+                        })
+
                     </script>
                 </div>
             </div>

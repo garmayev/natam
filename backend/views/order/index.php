@@ -1,5 +1,6 @@
 <?php
 
+use common\models\Order;
 use common\models\search\OrderSearch;
 use kartik\export\ExportMenu;
 use yii\data\ActiveDataProvider;
@@ -58,7 +59,7 @@ $gridColumns = [
 
 //echo $this->render("_search", ["model" => $searchModel]);
 
-if ( Yii::$app->user->can("employee") ) {
+if (Yii::$app->user->can("employee")) {
 	$columns = [
 		[
 			"attribute" => "id",
@@ -80,7 +81,7 @@ if ( Yii::$app->user->can("employee") ) {
 			"enableSorting" => true,
 			"content" => function ($model, $key) {
 				if ($model->location) return $model->location->title;
-				return null;
+				return "<i class='not-set'>Самовывоз</i>";
 			}
 		], [
 			"attribute" => "comment",
@@ -124,7 +125,7 @@ if ( Yii::$app->user->can("employee") ) {
 			"enableSorting" => true,
 			"content" => function ($model, $key) {
 				if ($model->location) return $model->location->title;
-				return null;
+				return "Самовывоз";
 			}
 		],
 		"price",
