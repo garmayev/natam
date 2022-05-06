@@ -23,7 +23,7 @@
         "dmstr/yii2-adminlte-asset": "^2.1",
         "la-haute-societe/yii2-save-relations-behavior": "^1.7",
         "ext-json": "*",
-	"garmayev/yii2-staff": "dev-master",
+	    "garmayev/yii2-staff": "dev-master",
         "devanych/yii2-cart": "*",
         "ext-curl": "*",
         "kartik-v/yii2-widget-datetimepicker": "*",
@@ -34,7 +34,8 @@
         "wbraganca/yii2-dynamicform": "^2.0",
         "codeception/codeception": "*",
         "kartik-v/yii2-widget-datepicker": "dev-master",
-        "slavkovrn/yii2-chat": "^1.0"
+        "slavkovrn/yii2-chat": "^1.0",
+        "kartik-v/yii2-field-range": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

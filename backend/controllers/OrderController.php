@@ -62,7 +62,6 @@ class OrderController extends BaseController
 			$order->orderProduct = $_POST["OrderProduct"];
 			$data = array_merge_recursive($post, ["Order" => ["orderProduct" => $_POST["OrderProduct"]]]);
 			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
-			$order->loadRelations($data);
 			if ($order->load($data) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 				return $this->redirect(["order/view", "id" => $order->id]);

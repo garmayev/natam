@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use common\models\Order;
+use garmayev\staff\models\Employee;
 use kartik\mpdf\Pdf;
 
 class AnalyticsController extends BaseController
@@ -21,49 +22,26 @@ class AnalyticsController extends BaseController
 		return $this->render("month");
 	}
 
-	public function actionOrders()
+	public function actionOrders($from_date = null, $to_date = null)
 	{
-		$models = Order::find()->all();
+		$models = Order::find();
+		if ( !is_null($from_date) ) {
+			$models->andWhere(['>', 'created_at', \Yii::$app->formatter->asTimestamp($from_date)]);
+		}
+		if ( !is_null($to_date) ) {
+			$models->andWhere(['<', 'created_at', \Yii::$app->formatter->asTimestamp($to_date)]);
+		}
 		return $this->render("orders", [
-			"models" => $models
+			"models" => $models->all()
 		]);
 	}
 
 	public function actionEmployee($startDate = null, $finishDate = null, $export = false)
 	{
-		if ( is_null($startDate) && is_null($finishDate) ) {
-			$models = Order::find()->orderBy('id DESC')->all();
-		} else {
-			$models = Order::find()
-				->where(['>', 'created_at', \Yii::$app->formatter->asTimestamp($startDate)])
-				->andWhere(['<', 'created_at', \Yii::$app->formatter->asTimestamp($finishDate)])
-				->orderBy('id DESC')
-				->all();
-		}
-		if ( isset($_GET['export']) ) {
-			$content = $this->renderPartial('employee', [
-				'models' => $models,
-			]);
-			$pdf = new \kartik\mpdf\Pdf([
-				'mode' => \kartik\mpdf\Pdf::MODE_UTF8, // leaner size using standard fonts
-				'content' => $content,
-				'orientation' => Pdf::ORIENT_LANDSCAPE,
-				'options' => [
-					'class' => 'hidden-print',
-				],
-				'methods' => [
-					'SetTitle' => '',
-					'SetHeader' => ['Natam-Trade||'.\Yii::t('app', 'Generated at: {datetime}', ['datetime' => \Yii::$app->formatter->asDatetime(time())])],
-					'SetFooter' => ['Страница #{PAGENO}'],
-				]
-			]);
-//			return $content;
-			return $pdf->render($content);
-		} else {
-			return $this->render("employee", [
-				"models" => $models,
-			]);
-		}
+		$employees = Employee::find()->all();
+		return $this->render('employee', [
+			'models' => $employees
+		]);
 	}
 
 	public function actionExportEmployee($startDate, $finishDate)

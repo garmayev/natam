@@ -3,188 +3,74 @@
 use common\models\Client;
 use common\models\HistoryEvent;
 use common\models\Order;
+use common\models\Settings;
+use common\models\TelegramMessage;
 use garmayev\staff\models\Employee;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use yii\data\ArrayDataProvider;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /**
  * @var $this View
- * @var $models Order[]
+ * @var $models Employee[]
  */
+$from_date = (isset($_GET['from_date'])) ? Yii::$app->formatter->asTimestamp($_GET['from_date']) : Yii::$app->params['startDate'];
+$to_date = (isset($_GET['to_date'])) ? Yii::$app->formatter->asTimestamp($_GET['to_date']) : time();
+echo Html::beginForm(Url::to(['analytics/employee']), 'get');
+echo '<label class="form-label">Valid Dates</label>';
+echo DatePicker::widget([
+	'name' => 'from_date',
+	'value' => Yii::$app->formatter->asDate($from_date, 'php:Y-m-d'),
+	'type' => DatePicker::TYPE_RANGE,
+	'name2' => 'to_date',
+	'value2' => Yii::$app->formatter->asDate($to_date, 'php:Y-m-d'),
+	'separator' => '<i class="fas fa-arrows-h"></i>',
+	'pluginOptions' => [
+		'autoclose' => true,
+		'format' => 'yyyy-mm-dd'
+	]
+]);
+echo Html::submitButton('Submit', ['class' => ['btn', 'btn-primary']]);
+echo Html::endForm();
 
-$stats = [];
-$incomplete = $complete = 0;
-$this->registerCss("td.alert {background: yellow}");
-$employees = \garmayev\staff\models\Employee::find()->where(["<>", "state_id", 0])->all();
-$statuses = (new common\models\Order)->getStatus();
-
-if (!isset($_GET['export'])) {
-	$form = ActiveForm::begin([
-		'method' => 'GET'
-	]);
-	echo DatePicker::widget([
-		'name' => 'startDate',
-		'type' => DatePicker::TYPE_INPUT,
-		'value' => (isset($_GET['startDate'])) ? Yii::$app->formatter->asDatetime($_GET['startDate'], 'php:d-m-Y') : Yii::$app->formatter->asDatetime(strtotime("-1 year"), 'php:d-m-Y'),
-		'pluginOptions' => [
-			'autoclose' => true,
-			'format' => 'dd-mm-yyyy',
-		],
-	]);
-	echo DatePicker::widget([
-		'name' => 'finishDate',
-		'type' => DatePicker::TYPE_INPUT,
-		'value' => (isset($_GET['finishDate'])) ? Yii::$app->formatter->asDatetime($_GET['finishDate'], 'php:d-m-Y') : Yii::$app->formatter->asDatetime(time(), 'php:d-m-Y'),
-		'pluginOptions' => [
-			'autoclose' => true,
-			'format' => 'dd-mm-yyyy',
-		],
-	]);
-	echo Html::submitButton('Export', ['name' => 'export', 'class' => ['btn', 'btn-success'], 'style' => 'margin: 5px;']);
-	echo Html::submitButton("Filter", ['class' => ['btn', 'btn-primary', 'style' => 'margin: 5px;']]);
-	ActiveForm::end();
-}
-$result = [];
-
-foreach ($models as $model) {
-	$events = HistoryEvent::find()
-		->where(['field_id' => $model->id])
-		->andWhere(['field_name' => 'status'])
-		->all();
-	$result[] = [
-		"order_id" => $model->id,
-		"status_new" => ['date' => $model->created_at, 'author' => $model->client_id],
-		"status_prepare" => 0,
-		"status_delivery" => 0,
-		"status_complete" => 0,
-		"status_cancel" => 0,
-		"status_hold" => 0,
-	];
-	foreach ($events as $event) {
-		$index = count($result) - 1;
-		switch ($event->new_value) {
-			case 2:
-				$result[$index]["status_prepare"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
-					'author' => $event->user_id,
-				];
-				break;
-			case 3:
-					$result[$index]["status_delivery"] = [
-						'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
-						'author' => $event->user_id,
-					];
-				break;
-			case 4:
-				if ($model->delivery_type !== Order::DELIVERY_SELF) {
-					$result[$index]["status_complete"] = [
-						'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
-						'author' => $event->user_id,
-					];
-				} else {
-					$result[$index]["status_delivery"] = [
-						'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
-						'author' => $event->user_id,
-					];
-					$result[$index]["status_complete"] = [
-						'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
-						'author' => $event->user_id,
-					];
-				}
-				break;
-			case 5:
-				$result[$index]["status_cancel"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
-					'author' => $event->user_id,
-				];
-				break;
-		}
+$orders = Order::find()
+	->where(['>', 'created_at', $from_date])
+	->andWhere(['<', 'created_at', $to_date])
+	->all();
+?>
+<table class="table table-striped">
+    <thead>
+    <td>ФИО</td>
+    <td><?= Yii::t('app', 'Completed') ?></td>
+    <td><?= Yii::t('app', 'UnCompleted') ?></td>
+    <td><?= Yii::t('app', 'Total') ?></td>
+    <td><?= Yii::t('app', 'Percent') ?></td>
+    </thead>
+	<?php
+	foreach ($models as $model) {
+		echo Html::beginTag('tr');
+        $query = TelegramMessage::find()
+	        ->where(['updated_by' => $model->user_id])
+            ->andWhere(['in', 'order_id', ArrayHelper::getColumn($orders, 'id')]);
+		$total_messages = (clone $query)
+			->all();
+		$completed_messages = (clone $query)
+            ->andWhere(['<', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)])
+			->all();
+		$uncompleted_messages = (clone $query)
+            ->andWhere(['>', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)])
+			->all();
+		echo Html::tag('td', $model->getFullname());
+		echo Html::tag('td', ($completed_messages) ? count($completed_messages) : 0);
+		echo Html::tag('td', ($uncompleted_messages) ? count($uncompleted_messages) : 0);
+		echo Html::tag('td', ($total_messages) ? count($total_messages) : 0);
+		echo Html::tag('td', ($total_messages && $completed_messages) ? (count($total_messages) / count($completed_messages) * 100) . "%" : '0%');
+		echo Html::endTag('tr');
 	}
-}
-var_dump($result);
-function asItem($model, $current, $previous = null)
-{
-	if (!is_null($previous)) {
-		if (isset($model[$current]['author']) && isset($model[$previous]['author'])) {
-			$employee = Employee::findOne(['user_id' => intval($model[$current]['author'])]);
-			$username = (($employee !== null) && method_exists($employee, 'getFullname')) ? $employee->getFullname() : '';
-			return "<p>{$username}</p><p>" . Yii::$app->formatter->asDuration(
-					$model[$current]['date'] -
-					$model[$previous]['date']) .
-				"</p>";
-		}
-	} else {
-		if (isset($model[$current]['author'])) {
-			$employee = Employee::findOne(['user_id' => intval($model[$current]['author'])]);
-			$username = (($employee !== null) && method_exists($employee, 'getFullname')) ? $employee->getFullname() : '';
-			return "<p>{$username}</p><p>" . Yii::$app->formatter->asDatetime($model[$current]['date']) . "</p>";
-		}
-	}
-	return Html::tag('span', Yii::t('yii', '(not set)'), ['class' => 'not-set']);
-}
-
-if (count($result)) {
-	$dataProvider = new ArrayDataProvider([
-		'allModels' => $result
-	]);
-	$columns = [
-		[
-			'attribute' => 'order_id',
-			'label' => '#',
-		],
-		[
-			'attribute' => 'status_new',
-			'label' => $model->getStatus(1),
-			'format' => 'html',
-			'value' => function ($model) {
-				if (isset($model['status_new'])) {
-				$client = Client::findOne($model['status_new']['author']);
-				return "<p>{$client->name}</p><p>" . Yii::$app->formatter->asDatetime($model['status_new']['date']) . "</p>";
-				}
-			}
-		],
-		[
-			'attribute' => 'status_prepare',
-			'label' => $model->getStatus(2),
-			'format' => 'html',
-			'value' => function ($model) {
-				return asItem($model, 'status_prepare', 'status_new');
-			}
-		],
-		[
-			'attribute' => 'status_delivery',
-			'label' => $model->getStatus(3),
-			'format' => 'html',
-			'value' => function ($model) {
-				return asItem($model, 'status_delivery', 'status_prepare');
-			}
-		],
-		[
-			'attribute' => 'status_complete',
-			'label' => $model->getStatus(4),
-			'format' => 'html',
-			'value' => function ($model) {
-				return asItem($model, 'status_complete', 'status_prepare');
-			}
-		],
-		[
-			'attribute' => 'status_cancel',
-			'label' => $model->getStatus(5),
-			'format' => 'html',
-			'value' => function ($model) {
-				return asItem($model, 'status_cancel');
-			}
-		],
-	];
-	echo GridView::widget([
-		'dataProvider' => $dataProvider,
-		'columns' => $columns,
-		'summary' => '',
-	]);
-} else {
-	echo Html::tag('span', '(Ничего не найдено)', ['class' => 'not-set']);
-}
+	?>
+</table>

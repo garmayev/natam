@@ -38,12 +38,12 @@ class TelegramMessage extends ActiveRecord
 			'timestamp' => [
 				'class' => TimestampBehavior::class,
 				'createdAtAttribute' => 'created_at',
-				'updatedAtAttribute' => 'updated_at'
+				'updatedAtAttribute' => false
 			],
 			'blameable' => [
 				'class' => BlameableBehavior::class,
 				'createdByAttribute' => 'created_by',
-				'updatedByAttribute' => 'updated_by',
+				'updatedByAttribute' => false,
 			],
 			'saveRelation' => [
 				'class' => SaveRelationsBehavior::class,
@@ -71,6 +71,9 @@ class TelegramMessage extends ActiveRecord
 		];
 	}
 
+	/**
+	 * @return \yii\db\ActiveQuery
+	 */
 	public function getOrder()
 	{
 		return $this->hasOne(Order::class, ['id' => 'order_id']);
@@ -116,6 +119,8 @@ class TelegramMessage extends ActiveRecord
 		]);
 		if ( $response->ok ) {
 			$this->status = self::STATUS_CLOSED;
+			$this->updated_by = \Yii::$app->user->id;
+			$this->updated_at = time();
 			$this->save();
 		} else {
 			\Yii::error($response->result);
