@@ -2,6 +2,7 @@
 
 namespace common\models;
 
+use garmayev\staff\models\Employee;
 use Yii;
 
 /**
@@ -55,6 +56,7 @@ use Yii;
  * @property string $password
  *
  * @property Client $client
+ * @property Employee $employee
  */
 
 class User extends \dektrium\user\models\User
@@ -66,4 +68,19 @@ class User extends \dektrium\user\models\User
 		return $this->hasOne(Client::class, ["user_id" => "id"]);
 	}
 
+	public function getEmployee()
+	{
+		return $this->hasOne(Employee::class, ['user_id' => 'id']);
+	}
+
+	public function getType()
+	{
+		if ( isset($this->client) ) {
+			return $this->client;
+		} else if (isset($this->employee)) {
+			return $this->employee;
+		} else {
+			return null;
+		}
+	}
 }

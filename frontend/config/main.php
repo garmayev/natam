@@ -106,10 +106,6 @@ return [
 		    'class' => 'yii\rbac\DbManager',
 		    'defaultRoles' => ['person'],
 	    ],
-	    'telegram' => [
-		    'class' => 'aki\telegram\Telegram',
-		    'botToken' => '1989845524:AAGaba1o5Koc8PTAKuSM6HKFOfdkjTvG8Sc',
-	    ]
 	],
 	'modules' => [
 		'gridview' =>  [

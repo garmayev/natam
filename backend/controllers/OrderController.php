@@ -28,7 +28,7 @@ class OrderController extends BaseController
 			$client = Client::findOne(["phone" => Yii::$app->user->identity->username]);
 			$query = Order::find()->where(["client_id" => $client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE]);
 		}
-		Yii::error($query->createCommand()->getRawSql());
+//		Yii::error($query->createCommand()->getRawSql());
 		return $this->render("index", [
 			"orderProvider" => new ActiveDataProvider([
 				"query" => $query

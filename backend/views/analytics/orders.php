@@ -10,6 +10,7 @@ use yii\web\View;
  */
 
 $employees = \garmayev\staff\models\Employee::find()->where(["<>", "state_id", 0])->all();
+$stats = [];
 foreach ($employees as $employee) {
 	$stats[$employee->id] = [
 		"employee" => $employee->getFullname(),
@@ -77,14 +78,13 @@ foreach ($models as $model) :
 					} else {
 						$stats[$employee->id]["complete"]++;
 					}
-					$stats[$employee->id]["total"]++;
 				}
 			}
+			$previous = $event;
 		}
 		$previous = $event; */
 	}
 endforeach;
-//var_dump($stats);
 ?>
 <table class="table table-hover table-striped">
     <thead>
