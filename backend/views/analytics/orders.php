@@ -23,7 +23,43 @@ foreach ($models as $model) :
 	$previous = null;
 	foreach ($statuses as $index => $status) {
 		$event = \common\models\HistoryEvent::find()->where(['field_name' => 'status'])->andWhere(["field_id" => $model->id])->andWhere(["new_value" => $index])->one();
-		if ($index === 1) {
+		if ($event) {
+			$employee = \garmayev\staff\models\Employee::findOne(["user_id" => $event->user_id]);
+			$interval = \common\models\Settings::getInterval($index - 1);
+			switch ($event->old_value) {
+				case 1:
+					$ago = (Yii::$app->formatter->asTimestamp($event->date) - 28800) - $model->created_at;
+					$stats[$employee->id][($interval < $ago) ? "incomplete" : "complete"]++;
+					$stats[$employee->id]["total"]++;
+					break;
+				case 2:
+					$previous = \common\models\HistoryEvent::find()->where(['field_name' => 'status'])->andWhere(["field_id" => $model->id])->andWhere(["new_value" => $event->old_value])->one();
+//					var_dump($model->id);
+//					var_dump($previous);
+//					var_dump($event->old_value); // die;
+//					if ($model->delivery_type !== Order::DELIVERY_SELF) {
+						$ago = (Yii::$app->formatter->asTimestamp($event->date) - 28800) - Yii::$app->formatter->asTimestamp($previous->date);
+						$stats[$employee->id][($interval < $ago) ? "incomplete" : "complete"]++;
+						$stats[$employee->id]["total"]++;
+//					} else {
+//						var_dump($model->id);
+//						var_dump($previous);
+//						$ago = (Yii::$app->formatter->asTimestamp($event->date)) - $model->created_at;
+//						$stats[$employee->id][($interval < $ago) ? "incomplete" : "complete"]++;
+//						$stats[$employee->id]["total"]++;
+//					}
+					break;
+				case 3:
+					$ago = (Yii::$app->formatter->asTimestamp($event->date) - 28800) - Yii::$app->formatter->asTimestamp($previous->date);
+					$stats[$employee->id][($interval < $ago) ? "incomplete" : "complete"]++;
+					$stats[$employee->id]["total"]++;
+					break;
+				case 4:
+					break;
+			}
+		}
+		$previous = $event;
+/*		if ($index === 1) {
 			$created = $model->created_at;
 		} else {
 			if ($event) {
@@ -45,9 +81,10 @@ foreach ($models as $model) :
 				}
 			}
 		}
-		$previous = $event;
+		$previous = $event; */
 	}
 endforeach;
+//var_dump($stats);
 ?>
 <table class="table table-hover table-striped">
     <thead>

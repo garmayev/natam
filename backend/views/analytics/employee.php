@@ -74,16 +74,27 @@ foreach ($models as $model) {
 				];
 				break;
 			case 3:
-				$result[$index]["status_delivery"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
-					'author' => $event->user_id,
-				];
+					$result[$index]["status_delivery"] = [
+						'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
+						'author' => $event->user_id,
+					];
 				break;
 			case 4:
-				$result[$index]["status_complete"] = [
-					'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
-					'author' => $event->user_id,
-				];
+				if ($model->delivery_type !== Order::DELIVERY_SELF) {
+					$result[$index]["status_complete"] = [
+						'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
+						'author' => $event->user_id,
+					];
+				} else {
+					$result[$index]["status_delivery"] = [
+						'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
+						'author' => $event->user_id,
+					];
+					$result[$index]["status_complete"] = [
+						'date' => Yii::$app->formatter->asTimestamp($event->date) - 28800,
+						'author' => $event->user_id,
+					];
+				}
 				break;
 			case 5:
 				$result[$index]["status_cancel"] = [
@@ -94,6 +105,7 @@ foreach ($models as $model) {
 		}
 	}
 }
+var_dump($result);
 function asItem($model, $current, $previous = null)
 {
 	if (!is_null($previous)) {
@@ -129,8 +141,10 @@ if (count($result)) {
 			'label' => $model->getStatus(1),
 			'format' => 'html',
 			'value' => function ($model) {
+				if (isset($model['status_new'])) {
 				$client = Client::findOne($model['status_new']['author']);
 				return "<p>{$client->name}</p><p>" . Yii::$app->formatter->asDatetime($model['status_new']['date']) . "</p>";
+				}
 			}
 		],
 		[
