@@ -36,7 +36,7 @@ echo Html::submitButton('Submit', ['class' => ['btn', 'btn-primary']]);
 echo Html::endForm();
 
 foreach ($models as $model) {
-	echo Html::a(Html::tag('h4', Yii::t('app', 'Order #{id}', ['id' => $model->id])), ['order/view', 'id' => $model->id]);
+	echo Html::a(Html::tag('h4', Yii::t('app', 'Order #{id}', ['id' => $model->id]).Html::tag('em', "({$model->getStatus($model->status)})", ['class' => 'small'])), ['order/view', 'id' => $model->id]);
 	echo Html::beginTag('div', ['class' => 'row']);
 	$class = 'panel_default';
     switch ($model->status) {
