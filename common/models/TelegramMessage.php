@@ -132,7 +132,7 @@ class TelegramMessage extends ActiveRecord
 		$response = \Yii::$app->telegram->sendMessage([
 			'chat_id' => $employee->chat_id,
 			'text' => $order->generateTelegramText(),
-			'parseMode' => 'HTML',
+			"parse_mode" => "HTML",
 			'reply_markup' => json_encode([
 				'inline_keyboard' => $order->generateTelegramKeyboard()
 			]),
