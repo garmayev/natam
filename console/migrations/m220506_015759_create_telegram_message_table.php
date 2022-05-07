@@ -18,6 +18,7 @@ class m220506_015759_create_telegram_message_table extends Migration
 	        'chat_id' => $this->integer(),
 			'status' => $this->integer(),
 			'order_id' => $this->integer(),
+			'message_id' => $this->integer(),
 	        'created_at' => $this->integer(),
 			'created_by' => $this->integer(),
 	        'updated_at' => $this->integer(),
