@@ -178,7 +178,7 @@ class TelegramController extends \yii\rest\Controller
 						$response = Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
 						// $update->delete();
 					}
-					$order->status++;
+					$order->status = $staff->state_id + 1;
 					$order->save();
 					break;
 				case "/order_driver":
