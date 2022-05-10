@@ -115,7 +115,7 @@ class TelegramMessage extends ActiveRecord
 		$response = \Yii::$app->telegram->editMessageText([
 			'chat_id' => $this->chat_id,
 			'message_id' => $this->message_id,
-			'text' => \Yii::t('app', 'Order #{n} is updated', ['n' => $this->order_id]),
+			'text' => \Yii::t('app', 'Order #{n} is updated again', ['n' => $this->order_id]),
 		]);
 		if ( $response->ok ) {
 			$this->status = self::STATUS_CLOSED;

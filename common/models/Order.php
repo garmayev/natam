@@ -373,7 +373,7 @@ class Order extends ActiveRecord
 				$keyboard[] = [
 					[
 						"text" => "Передать заказ кладовщику",
-						"callback_data" => "/order_complete id={$this->id}"
+						"callback_data" => "/manager id={$this->id}"
 					],
 				];
 				$keyboard[] = [
@@ -385,12 +385,12 @@ class Order extends ActiveRecord
 				break;
 			case self::STATUS_PREPARE:
 				if ( $this->delivery_type == self::DELIVERY_COMPANY ) {
-					$employees = Employee::find()->where(["state_id" => $this->status + 1])->limit(5)->all();
+					$employees = Employee::find()->where(["state_id" => $this->status])->limit(5)->all();
 					foreach ($employees as $employee) {
 						$keyboard[] = [
 							[
 								"text" => "{$employee->family} {$employee->name}",
-								"callback_data" => "/order_driver order_id={$this->id}&driver_id={$employee->id}",
+								"callback_data" => "/store id={$this->id}&driver_id={$employee->id}",
 							]
 						];
 					}
@@ -407,7 +407,7 @@ class Order extends ActiveRecord
 				$keyboard[] = [
 					[
 						"text" => "Выполнено",
-						"callback_data" => "/order_complete id={$this->id}"
+						"callback_data" => "/driver id={$this->id}"
 					]
 				];
 				break;

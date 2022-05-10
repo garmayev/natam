@@ -183,6 +183,8 @@ class TelegramController extends \yii\rest\Controller
 					if (isset($argument["driver_id"])) {
 						$driver = Employee::findOne($argument["driver_id"]);
 
+						Yii::error($driver->attributes);
+
 						$order->status = Order::STATUS_DELIVERY;
 						$order->save();
 
@@ -288,9 +290,8 @@ class TelegramController extends \yii\rest\Controller
 		Command::run("/manager", [$this, "manager"]);
 		Command::run("/store", [$this, "store"]);
 		Command::run("/driver", [$this, "driver"]);
-		Command::run("/check", [$this, "inlineCheck"]);
 		Command::run("/all_orders", [$this, "orders"]);
-		Command::run("/status_store", [$this, "store"]);
+		Command::run("/status_store", [$this, "status_store"]);
 	}
 
 	public static function start($telegram, $args = null)
@@ -386,29 +387,68 @@ class TelegramController extends \yii\rest\Controller
 		if ( self::checkPermission($telegram, "employee") ) {
 			if ( isset($args) ) {
 				$order = Order::findOne($args["id"]);
-				if ( isset($telegram->input->callback_query) ) {
-					$user = TelegramController::findUser($telegram->input->callback_query->message["chat"]["id"]);
-				} else {
-					$user = TelegramController::findUser($telegram->input->message["chat"]["id"]);
-				}
-				Yii::$app->user->switchIdentity($user, 0);
-				$message_id = ($telegram->input->callback_query) ? $telegram->input->callback_query->message["message_id"] : $telegram->input->message_id;
-				$employee = Employee::find()->where(["user_id" => $user->id])->one();
-				$order->status = ($employee->state_id + 1);
-				if ( $order->save() ) {
-					$update = Updates::findOne(["message_id" => $message_id]);
-					if ( $update ) {
-						$update->employee_id = $employee->id;
-						$update->per_time = time();
-						$update->order_status = $order->status;
-					}
-					$update->save();
-				} else {
+				$order->status = Order::STATUS_PREPARE;
+				if ( !$order->save() ) {
 					Yii::error($order->getErrorSummary(true));
 				}
 			}
 		} else {
 			$text = Yii::t("telegram", "You don`t have permissions for this action");
+			Yii::error($text);
+		}
+	}
+
+	public static function store($telegram, $args = null)
+	{
+		/**
+		 * $args = [ "id" => order_id ]
+		 */
+		if ( self::checkPermission($telegram, "employee") ) {
+			if ( isset($args) ) {
+				$order = Order::findOne($args["id"]);
+
+				if ( $order->delivery_type === Order::DELIVERY_COMPANY ) {
+					$employee = Employee::find()->where(["user_id" => $args["driver_id"]])->one();
+					$order->status = Order::STATUS_DELIVERY;
+					TelegramMessage::send($employee, $order);
+					if (!$order->save()) {
+						Yii::error($order->getErrorSummary(true));
+					}
+				} else {
+					$order->status = Order::STATUS_COMPLETE;
+					$order->save();
+				}
+			}
+		} else {
+			$text = Yii::t("telegram", "You don`t have permissions for this action");
+			Yii::error($text);
+		}
+	}
+
+	public static function driver($telegram, $args = null)
+	{
+		/**
+		 * $args = [ "id" => order_id ]
+		 */
+		if ( self::checkPermission($telegram, "employee") ) {
+			if ( isset($args) ) {
+				$order = Order::findOne($args["id"]);
+				$messages = TelegramMessage::find()
+					->where(['order_id' => $order->id])
+					->andWhere(['status' => TelegramMessage::STATUS_OPENED])
+					->all();
+
+				foreach ($messages as $message) {
+					$message->hide();
+				}
+				$order->status = Order::STATUS_COMPLETE;
+				if ( !$order->save() ) {
+					Yii::error($order->getErrorSummary(true));
+				}
+			}
+		} else {
+			$text = Yii::t("telegram", "You don`t have permissions for this action");
+			Yii::error($text);
 		}
 	}
 }
