@@ -144,8 +144,12 @@ class AnalyticsController extends BaseController
 	{
 		$spreadsheet = new Spreadsheet();
 		$data = $this->getDataByEmployee($models, $orders);
-		$row = 1;
+		$row = 2;
 		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setCellValue('A1', "ФИО сотрудника");
+		$sheet->setCellValue('B1', "Выполненые в срок");
+		$sheet->setCellValue('C1', "Невыполненые в срок");
+		$sheet->setCellValue('D1', "Всего действий");
 		foreach ($data as $key => $item)
 		{
 			$sheet->setCellValue("A{$row}", $item['employee']->getFullName());

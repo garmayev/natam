@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use common\models\Client;
 use common\models\Order;
 use common\models\OrderProduct;
+use common\models\TelegramMessage;
 use frontend\commands\Command;
 use frontend\models\Staff;
 use frontend\models\Telegram;
@@ -172,27 +173,12 @@ class TelegramController extends \yii\rest\Controller
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["id"]);
 					$staff = Employee::find()->where(["chat_id" => $telegram->callback_query["from"]["id"]])->one();
-					$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
-					foreach ($updates as $update) {
-						// Yii::error($update->attributes);
-						$response = Telegram::editMessage(["chat_id" => $update->employee->chat_id, "message_id" => $update->message_id, "text" => "Статус заказа #{$order->id} был изменен"]);
-						// $update->delete();
-					}
 					$order->status = $staff->state_id + 1;
 					$order->save();
 					break;
 				case "/order_driver":
 					parse_str($args[0], $argument);
 					$order = Order::findOne($argument["order_id"]);
-					$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
-					foreach ($updates as $update) {
-						Telegram::editMessage([
-							"chat_id" => $update->employee->chat_id,
-							"text" => "Статус заказа #{$order->id} был изменен",
-							"message_id" => $update->message_id
-						]);
-						// $update->delete();
-					}
 
 					if (isset($argument["driver_id"])) {
 						$driver = Employee::findOne($argument["driver_id"]);
@@ -200,29 +186,7 @@ class TelegramController extends \yii\rest\Controller
 						$order->status = Order::STATUS_DELIVERY;
 						$order->save();
 
-						$response = Telegram::sendMessage([
-							"chat_id" => $driver->chat_id,
-							"text" => $order->generateTelegramText(),
-							"parse_mode" => "HTML",
-							"reply_markup" => json_encode(["inline_keyboard" => $order->generateTelegramKeyboard()])
-						]);
-
-						if ($response->isOk) {
-							$data = $response->getData();
-							$update = new Updates();
-							if ($update->load(["Updates" => [
-									"order_id" => $order->id,
-									"order_status" => $order->status,
-									"employee_id" => $driver->id,
-									"message_id" => $data["result"]["message_id"],
-									"message_timestamp" => $data["result"]["date"],
-								]]) && $update->save()) {
-								return ["ok" => true];
-							} else {
-								Yii::error($driver->id);
-								Yii::error($update->getErrorSummary(true));
-							}
-						}
+						TelegramMessage::send($driver, $order);;
 					} else {
 						$order->status = Order::STATUS_COMPLETE;
 						$order->save();

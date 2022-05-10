@@ -48,12 +48,13 @@ class NotifyBehavior extends \yii\base\Behavior
 			foreach ($messages as $message) {
 				$message->hide();
 			}
-
-			$employees = Employee::find()
-				->where(['state_id' => $owner->status ])
-				->all();
-			if (count($employees)) {
-				foreach ($employees as $employee) TelegramMessage::send($employee, $owner);
+			if ( $owner->status < Order::STATUS_DELIVERY ) {
+				$employees = Employee::find()
+					->where(['state_id' => $owner->status])
+					->all();
+				if (count($employees)) {
+					foreach ($employees as $employee) TelegramMessage::send($employee, $owner);
+				}
 			}
 		}
 	}
