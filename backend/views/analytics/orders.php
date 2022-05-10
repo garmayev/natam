@@ -62,7 +62,7 @@ foreach ($models as $model) {
                 <div class="panel-heading"><?= $status ?></div>
                 <div class="panel-body">
                     <?php
-                        if ($telegram_message->status === TelegramMessage::STATUS_CLOSED) {
+                        if ($telegram_message->status === TelegramMessage::STATUS_CLOSED && $telegram_message->updatedBy) {
 	                        echo "<p>Закрыл этап: {$telegram_message->updatedBy->employee->getFullname()}</p>";
                         } else {
 	                        echo "<p>Открыл этап: {$telegram_message->createdBy->employee->getFullname()}</p>";

@@ -39,7 +39,8 @@ class NotifyBehavior extends \yii\base\Behavior
 		 * @var Order $owner
 		 */
 		$owner = $this->owner;
-		if ( isset($event->changedAttributes[$this->attribute]) ) {
+//		\Yii::error($event);
+//		if ( isset($event->changedAttributes[$this->attribute]) ) {
 			$messages = TelegramMessage::find()
 				->where(['order_id' => $owner->id])
 				->andWhere(['status' => TelegramMessage::STATUS_OPENED])
@@ -56,6 +57,6 @@ class NotifyBehavior extends \yii\base\Behavior
 					foreach ($employees as $employee) TelegramMessage::send($employee, $owner);
 				}
 			}
-		}
+//		}
 	}
 }

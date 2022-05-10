@@ -227,20 +227,6 @@ class TelegramController extends \yii\rest\Controller
 								]
 							]),
 						]);
-//						$updates = Updates::find()->where(["order_id" => $order->id])->andWhere(["order_status" => $order->status])->all();
-//						foreach ($updates as $update) {
-//							Telegram::editMessage([
-//								"message_id" => $update->message_id,
-//								"text" => "Заказ #$order->id отложен\nАдрес доставки: $order->address\nДата создания заказа: ".\Yii::$app->formatter->asDate($order->created_at, "php: d M Y H:i")."\nСодержимое заказа:\n",
-//								"chat_id" => $update->employee->chat_id,
-//								"reply_markup" => json_encode(["inline_keyboard" => [
-//									[["text" => "Кладовщику", "callback_data" => "/order_restore id={$order->id}"]]
-//								]]),
-//							]);
-//						}
-//						$order->status = Order::STATUS_HOLD;
-//						$order->save();
-//						return ["ok" => true];
 					}
 					break;
 				case "/order_hold_by_time":

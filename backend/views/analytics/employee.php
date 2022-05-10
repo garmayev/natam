@@ -42,11 +42,11 @@ echo Html::endForm();
 ?>
 <table class="table table-striped">
     <thead>
-    <td>ФИО</td>
-    <td><?= Yii::t('app', 'Completed') ?></td>
-    <td><?= Yii::t('app', 'UnCompleted') ?></td>
-    <td><?= Yii::t('app', 'Total') ?></td>
-    <td><?= Yii::t('app', 'Percent') ?></td>
+        <td>ФИО</td>
+        <td><?= Yii::t('app', 'Completed') ?></td>
+        <td><?= Yii::t('app', 'UnCompleted') ?></td>
+        <td><?= Yii::t('app', 'Total') ?></td>
+        <td><?= Yii::t('app', 'Percent') ?></td>
     </thead>
 	<?php
 	foreach ($models as $model) {
