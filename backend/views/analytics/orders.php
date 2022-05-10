@@ -32,7 +32,8 @@ echo DatePicker::widget([
 		'format' => 'yyyy-mm-dd'
 	]
 ]);
-echo Html::submitButton('Submit', ['class' => ['btn', 'btn-primary']]);
+echo Html::submitButton('Export', ['class' => ['btn', 'btn-success'], 'name' => 'export', 'value' => 'export']);
+echo Html::submitButton('Filter', ['class' => ['btn', 'btn-primary'], 'name' => 'filter', 'value' => 'filter']);
 echo Html::endForm();
 
 foreach ($models as $model) {
@@ -54,18 +55,17 @@ foreach ($models as $model) {
 		$telegram_message = TelegramMessage::find()
 			->where(['order_id' => $model->id])
 			->andWhere(['order_status' => $key])
-            ->andWhere(['status' => TelegramMessage::STATUS_CLOSED])
 			->one();
 		if (!empty($telegram_message)) {
 			?>
-            <div class="panel <?= $class ?>" style="width: 31%; margin: 0 1%; display: inline-block" data-status="<?= $model->status ?>">
+            <div class="panel <?= $class ?>" style="width: 31%; margin: 0 .5%; display: inline-block" data-status="<?= $model->status ?>">
                 <div class="panel-heading"><?= $status ?></div>
                 <div class="panel-body">
                     <?php
                         if ($telegram_message->status === TelegramMessage::STATUS_CLOSED) {
 	                        echo "<p>Закрыл этап: {$telegram_message->updatedBy->employee->getFullname()}</p>";
                         } else {
-	                        echo "<p>Закрыл этап: <span class='not-set'>".Yii::t('yii', '(not set)')."</span></p>";
+	                        echo "<p>Открыл этап: {$telegram_message->createdBy->employee->getFullname()}</p>";
                         }
                     ?>
                     <?= Html::tag('p', Yii::t('app', 'Created At').": ".Yii::$app->formatter->asDatetime($telegram_message->created_at)) ?>

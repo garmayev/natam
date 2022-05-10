@@ -90,5 +90,7 @@ return [
 	'Analytic' => 'Аналитика',
 	'Analytics by employee' => 'Аналитика по сотрудникам',
 	'Analytics by orders' => 'Аналитика по заказам',
-	'Client info' => 'Информация о клиенте'
+	'Client info' => 'Информация о клиенте',
+	'Updated At' => 'Дата обновлено',
+	'Elapsed Time' => 'Прошло',
 ];

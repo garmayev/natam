@@ -18,6 +18,7 @@ use yii\widgets\ActiveForm;
 /**
  * @var $this View
  * @var $models Employee[]
+ * @var $orders Order[]
  */
 $from_date = (isset($_GET['from_date'])) ? Yii::$app->formatter->asTimestamp($_GET['from_date']) : Yii::$app->params['startDate'];
 $to_date = (isset($_GET['to_date'])) ? Yii::$app->formatter->asTimestamp($_GET['to_date']) : time();
@@ -35,13 +36,9 @@ echo DatePicker::widget([
 		'format' => 'yyyy-mm-dd'
 	]
 ]);
-echo Html::submitButton('Submit', ['class' => ['btn', 'btn-primary']]);
+echo Html::submitButton('Export', ['class' => ['btn', 'btn-success'], 'name' => 'export', 'value' => 'export']);
+echo Html::submitButton('Filter', ['class' => ['btn', 'btn-primary'], 'name' => 'filter', 'value' => 'filter']);
 echo Html::endForm();
-
-$orders = Order::find()
-	->where(['>', 'created_at', $from_date])
-	->andWhere(['<', 'created_at', $to_date])
-	->all();
 ?>
 <table class="table table-striped">
     <thead>

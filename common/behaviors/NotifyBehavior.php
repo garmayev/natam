@@ -46,7 +46,6 @@ class NotifyBehavior extends \yii\base\Behavior
 				->all();
 			
 			foreach ($messages as $message) {
-				\Yii::error($message->attributes);
 				$message->hide();
 			}
 

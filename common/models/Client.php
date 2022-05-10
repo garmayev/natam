@@ -156,6 +156,11 @@ class Client extends \yii\db\ActiveRecord
 		$this->phone = preg_replace("/[\(\)\ \+\-]*/", "", $this->phone, -1);
 	}
 
+	public function getFullName()
+	{
+		return $this->name;
+	}
+
 	public static function findByPhone($mixed)
 	{
 		return Client::findOne(["phone" => preg_replace("/[\(\)\ \+]*/", "", $mixed, -1)]);
