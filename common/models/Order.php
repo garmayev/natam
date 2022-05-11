@@ -166,7 +166,7 @@ class Order extends ActiveRecord
 
 	public function afterSave($insert, $changedAttributes)
 	{
-		$employee = Employee::findOne(["user_id" => Yii::$app->user->id]);
+//		$employee = Employee::findOne(["user_id" => Yii::$app->user->id]);
 //		if ( $this->isAttributeChanged("status") ) {
 //			$employees = Employee::find()->where(["state_id" => $this->status])->all();
 //			foreach ($employees as $employee) {
@@ -398,7 +398,7 @@ class Order extends ActiveRecord
 					$keyboard[] = [
 						[
 							"text" => "Выполнено",
-							"callback_data" => "/order_driver order_id={$this->id}",
+							"callback_data" => "/store id={$this->id}",
 						]
 					];
 				}

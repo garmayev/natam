@@ -49,6 +49,7 @@ class TelegramController extends \yii\rest\Controller
 	public function beforeAction($action)
 	{
 		$data = json_decode(file_get_contents("php://input"), true);
+		Yii::error($data);
 		if ( isset($data["callback_query"]) ) {
 			$user = $this->findUser($data["callback_query"]["from"]["id"]);
 		} else {
@@ -408,15 +409,18 @@ class TelegramController extends \yii\rest\Controller
 				$order = Order::findOne($args["id"]);
 
 				if ( $order->delivery_type === Order::DELIVERY_COMPANY ) {
-					$employee = Employee::find()->where(["user_id" => $args["driver_id"]])->one();
+					$employee = Employee::find()->where($args["driver_id"])->one();
 					$order->status = Order::STATUS_DELIVERY;
-					TelegramMessage::send($employee, $order);
 					if (!$order->save()) {
 						Yii::error($order->getErrorSummary(true));
+					} else {
+						// \Yii::error((isset($employee)) ? $employee->attributes : $employee);
+						// \Yii::error($order->attributes);
+						TelegramMessage::send($employee, $order);
 					}
 				} else {
 					$order->status = Order::STATUS_COMPLETE;
-					$order->save();
+					\Yii::error( $order->save() );
 				}
 			}
 		} else {

@@ -17,35 +17,34 @@ return [
 	'name' => 'Натам Трейд',
 	'timeZone' => 'Asia/Irkutsk',
 	'language' => "ru",
-    'components' => [
-    	'view' => [
-    		'theme' => [
-    			'pathMap' => [
-    				'@dektrium/user/views' => '@app/views/user',
-				    '@garmayev/staff/views' => '@app/modules/admin/views/layouts/main',
-			    ]
-		    ]
-	    ],
-        'request' => [
-            'csrfParam' => '_csrf-frontend',
-	        'baseUrl' => '',
+	'components' => [
+	'view' => [
+		'theme' => [
+			'pathMap' => [
+				'@dektrium/user/views' => '@app/views/user',
+				'@garmayev/staff/views' => '@app/modules/admin/views/layouts/main',
+			]
+		]
+	],
+	'request' => [
+		'csrfParam' => '_csrf-frontend',
+		'baseUrl' => '',
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the frontend
-            'name' => 'advanced-frontend',
+        	// this is the name of the session cookie used for login on the frontend
+        	'name' => 'advanced-frontend',
         ],
         'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
-                [
-                    'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
-		    'except' => [
-			'yii\web\HttpException:404',
-		    ]
-
-                ],
-            ],
+        	'traceLevel' => YII_DEBUG ? 3 : 0,
+        	'targets' => [
+            		[
+                		'class' => 'yii\log\FileTarget',
+                		'levels' => ['error', 'warning'],
+				'except' => [
+					'yii\web\HttpException:404',
+				]
+            		],
+        	],
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -59,32 +58,31 @@ return [
 	            '<controller:\w+>/<action:\w+>' => '<controller>/<action>'
             ],
         ],
-	    'i18n' => [
-		    'translations' => [
-			    'app*' => [
-				    'class' => 'yii\i18n\PhpMessageSource',
-				    'fileMap' => [
-					    'app'       => 'app.php',
-					    'app/error' => 'error.php',
-					    'natam'     => 'natam.php',
-				    ],
-			    ],
-			    'natam' => [
-				    'class' => 'yii\i18n\PhpMessageSource',
-				    'fileMap' => [
-					    'natam'     => 'natam.php',
-				    ],
-			    ],
-			    'telegram' => [
-				    'class' => 'yii\i18n\PhpMessageSource',
-				    'fileMap' => [
-					    'telegram'     => 'telegram.php',
-				    ],
-			    ]
-
-		    ],
-	    ],
-	    'cart' => [
+	'i18n' => [
+		'translations' => [
+			'app*' => [
+				'class' => 'yii\i18n\PhpMessageSource',
+				'fileMap' => [
+					'app'       => 'app.php',
+					'app/error' => 'error.php',
+					'natam'     => 'natam.php',
+				],
+			],
+			'natam' => [
+				'class' => 'yii\i18n\PhpMessageSource',
+				'fileMap' => [
+					'natam'     => 'natam.php',
+				],
+			],
+			'telegram' => [
+				'class' => 'yii\i18n\PhpMessageSource',
+				'fileMap' => [
+					'telegram'     => 'telegram.php',
+				],
+			]
+		],
+	],
+	'cart' => [
 		    'class' => 'devanych\cart\Cart',
 		    'storageClass' => 'devanych\cart\storage\DbSessionStorage',
 		    'calculatorClass' => 'devanych\cart\calculators\SimpleCalculator',

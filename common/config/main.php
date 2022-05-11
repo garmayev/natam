@@ -12,7 +12,7 @@ return [
 		],
 		'telegram' => [
 			'class' => 'aki\telegram\Telegram',
-			'botToken' => '1989845524:AAGaba1o5Koc8PTAKuSM6HKFOfdkjTvG8Sc',
+			'botToken' => '2124338715:AAFEScQu0Ny-_AEdC4e9Ngdvx9O_hnbJVXc',
 		]
 	],
 	'modules' => [
