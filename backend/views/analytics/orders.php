@@ -19,7 +19,6 @@ use yii\web\View;
 $from_date = (isset($_GET['from_date'])) ? Yii::$app->formatter->asTimestamp($_GET['from_date']) : Yii::$app->params['startDate'];
 $to_date = (isset($_GET['to_date'])) ? Yii::$app->formatter->asTimestamp($_GET['to_date']) : time();
 echo Html::beginForm(Url::to(['analytics/orders']), 'get');
-echo '<label class="form-label">Valid Dates</label>';
 echo DatePicker::widget([
 	'name' => 'from_date',
 	'value' => Yii::$app->formatter->asDate($from_date, 'php:Y-m-d'),
