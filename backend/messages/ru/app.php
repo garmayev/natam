@@ -93,4 +93,8 @@ return [
 	'Client info' => 'Информация о клиенте',
 	'Updated At' => 'Дата обновлено',
 	'Elapsed Time' => 'Прошло',
+	'Completed' => 'Выполнено в срок',
+	'Uncompleted' => 'Вышли из срока',
+	'Total' => 'Всего',
+	'Percent' => 'Процент успешности',
 ];
