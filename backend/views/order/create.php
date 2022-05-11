@@ -89,7 +89,8 @@ if ($model->location) {
 	$js .= ",latitude = undefined, longitude = undefined";
 }
 $js .= ";
-ymaps.ready(() => {
+ymaps.ready(init);
+function init() {
     $('#order-address').suggestions({
         token: '2c9418f4fdb909e7469087c681aac4dd7eca158c',
         type: 'ADDRESS',
@@ -175,10 +176,25 @@ ymaps.ready(() => {
             $('#location-longitude').val(coords[1]);
         });
     }
-});
+}
 $('.delete-product').on('click', (e) => {
     e.preventDefault();
     $(e.currentTarget).closest('.input-group').remove();
+});
+$('#order-delivery_type').on('change', (e) => {
+    if ($(e.currentTarget).is(':checked')) {
+        $('#map').hide();
+        $('#order-address').closest('.form-group').hide();
+        $('#location-title').closest('.form-group').hide();
+        $('#location-latitude').closest('.form-group').hide();
+        $('#location-longitude').closest('.form-group').hide();
+    } else {
+        $('#order-address').closest('.form-group').show();
+        $('#location-title').closest('.form-group').show();
+        $('#location-latitude').closest('.form-group').show();
+        $('#location-longitude').closest('.form-group').show();
+        $('#map').show();
+    }
 })
 ";
 $this->registerJs($js, View::POS_LOAD);
@@ -205,9 +221,8 @@ $this->registerCss("
 			}
 			echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
 			echo $form->field($location, "title")->hiddenInput(['name' => 'Order[location][title]'])->label(false);
-			echo $form->field($location, "latitude")->hiddenInput(['name' => 'Order[location][latitude]'])->label(false);
-			echo $form->field($location, "longitude")->hiddenInput(['name' => 'Order[location][longitude]'])->label(false);
-
+			echo $form->field($location, "latitude", ["enableClientValidation" => false])->hiddenInput(['name' => 'Order[location][latitude]'])->label(false);
+			echo $form->field($location, "longitude", ["enableClientValidation" => false])->hiddenInput(['name' => 'Order[location][longitude]'])->label(false);
 			echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
 			echo $form->field($model, "status")->dropDownList($model->getStatus());
 			echo \kartik\datetime\DateTimePicker::widget([
@@ -224,7 +239,8 @@ $this->registerCss("
 					'startDate' => date("Y-m-d"),
 					'autoclose' => true,
 				]
-			])
+			]);
+			echo $form->field($model, 'delivery_type')->checkbox(['label' => 'Самовывоз']);
 			?>
         </div>
     </div>
