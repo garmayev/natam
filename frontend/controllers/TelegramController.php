@@ -39,7 +39,7 @@ class TelegramController extends \yii\rest\Controller
 		if ( !Yii::$app->user->can($permission) ) {
 			$message = isset($telegram->input->message) ? $telegram->input->message : $telegram->input->callback_query;
 			$result = $telegram->sendMessage([
-				'chat_id' => $telegram->input->message["from"]["id"],
+				'chat_id' => $message["from"]["id"],
 				"text" => Yii::t("telegram", "You don`t have permissions for this action")
 			]);
 			return false;
