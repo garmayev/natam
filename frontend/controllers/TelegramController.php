@@ -39,7 +39,7 @@ class TelegramController extends \yii\rest\Controller
 		if ( !Yii::$app->user->can($permission) ) {
 			$message = isset($telegram->input->message) ? $telegram->input->message : $telegram->input->callback_query;
 			$result = $telegram->sendMessage([
-				'chat_id' => $message["from"]["id"],
+				'chat_id' => $message->from['id'],
 				"text" => Yii::t("telegram", "You don`t have permissions for this action")
 			]);
 			return false;
@@ -410,7 +410,7 @@ class TelegramController extends \yii\rest\Controller
 				$order = Order::findOne($args["id"]);
 
 				if ( $order->delivery_type === Order::DELIVERY_COMPANY ) {
-					$employee = Employee::find()->where($args["driver_id"])->one();
+					$employee = Employee::findOne($args["driver_id"]);
 					$order->status = Order::STATUS_DELIVERY;
 					if (!$order->save()) {
 						Yii::error($order->getErrorSummary(true));
