@@ -63,6 +63,11 @@ class User extends \dektrium\user\models\User
 {
 	public $password = '';
 
+	public static function tableName()
+	{
+		return '{{%user}}';
+	}
+
 	public function getClient()
 	{
 		return $this->hasOne(Client::class, ["user_id" => "id"]);

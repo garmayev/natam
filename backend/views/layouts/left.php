@@ -35,7 +35,8 @@ if (!Yii::$app->user->can("employee")) {
 				"icon" => "ticket",
 			], [
 				"label" => Yii::t("app", "Client info"),
-				"url" => Url::to(["client/view", "id" => $clientInfo->id])
+				"url" => Url::to(["client/view", "id" => $clientInfo->id]),
+                "visible" => false,
 			]
 		];
 	}

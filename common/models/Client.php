@@ -72,29 +72,27 @@ class Client extends \yii\db\ActiveRecord
 		$valid = parent::beforeSave($insert);
 		if ($valid) {
 			$user = User::findOne(['username' => $this->phone]);
-			if ( isset($user) ) {
+			if (isset($user)) {
 				$this->user = $user;
 			} else {
-				if ( isset($this->email) ) {
-					$user = Yii::createObject([
-						'class' => User::className(),
-						'scenario' => 'register',
-						'username' => $this->phone,
-						'email' => $this->email,
-						'password' => $this->phone,
-					]);
-					if ($user->save()) {
-						$this->sendNotify("Your login: $this->phone\nYour password: $this->phone", self::NOTIFY_SMS);
-						$auth = Yii::$app->authManager;
-						$role = $auth->getRole('person');
-						$auth->assign($role, $user->id);
-						$user->profile->name = $this->name;
-						$user->profile->public_email = $this->email;
-						$this->user = $user;
-						return $valid && $user->profile->save();
-					} else {
-						Yii::error($user->getErrorSummary(true));
-					}
+				$user = Yii::createObject([
+					'class' => User::className(),
+					'scenario' => 'register',
+					'username' => $this->phone,
+					'email' => ($this->email) ? $this->email : "{$this->phone}@client.com",
+					'password' => $this->phone,
+				]);
+				if ($user->save()) {
+					$this->sendNotify("Your login: $this->phone\nYour password: $this->phone", self::NOTIFY_SMS);
+					$auth = Yii::$app->authManager;
+					$role = $auth->getRole('person');
+					$auth->assign($role, $user->id);
+					$user->profile->name = $this->name;
+					$user->profile->public_email = ($this->email) ? $this->email : "{$this->phone}@client.com";
+					$this->user = $user;
+					return $valid && $user->profile->save();
+				} else {
+					Yii::error($user->getErrorSummary(true));
 				}
 			}
 		}
@@ -103,7 +101,7 @@ class Client extends \yii\db\ActiveRecord
 
 	public function sendNotify($message, $notify_type)
 	{
-		if ( isset($notify_type) ) {
+		if (isset($notify_type)) {
 			$notify = $notify_type;
 		} else {
 			$notify = $this->notify;
@@ -174,7 +172,7 @@ class Client extends \yii\db\ActiveRecord
 	public static function findByPhoneOrChatId($mixed)
 	{
 		$client = self::findByPhone($mixed);
-		if ( !isset($client) ) {
+		if (!isset($client)) {
 			return self::findByChatId($mixed);
 		}
 		return $client;
@@ -202,7 +200,7 @@ class Client extends \yii\db\ActiveRecord
 			Client::NOTIFY_SMS => "Уведомлять по SMS",
 			Client::NOTIFY_EMAIL => "Уведомлять по E-mail",
 		];
-		if ( $this->chat_id ) {
+		if ($this->chat_id) {
 			$list[Client::NOTIFY_TELEGRAM] = "Уведомлять в Telegram";
 		}
 		return $list;

@@ -1,4 +1,9 @@
 <?php
+
+use common\models\User;
+use dektrium\user\Module;
+use frontend\models\Staff;
+
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -87,6 +92,15 @@ return [
 		],
 		'staff' => [
 			'class' => \garmayev\staff\Module::class,
+		],
+		'user' => [
+			'class' => 'dektrium\user\Module',
+			'modelMap' => [
+				'User' => \common\models\User::className(),
+			],
+			'enableConfirmation' => false,
+			'enableUnconfirmedLogin' => true,
+
 		]
 	],
     'params' => $params,
