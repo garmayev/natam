@@ -19,10 +19,10 @@ class AnalyticsController extends BaseController
 	{
 		$models = Order::find();
 		if (!is_null($from_date)) {
-			$models->andWhere(['>', 'created_at', \Yii::$app->formatter->asTimestamp($from_date)]);
+			$models->andWhere(['>', 'created_at', \Yii::$app->formatter->asTimestamp($from_date." 00:00")]);
 		}
 		if (!is_null($to_date)) {
-			$models->andWhere(['<', 'created_at', \Yii::$app->formatter->asTimestamp($to_date)]);
+			$models->andWhere(['<', 'created_at', \Yii::$app->formatter->asTimestamp($to_date." 23:59")]);
 		}
 		if ($export) {
 			if (ob_get_length()) ob_end_clean();
@@ -43,10 +43,10 @@ class AnalyticsController extends BaseController
 		$employees = Employee::find()->all();
 		$orders = Order::find();
 		if (!is_null($from_date)) {
-			$orders->andWhere(['>', 'created_at', \Yii::$app->formatter->asTimestamp($from_date)]);
+			$orders->andWhere(['>', 'created_at', \Yii::$app->formatter->asTimestamp($from_date.' 00:00')]);
 		}
 		if (!is_null($to_date)) {
-			$orders->andWhere(['<', 'created_at', \Yii::$app->formatter->asTimestamp($to_date)]);
+			$orders->andWhere(['<', 'created_at', \Yii::$app->formatter->asTimestamp($to_date.' 23:59')]);
 		}
 		if ( $export ) {
 			if (ob_get_length()) ob_end_clean();
