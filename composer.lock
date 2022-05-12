@@ -2175,12 +2175,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-widget-datepicker.git",
-                "reference": "9d28ec5180e65c1966ffd9f18df33967999446a2"
+                "reference": "0ed90241847f93f8d3dafd307f3ab5eec35159f5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kartik-v/yii2-widget-datepicker/zipball/9d28ec5180e65c1966ffd9f18df33967999446a2",
-                "reference": "9d28ec5180e65c1966ffd9f18df33967999446a2",
+                "url": "https://api.github.com/repos/kartik-v/yii2-widget-datepicker/zipball/0ed90241847f93f8d3dafd307f3ab5eec35159f5",
+                "reference": "0ed90241847f93f8d3dafd307f3ab5eec35159f5",
                 "shasum": ""
             },
             "require": {
@@ -2226,7 +2226,7 @@
                 "issues": "https://github.com/kartik-v/yii2-widget-datepicker/issues",
                 "source": "https://github.com/kartik-v/yii2-widget-datepicker/tree/master"
             },
-            "time": "2022-04-18T08:33:34+00:00"
+            "time": "2022-05-04T04:54:39+00:00"
         },
         {
             "name": "kartik-v/yii2-widget-datetimepicker",
@@ -8388,5 +8388,5 @@
         "ext-curl": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
