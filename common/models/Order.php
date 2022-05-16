@@ -161,13 +161,13 @@ class Order extends ActiveRecord
 	{
 		parent::afterSave($insert, $changedAttributes);
 		if ( !$insert ) {
-			if ( isset($changedAttributes['status']) && $this->status != Order::STATUS_DELIVERY ) {
+			if ( isset($changedAttributes['status']) && $this->attributes['status'] != Order::STATUS_DELIVERY ) {
 				$messages = TelegramMessage::find()
 					->where(['order_id' => $this->id])
 					->andWhere(['status' => TelegramMessage::STATUS_OPENED])
 					->all();
 				foreach ($messages as $message) $message->hide();
-				$employees = Employee::findAll(['state_id' => $this->status]);
+				$employees = Employee::findAll(['state_id' => $this->attributes['status']]);
 				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 			}
 		} else {
