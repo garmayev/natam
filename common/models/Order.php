@@ -44,7 +44,7 @@ use yii\db\ActiveRecord;
  */
 class Order extends ActiveRecord
 {
-	use SaveRelationsTrait;
+//	use SaveRelationsTrait;
 
 	public $name;
 	public $locationTitle;
@@ -76,13 +76,13 @@ class Order extends ActiveRecord
 					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
 				],
 			],
-			'relations' => [
-				'class' => SaveRelationsBehavior::class,
-				'relations' => [
-					'location',
-					'client',
-				],
-			],
+//			'relations' => [
+//				'class' => SaveRelationsBehavior::class,
+//				'relations' => [
+//					'location',
+//					'client',
+//				],
+//			],
 			'rel' => [
 				'class' => UpdateBehavior::className(),
 			],
@@ -133,21 +133,20 @@ class Order extends ActiveRecord
 
 		if ( isset($data["Client"]["phone"]) ) {
 			$client = Client::findByPhone($data["Client"]["phone"]);
-			if ( isset($client) ) {
-				$this->client = $client;
-			} else {
-				$this->client = new Client($data["Client"]);
+			if (!isset($client)) {
+				$client = new Client($data["Client"]);
+				$client->save();
 			}
+			$this->client_id = $client->id;
 		}
 
 		if ( !empty($data["Order"]["location"]["title"]) ) {
 			$location = Location::findOne(['title' => $data['Order']['location']['title']]);
-			if (isset($location)) {
-				$this->location = $location;
-			} else {
-				$this->location = new Location($data["Order"]['location']);
-				$this->location->save();
+			if (!isset($location)) {
+				$location = new Location($data["Order"]['location']);
+				$location->save();
 			}
+			$this->location_id = $location->id;
 			$this->delivery_type = self::DELIVERY_COMPANY;
 		} else {
 			$this->scenario = self::SCENARIO_DELIVERY_SELF;
@@ -324,9 +323,7 @@ class Order extends ActiveRecord
 		}
 		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
 		$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
-		if ( !empty($this->comment) ) {
-			$result .= "<b>Комментарий</b>: " . $this->comment . "\n";
-		}
+		$result .= "<b>Комментарий</b>: " . $this->comment . "\n";
 		$result .= "<i>Общая стоимость: {$this->getPrice()}</i>";
 		return $result;
 	}
