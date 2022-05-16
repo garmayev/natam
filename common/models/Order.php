@@ -166,7 +166,7 @@ class Order extends ActiveRecord
 				->andWhere(['status' => TelegramMessage::STATUS_OPENED])
 				->all();
 			foreach ($messages as $message) $message->hide();
-			$employees = Employee::findAll(['state_id' => $changedAttributes['status']]);
+			$employees = Employee::findAll(['state_id' => $this->status]);
 			foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 		}
 	}
