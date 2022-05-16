@@ -139,27 +139,29 @@ class TelegramMessage extends ActiveRecord
 
 	public static function send(Employee $employee, Order $order)
 	{
-		$response = \Yii::$app->telegram->sendMessage([
-			'chat_id' => $employee->chat_id,
-			'text' => $order->generateTelegramText(),
-			"parse_mode" => "HTML",
-			'reply_markup' => json_encode([
-				'inline_keyboard' => $order->generateTelegramKeyboard()
-			]),
-		]);
-		if ( $response->ok ) {
-			$message = new TelegramMessage([
-				'order_id' => $order->id,
-				'order_status' => $order->status,
-				'message_id' => $response->result->message_id,
-				'content' => $response->result->text,
+		if (isset($employee) && isset($employee->chat_id)) {
+			$response = \Yii::$app->telegram->sendMessage([
 				'chat_id' => $employee->chat_id,
-				'updated_at' => null,
-				'updated_by' => null,
+				'text' => $order->generateTelegramText(),
+				"parse_mode" => "HTML",
+				'reply_markup' => json_encode([
+					'inline_keyboard' => $order->generateTelegramKeyboard()
+				]),
 			]);
-			$message->save();
-		} else {
-			\Yii::error($response['result']);
+			if ( $response->ok ) {
+				$message = new TelegramMessage([
+					'order_id' => $order->id,
+					'order_status' => $order->status,
+					'message_id' => $response->result->message_id,
+					'content' => $response->result->text,
+					'chat_id' => $employee->chat_id,
+					'updated_at' => null,
+					'updated_by' => null,
+				]);
+				$message->save();
+			} else {
+				\Yii::error($response->result);
+			}
 		}
 	}
 }

@@ -26,9 +26,9 @@ class NotifyBehavior extends \yii\base\Behavior
 		 */
 		$owner = $this->owner;
 		$employees = Employee::find()
-			->where(['state_id' => $owner->status ])
+			->where(['state_id' => Order::STATUS_NEW ])
 			->all();
-		if ( count($employees) ) {
+		if ( count($employees) > 0 ) {
 			foreach ($employees as $employee) TelegramMessage::send($employee, $owner);
 		}
 	}

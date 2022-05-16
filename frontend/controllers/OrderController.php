@@ -14,6 +14,7 @@ class OrderController extends \yii\web\Controller
 
 	public function actionCreate()
 	{
+		$this->enableCsrfValidation = false;
 		$order = new Order();
 		$post = Yii::$app->request->post();
 		// Yii::error($post);

@@ -145,7 +145,6 @@ class Order extends ActiveRecord
 		}
 
 		if ( !empty($data["Order"]["location"]["title"]) ) {
-//			Yii::error("DELIVERY COMPANY");
 			$location = Location::findOne(['title' => $data['Order']['location']['title']]);
 			if (isset($location)) {
 				$this->location = $location;
@@ -155,41 +154,11 @@ class Order extends ActiveRecord
 			}
 			$this->delivery_type = self::DELIVERY_COMPANY;
 		} else {
-//			Yii::error("SELF DELIVERY");
 			$this->scenario = self::SCENARIO_DELIVERY_SELF;
 			$this->location = null;
 			$this->delivery_type = self::DELIVERY_SELF;
 		}
-
 		return $parent;
-	}
-
-	public function afterSave($insert, $changedAttributes)
-	{
-//		$employee = Employee::findOne(["user_id" => Yii::$app->user->id]);
-//		if ( $this->isAttributeChanged("status") ) {
-//			$employees = Employee::find()->where(["state_id" => $this->status])->all();
-//			foreach ($employees as $employee) {
-//				$response = Yii::$app->telegram->sendMessage([
-//					"chat_id" => $employee->chat_id,
-//					"text" => $this->generateTelegramText(),
-//					"reply_keyboard" => json_encode($this->generateTelegramKeyboard()),
-//				]);
-//				$data = $response->getContent();
-//				if ( $response->isOk && $data["ok"] ) {
-//					$update = new Updates([
-//						"order_id" => $this->id,
-//						"order_status" => $this->status,
-//						"employee_id" => $employee->id,
-//						"message_id" => $data["message"]["message_id"],
-//						"message_timestamp" => $data["message"]["date"],
-//						"created_by" => Yii::$app->user->id,
-//					]);
-//					$update->save();
-//				}
-//			}
-//		}
-		parent::afterSave($insert, $changedAttributes);
 	}
 
 	public function getStatus($status = null)
@@ -385,7 +354,7 @@ class Order extends ActiveRecord
 				break;
 			case self::STATUS_PREPARE:
 				if ( $this->delivery_type == self::DELIVERY_COMPANY ) {
-					$employees = Employee::find()->where(["state_id" => $this->status])->limit(5)->all();
+					$employees = Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->limit(5)->all();
 					foreach ($employees as $employee) {
 						$keyboard[] = [
 							[
