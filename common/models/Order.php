@@ -160,13 +160,18 @@ class Order extends ActiveRecord
 	public function afterSave($insert, $changedAttributes)
 	{
 		parent::afterSave($insert, $changedAttributes);
+
+		$messages = TelegramMessage::find()
+			->where(['order_id' => $this->id])
+			->andWhere(['status' => TelegramMessage::STATUS_OPENED])
+			->all();
+		foreach ($messages as $message) $message->hide();
+
+		\Yii::error($insert);
+		\Yii::error($changedAttributes);
+
 		if ( !$insert ) {
-			if ( isset($changedAttributes['status']) && $this->attributes['status'] != Order::STATUS_DELIVERY ) {
-				$messages = TelegramMessage::find()
-					->where(['order_id' => $this->id])
-					->andWhere(['status' => TelegramMessage::STATUS_OPENED])
-					->all();
-				foreach ($messages as $message) $message->hide();
+			if ( isset($changedAttributes['status']) && $this->attributes['status'] < Order::STATUS_DELIVERY ) {
 				$employees = Employee::findAll(['state_id' => $this->attributes['status']]);
 				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 			}
