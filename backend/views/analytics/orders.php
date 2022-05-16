@@ -64,9 +64,11 @@ foreach ($models as $model) {
                     <?php
                         if ($telegram_message->status === TelegramMessage::STATUS_CLOSED && $telegram_message->updatedBy) {
 	                        echo "<p>Закрыл этап: {$telegram_message->updatedBy->employee->getFullname()}</p>";
-                        } else {
+                        } else if (isset($temegram_message->createdBy)) {
 	                        echo "<p>Открыл этап: {$telegram_message->createdBy->employee->getFullname()}</p>";
-                        }
+                        } else {
+				echo $telegram_message->createdBy->username;
+			}
                     ?>
                     <?= Html::tag('p', Yii::t('app', 'Created At').": ".Yii::$app->formatter->asDatetime($telegram_message->created_at)) ?>
                     <?= Html::tag('p', Yii::t('app', 'Updated At').": ".Yii::$app->formatter->asDatetime($telegram_message->updated_at)) ?>

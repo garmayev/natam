@@ -175,7 +175,7 @@ class Order extends ActiveRecord
 				$employees = Employee::findAll(['state_id' => $this->attributes['status']]);
 				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 			}
-		} else if (isset($changedAttributes['status'])) {
+		} else if (is_null($changedAttributes['status'])) {
 			$employees = Employee::findAll(['state_id' => $this->status]);
 			foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 		}

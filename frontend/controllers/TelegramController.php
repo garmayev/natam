@@ -409,7 +409,7 @@ class TelegramController extends \yii\rest\Controller
 			if ( isset($args) ) {
 				$order = Order::findOne($args["id"]);
 
-				if ( $order->delivery_type === Order::DELIVERY_COMPANY ) {
+				if ( isset($order->delivery_type) && $order->delivery_type === Order::DELIVERY_COMPANY ) {
 					$employee = Employee::findOne($args["driver_id"]);
 					$order->status = Order::STATUS_DELIVERY;
 					if (!$order->save()) {
