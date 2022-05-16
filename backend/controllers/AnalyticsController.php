@@ -10,6 +10,7 @@ use kartik\mpdf\Pdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet;
+use SebastianBergmann\CodeCoverage\Report\Xml\Totals;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
@@ -111,6 +112,7 @@ class AnalyticsController extends BaseController
 				'completed_messages' => count($completed_messages),
 				'uncompleted_messages' => count($uncompleted_messages),
 				'total_messages' => count($total_messages),
+				'percent' => (count($completed_messages) > 0) ? (count($total_messages) / count($completed_messages)) * 100 : 0,
 			];
 		}
 		return $result;
@@ -119,7 +121,6 @@ class AnalyticsController extends BaseController
 	protected function createSpreadByOrder($models)
 	{
 		$spreadsheet = new Spreadsheet();
-		$order = new Order();
 		$data = $this->getDataByOrder($models);
 		$row = 2;
 		$sheet = $spreadsheet->getActiveSheet();
@@ -167,17 +168,6 @@ class AnalyticsController extends BaseController
 						break;
 				}
 			}
-//				$item[$key]['details'][$i] = [
-//
-//				];
-//			foreach ($item[$key]['details'] as $order_detail) {
-//
-//			}
-//			$sheet->setCellValue("C{$row}", (isset($item['opened'])) ? $item['opened']->getFullname() : '');
-//			$sheet->setCellValue("D{$row}", (isset($item['closed'])) ? $item['closed']->getFullname() : '');
-//			$sheet->setCellValue("E{$row}", \Yii::$app->formatter->asDatetime($item['created_at']));
-//			$sheet->setCellValue("F{$row}", (isset($item['updated_at'])) ? \Yii::$app->formatter->asDatetime($item['updated_at']) : '');
-//			$sheet->setCellValue("G{$row}", (isset($item['updated_at'])) ? \Yii::$app->formatter->asRelativeTime($item['updated_at'], $item['created_at']) : '');
 			$row++;
 		}
 		return \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
@@ -193,11 +183,13 @@ class AnalyticsController extends BaseController
 		$sheet->setCellValue('B1', "Выполненые в срок");
 		$sheet->setCellValue('C1', "Невыполненые в срок");
 		$sheet->setCellValue('D1', "Всего действий");
+		$sheet->setCellValue('E1', "Процент успешности");
 		foreach ($data as $key => $item) {
 			$sheet->setCellValue("A{$row}", $item['employee']->getFullName());
 			$sheet->setCellValue("B{$row}", $item['completed_messages']);
 			$sheet->setCellValue("C{$row}", $item['uncompleted_messages']);
 			$sheet->setCellValue("D{$row}", $item['total_messages']);
+			$sheet->setCellValue("E{$row}", "{$item['percent']}%");
 			$row++;
 		}
 		return \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');

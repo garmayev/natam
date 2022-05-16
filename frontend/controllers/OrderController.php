@@ -7,6 +7,7 @@ use common\models\Location;
 use common\models\Order;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
 use Yii;
+use yii\base\InvalidArgumentException;
 
 class OrderController extends \yii\web\Controller
 {
@@ -17,7 +18,6 @@ class OrderController extends \yii\web\Controller
 		$this->enableCsrfValidation = false;
 		$order = new Order();
 		$post = Yii::$app->request->post();
-		// Yii::error($post);
 		if (Yii::$app->request->isPost) {
 			if ( isset($post["OrderProduct"]) ) {
 				$order->orderProduct = $_POST["OrderProduct"];
@@ -25,7 +25,11 @@ class OrderController extends \yii\web\Controller
 			} else {
 				$data = $post;
 			}
-			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
+			try {
+				$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
+			} catch ($e InvalidArgumentException::class) {
+				$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]." 9:00");
+			}
 			$order->loadRelations($data);
 			if ($order->load($data) && $order->save()) {
 				Yii::$app->cart->clear();

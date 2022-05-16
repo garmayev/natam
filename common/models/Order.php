@@ -81,15 +81,11 @@ class Order extends ActiveRecord
 				'relations' => [
 					'location',
 					'client',
-//					'orderProducts'
 				],
 			],
 			'rel' => [
 				'class' => UpdateBehavior::className(),
 			],
-//			'history' => [
-//				'class' => ActiveRecordHistoryBehavior::class,
-//			],
 			'notify' => [
 				'class' => NotifyBehavior::class,
 				'attribute' => 'status',
