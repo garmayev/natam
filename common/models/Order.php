@@ -348,7 +348,7 @@ class Order extends ActiveRecord
 				break;
 			case self::STATUS_PREPARE:
 				if ( $this->delivery_type == self::DELIVERY_COMPANY ) {
-					$employees = Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->limit(5)->all();
+					$employees = Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->all();
 					foreach ($employees as $employee) {
 						$keyboard[] = [
 							[

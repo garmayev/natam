@@ -49,7 +49,7 @@ use yii\widgets\ActiveForm;
                     <div class="form_btn">
                         <div class="form_policy">
                             <!--                                <input type="checkbox" id="form_policy" />-->
-                            <label for="form_policy">Нажимая кнопку "Отправть" вы даете свое согласие на обработку
+                            <label for="form_policy">Нажимая кнопку "Отправить" вы даете свое согласие на обработку
                                 персональных данных</label>
                         </div>
                         <button type="submit" class="btn blue">
