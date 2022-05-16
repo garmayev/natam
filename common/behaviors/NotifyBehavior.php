@@ -26,7 +26,7 @@ class NotifyBehavior extends \yii\base\Behavior
 		 */
 		$owner = $this->owner;
 		$employees = Employee::find()
-			->where(['state_id' => $owner->status])
+			->where(['state_id' => $event->changedAttributes[$this->attribute]])
 			->all();
 		if (count($employees)) {
 			foreach ($employees as $employee) TelegramMessage::send($employee, $owner);
@@ -39,6 +39,8 @@ class NotifyBehavior extends \yii\base\Behavior
 		 * @var Order $owner
 		 */
 		$owner = $this->owner;
+		\Yii::error(isset($event->changedAttributes[$this->attribute]));
+		// \Yii::error('Model attribute: '.$this->status);
 		if (isset($event->changedAttributes[$this->attribute])) {
 			$messages = TelegramMessage::find()
 				->where(['order_id' => $owner->id])

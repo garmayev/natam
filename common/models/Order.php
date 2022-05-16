@@ -154,6 +154,7 @@ class Order extends ActiveRecord
 			$this->location = null;
 			$this->delivery_type = self::DELIVERY_SELF;
 		}
+		$this->comment = $data["Order"]["comment"];
 		return $parent;
 	}
 
@@ -321,7 +322,7 @@ class Order extends ActiveRecord
 		} else {
 			$result .= "<b>Адрес доставки</b>: Самовывоз\n";
 		}
-		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:{$this->client->phone}'>{$this->client->phone}</a>\n";
+		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
 		$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
 		if ( !empty($this->comment) ) {
 			$result .= "<b>Комментарий</b>: " . $this->comment . "\n";

@@ -27,7 +27,7 @@ class OrderController extends \yii\web\Controller
 			}
 			try {
 				$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
-			} catch ($e InvalidArgumentException::class) {
+			} catch (InvalidArgumentException $e) {
 				$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]." 9:00");
 			}
 			$order->loadRelations($data);
