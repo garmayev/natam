@@ -86,10 +86,10 @@ class Order extends ActiveRecord
 			'rel' => [
 				'class' => UpdateBehavior::className(),
 			],
-			'notify' => [
-				'class' => NotifyBehavior::class,
-				'attribute' => 'status',
-			]
+//			'notify' => [
+//				'class' => NotifyBehavior::class,
+//				'attribute' => 'status',
+//			]
 		];
 	}
 
@@ -155,6 +155,15 @@ class Order extends ActiveRecord
 		}
 		$this->comment = $data["Order"]["comment"];
 		return $parent;
+	}
+
+	public function afterSave($insert, $changedAttributes)
+	{
+		parent::afterSave($insert, $changedAttributes);
+		if ( isset($changedAttributes['status']) && $changedAttributes['status'] != Order::STATUS_DELIVERY ) {
+			$employees = Employee::findAll(['state_id' => $changedAttributes['status']]);
+			foreach ($employees as $employee) TelegramMessage::send($employee, $this);
+		}
 	}
 
 	public function getStatus($status = null)
