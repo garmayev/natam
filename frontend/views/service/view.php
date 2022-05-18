@@ -24,6 +24,9 @@ $this->registerCss("
 .about_description ul {
     list-style-type: disc;
 }
+.about_description ul li {
+    list-style-type: disc;
+}
 ");
 ?>
     <section class="about">
