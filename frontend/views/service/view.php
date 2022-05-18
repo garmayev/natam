@@ -19,6 +19,7 @@ $this->registerCss("
 .about_description .text {
     font-family: 'Roboto';
     font-size: 16px;
+    margin: 10px 0;
 }
 .about_description ul {
     list-style-type: disc;
