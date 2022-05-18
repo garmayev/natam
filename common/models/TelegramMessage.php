@@ -139,7 +139,7 @@ class TelegramMessage extends ActiveRecord
 
 	public static function send(Employee $employee, Order $order)
 	{
-		if (isset($employee) && isset($employee->chat_id)) {
+		if (isset($employee->chat_id)) {
 			$response = \Yii::$app->telegram->sendMessage([
 				'chat_id' => $employee->chat_id,
 				'text' => $order->generateTelegramText(),
@@ -152,15 +152,17 @@ class TelegramMessage extends ActiveRecord
 				$message = new TelegramMessage([
 					'order_id' => $order->id,
 					'order_status' => $order->status,
-					'message_id' => $response->result->message_id,
-					'content' => $response->result->text,
+					'message_id' => 0,
+					'content' => $order->generateTelegramText(),
 					'chat_id' => $employee->chat_id,
 					'updated_at' => null,
 					'updated_by' => null,
 				]);
-				$message->save();
+				if (!$message->save()) {
+					\Yii::error($message->getErrorSummary(true));
+				}
 			} else {
-				\Yii::error(isset($employee) ? $employee->attributes : json_encode($employee));
+				\Yii::error($employee->attributes);
 				\Yii::error($response->result);
 			}
 		}

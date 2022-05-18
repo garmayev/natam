@@ -1,25 +1,37 @@
 <?php
 
-use frontend\models\Client;
-use frontend\models\Service;
+use common\models\Service;
 use yii\helpers\Url;
 use yii\web\View;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
 
 /**
  * @var $this View
  * @var $model Service
  */
-$this->registerCss(".about_info::before { display: none; }");
+$this->registerCss("
+.about_info::before { display: none; } 
+.about_title { margin: 30px 0; }
+.about_description {
+    font-family: 'Roboto';
+    font-size: 16px;
+}
+.about_description .text {
+    font-family: 'Roboto';
+    font-size: 16px;
+}
+.about_description ul {
+    list-style-type: disc;
+}
+");
 ?>
     <section class="about">
         <div class="container">
             <div class="about_inner">
                 <div class="about_content">
 					<?php
-					echo Html::tag("h2", $model->title, ["class" => "title_without"]);
-					echo Html::tag("div", $model->description);
+					echo Html::tag("h2", $model->title, ["class" => "about_title"]);
+					echo Html::tag("div", $model->description, ['class' => 'about_description']);
 					?>
                 </div>
                 <div class="about_info">

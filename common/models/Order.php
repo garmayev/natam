@@ -157,6 +157,39 @@ class Order extends ActiveRecord
 		return $parent;
 	}
 
+<<<<<<< Updated upstream
+=======
+	public function afterSave($insert, $changedAttributes)
+	{
+		parent::afterSave($insert, $changedAttributes);
+
+		if ( Yii::$app->user->isGuest ) {
+			Yii::$app->user->switchIdentity($this->client->user);
+		}
+
+		$messages = TelegramMessage::find()
+			->where(['order_id' => $this->id])
+			->andWhere(['status' => TelegramMessage::STATUS_OPENED])
+			->all();
+		foreach ($messages as $message) $message->hide();
+
+		\Yii::error($insert);
+		\Yii::error($changedAttributes);
+
+		if ( !$insert ) {
+			if ( isset($changedAttributes['status']) && $this->attributes['status'] < Order::STATUS_DELIVERY ) {
+				$employees = Employee::findAll(['state_id' => $this->attributes['status']]);
+				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
+			}
+		} else if (is_null($changedAttributes['status'])) {
+			$employees = Employee::findAll(['state_id' => $this->status]);
+			foreach ($employees as $employee) TelegramMessage::send($employee, $this);
+		}
+
+		Yii::$app->user->logout();
+	}
+
+>>>>>>> Stashed changes
 	public function getStatus($status = null)
 	{
 		$statuses = [
