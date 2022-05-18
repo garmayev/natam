@@ -4,32 +4,35 @@ if ((window.location.pathname !== `/`)) {
 
 let counter = 0;
 
-$('.about_slider').slick({
-    dots: false,
-    infinite: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    responsive: [
-        {
-            breakpoint: 1000,
-            settings: {
-                slidesToShow: 1,
-            },
-        },
-        {
-            breakpoint: 630,
-            settings: {
-                slidesToShow: 1,
-            },
-        },
-    ],
-});
-$(".main_inner > .blue").on("click", (e) => {
+if ($('.about_slider').length > 0) {
+    console.log($('.about_slider'));
+    $('.about_slider').slick({
+	dots: false,
+	infinite: true,
+	slidesToShow: 1,
+	slidesToScroll: 1,
+	responsive: [
+	    {
+        	breakpoint: 1000,
+        	settings: {
+		    slidesToShow: 1,
+        	},
+	    },
+	    {
+        	breakpoint: 630,
+        	settings: {
+        	    slidesToShow: 1,
+        	},
+	    },
+	],
+    });
+}
+$(".main_inner > .blue, .main_content > .blue").on("click", (e) => {
     if (!$(e.currentTarget).hasClass('next_step')) {
-        e.preventDefault();
-        console.log("CLICK")
+        // e.preventDefault();
+        // console.log("CLICK")
         // $("html, body").animate({
-        //     scrollTop: $("#product").offset().top
+    	//     scrollTop: $("#product").offset().top
         // });
     }
 })

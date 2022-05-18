@@ -75,8 +75,8 @@ class PostController extends BaseController
 	public function actionDelete($id)
 	{
 		$model = Post::findOne($id);
-		unlink(Yii::getAlias("@webroot").$model->thumbs);
+		// unlink(Yii::getAlias("@webroot").$model->thumbs);
 		$model->delete();
-		return $this->redirect(["/admin/post/index"]);
+		return $this->redirect(["index"]);
 	}
 }

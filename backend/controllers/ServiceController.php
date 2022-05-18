@@ -35,7 +35,7 @@ class ServiceController extends BaseController
 		if ( Yii::$app->request->isPost ) {
 			$model->file = UploadedFile::getInstance($model, "file");
 			if ( $model->load(Yii::$app->request->post()) && $model->upload() && $model->save() ) {
-				return $this->redirect(["/admin/service/index"]);
+				return $this->redirect(["index"]);
 			} else {
 				Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Service is not saved"));
 				Yii::error($model->getErrorSummary(true));

@@ -4,6 +4,7 @@ namespace console\controllers;
 
 use common\models\Order;
 use common\models\User;
+use common\models\TelegramMessage;
 use console\models\Alert;
 use frontend\models\Telegram;
 use frontend\models\Updates;
@@ -44,7 +45,7 @@ class NotifyController extends \yii\console\Controller
 					//} else {
 					//	$this->stdout("\tДля уведомления был выбран сотрудник {$employee->id}\n");
 					//}
-					$this->sendMessage($employee, $model);
+					//$this->sendMessage($employee, $model);
 					//$employee->last_message_at = time();
 					//$employee->save();
 				} else {
@@ -156,7 +157,7 @@ class NotifyController extends \yii\console\Controller
 	protected function sendMessage($employees, $model)
 	{
 		foreach ($employees as $employee) {
-			$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "parse_mode" => "HTML", "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
+/*			$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "parse_mode" => "HTML", "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
 			if ( !$response->isOk ) {
 				echo "\t\tChat ID: {$employee->chat_id}\n\t\tText: {$model->generateTelegramText()}";
 				return false;
@@ -169,7 +170,8 @@ class NotifyController extends \yii\console\Controller
 				"message_id" => $data["result"]["message_id"],
 				"message_timestamp" => $data["result"]["date"],
 			]);
-			$update->save();
+			$update->save(); */
+			
 		}
 		return true;
 	}
@@ -179,4 +181,9 @@ class NotifyController extends \yii\console\Controller
 
 	}
 
+	public function actionHide()
+	{
+		$messages = TelegramMessage::find()->where(['status' => TelegramMessage::STATUS_OPENED])->all();
+		foreach ($messages as $message) $message->hide();
+	}
 }

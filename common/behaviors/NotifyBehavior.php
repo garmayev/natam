@@ -25,8 +25,6 @@ class NotifyBehavior extends \yii\base\Behavior
 		 * @var Order $owner
 		 */
 		$owner = $this->owner;
-		\Yii::error("INSERT");
-		\Yii::error($owner->{$this->attribute});
 		$employees = Employee::find()
 			->where(['state_id' => $owner->{$this->attribute}])
 			->all();
@@ -41,11 +39,7 @@ class NotifyBehavior extends \yii\base\Behavior
 		 * @var Order $owner
 		 */
 		$owner = $this->owner;
-//		\Yii::error("UPDATE");
-//		\Yii::error(isset($event->changedAttributes["{$this->attribute}"]));
-//		\Yii::error($event->changedAttributes["{$this->attribute}"]);
-		\Yii::error('Model attribute: '.$owner->status);
-		if (isset($event->changedAttributes["{$this->attribute}"]) && $owner->status !== Order::STATUS_NEW) {
+		if (isset($event->changedAttributes["{$this->attribute}"]) && $owner->{$this->attribute} !== Order::STATUS_NEW) {
 			$messages = TelegramMessage::find()
 				->where(['order_id' => $owner->id])
 				->andWhere(['status' => TelegramMessage::STATUS_OPENED])
@@ -56,7 +50,7 @@ class NotifyBehavior extends \yii\base\Behavior
 			}
 			if ($owner->status < Order::STATUS_DELIVERY && $owner->status != Order::STATUS_DELIVERY) {
 				$employees = Employee::find()
-					->where(['state_id' => $owner->status])
+					->where(['state_id' => $owner->{$this->attribute}])
 					->all();
 				if (count($employees)) {
 					foreach ($employees as $employee) TelegramMessage::send($employee, $owner);

@@ -28,7 +28,7 @@ class AppAsset extends AssetBundle
 	    '//unpkg.com/swiper@8/swiper-bundle.min.css',
     ];
     public $js = [
-    	'js/slick.min.js',
+    	    'js/slick.min.js',
 	    'js/jquery.maskedinput.min.js',
 	    'js/programmer_new.js',
 	    'js/main.js',

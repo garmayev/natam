@@ -86,10 +86,10 @@ class Order extends ActiveRecord
 			'rel' => [
 				'class' => UpdateBehavior::className(),
 			],
-//			'notify' => [
-//				'class' => NotifyBehavior::class,
-//				'attribute' => 'status',
-//			]
+			'notify' => [
+				'class' => NotifyBehavior::class,
+				'attribute' => 'status',
+			]
 		];
 	}
 
@@ -150,35 +150,11 @@ class Order extends ActiveRecord
 			$this->delivery_type = self::DELIVERY_COMPANY;
 		} else {
 			$this->scenario = self::SCENARIO_DELIVERY_SELF;
-			$this->location = null;
+			$this->location_id = null;
 			$this->delivery_type = self::DELIVERY_SELF;
 		}
 		$this->comment = $data["Order"]["comment"];
 		return $parent;
-	}
-
-	public function afterSave($insert, $changedAttributes)
-	{
-		parent::afterSave($insert, $changedAttributes);
-
-		$messages = TelegramMessage::find()
-			->where(['order_id' => $this->id])
-			->andWhere(['status' => TelegramMessage::STATUS_OPENED])
-			->all();
-		foreach ($messages as $message) $message->hide();
-
-		\Yii::error($insert);
-		\Yii::error($changedAttributes);
-
-		if ( !$insert ) {
-			if ( isset($changedAttributes['status']) && $this->attributes['status'] < Order::STATUS_DELIVERY ) {
-				$employees = Employee::findAll(['state_id' => $this->attributes['status']]);
-				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
-			}
-		} else if (is_null($changedAttributes['status'])) {
-			$employees = Employee::findAll(['state_id' => $this->status]);
-			foreach ($employees as $employee) TelegramMessage::send($employee, $this);
-		}
 	}
 
 	public function getStatus($status = null)

@@ -60,10 +60,10 @@ class Post extends ActiveRecord
 		if ( $this->validate() )
 		{
 			$path = "/img/uploads/{$this->file->baseName}.{$this->file->extension}";
-			if ( file_exists(\Yii::getAlias("@webroot").$this->thumbs) ) {
-				unlink(\Yii::getAlias("@webroot").$this->thumbs);
+			if ( file_exists(\Yii::getAlias("@frontend")."/web".$this->thumbs) ) {
+				unlink(\Yii::getAlias("@frontend")."/web".$this->thumbs);
 			}
-			$this->file->saveAs(\Yii::getAlias("@webroot").$path);
+			$this->file->saveAs(\Yii::getAlias("@frontend")."/web".$path);
 			$this->thumbs = $path;
 		} else {
 			return false;
