@@ -24,7 +24,8 @@ $(document).ready(function () {
         ],
     });
     if ($(".about_slider").length > 0) {
-	$(".about_slider").slick({
+        if ( window.location.pathname === "/" )
+	    $(".about_slider").slick({
     	    dots: false,
     	    infinite: true,
     	    slidesToShow: 1,

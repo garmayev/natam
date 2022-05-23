@@ -1,32 +1,33 @@
 if ((window.location.pathname !== `/`)) {
     $("body").removeClass("home");
+} else {
+
+    if ($('.about_slider').length > 0) {
+        $('.about_slider').slick({
+            dots: false,
+            infinite: true,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            responsive: [
+                {
+                    breakpoint: 1000,
+                    settings: {
+                        slidesToShow: 1,
+                    },
+                },
+                {
+                    breakpoint: 630,
+                    settings: {
+                        slidesToShow: 1,
+                    },
+                },
+            ],
+        });
+    }
 }
 
 let counter = 0;
 
-if ($('.about_slider').length > 0) {
-    console.log($('.about_slider'));
-    $('.about_slider').slick({
-	dots: false,
-	infinite: true,
-	slidesToShow: 1,
-	slidesToScroll: 1,
-	responsive: [
-	    {
-        	breakpoint: 1000,
-        	settings: {
-		    slidesToShow: 1,
-        	},
-	    },
-	    {
-        	breakpoint: 630,
-        	settings: {
-        	    slidesToShow: 1,
-        	},
-	    },
-	],
-    });
-}
 $(".main_inner > .blue, .main_content > .blue").on("click", (e) => {
     if (!$(e.currentTarget).hasClass('next_step')) {
         // e.preventDefault();
