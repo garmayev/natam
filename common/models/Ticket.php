@@ -79,7 +79,8 @@ class Ticket extends \yii\db\ActiveRecord
 			$text .= "Услуга, заинтересовавшая клиента: ".$service->title;
 		}
 		$bot_id = Yii::$app->params["telegram"]["bot_id"];
-		$employee = Employee::find()->select(["minValue" => new Expression("MIN(last_message_at)")])->one();
+		$employees = Employee::find()->all();
+		foreach ($employees as $employee)
 			$response = $client->createRequest()
 				->setMethod("POST")
 				->setData(["chat_id" => $employee->phone, "text" => $text, "parse_mode" => "markdown"])

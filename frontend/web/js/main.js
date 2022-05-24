@@ -67,9 +67,9 @@ $(document).ready(function () {
     });
 
     let num;
-    $(".plus").on("click", function () {
+    $(".plus").on("click", function (e) {
         num = parseInt($(this).prev().val());
-        console.log(num);
+        console.log($(e));
         $(this)
             .prev()
             .val(num + 1);

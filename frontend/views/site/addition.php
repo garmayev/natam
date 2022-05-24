@@ -36,9 +36,9 @@ foreach ($productProvider->getModels() as $model) {
         <?= Html::hiddenInput("Cart[product_id]", $model->id, ["class" => "cart_product_id"]) ?>
         <div class="product_order">
             <div class="product_count">
-                <button class="minus" <?= "disabled=disabled" ?>>-</button>
-                <input type="text" value="1" name="Cart[product_count]" class="cart_product_count" <?= "disabled=disabled" ?>/>
-                <button class="plus" <?= "disabled=disabled" ?>>+</button>
+                <button class="minus">-</button>
+                <input type="text" value="1" name="Cart[product_count]" class="cart_product_count"/>
+                <button class="plus">+</button>
             </div>
 			<?= Html::a("Заказать", "#", ["class" => ["btn", "blue"]]) ?>
         </div>

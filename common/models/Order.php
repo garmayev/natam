@@ -86,10 +86,16 @@ class Order extends ActiveRecord
 			'rel' => [
 				'class' => UpdateBehavior::className(),
 			],
-			'notify' => [
-				'class' => NotifyBehavior::class,
-				'attribute' => 'status',
-			]
+			'history' => [
+				'class' => ActiveRecordHistoryBehavior::class,
+				'ignoreFields' => [
+					'address', 'location_id', 'client_id', 'delivery_type', 'notify_started_at', 'comment', 'orderProducts'
+				]
+			],
+//			'notify' => [
+//				'class' => NotifyBehavior::class,
+//				'attribute' => 'status',
+//			]
 		];
 	}
 
@@ -157,8 +163,6 @@ class Order extends ActiveRecord
 		return $parent;
 	}
 
-<<<<<<< Updated upstream
-=======
 	public function afterSave($insert, $changedAttributes)
 	{
 		parent::afterSave($insert, $changedAttributes);
@@ -171,10 +175,14 @@ class Order extends ActiveRecord
 			->where(['order_id' => $this->id])
 			->andWhere(['status' => TelegramMessage::STATUS_OPENED])
 			->all();
-		foreach ($messages as $message) $message->hide();
-
-		\Yii::error($insert);
-		\Yii::error($changedAttributes);
+		
+		foreach ($messages as $message) {
+			$message->hide();
+			\Yii::error(\Yii::$app->telegram->input->callback_query->message['message_id']);
+			if ($message->message_id !== \Yii::$app->telegram->input->callback_query->message['message_id']) {
+				$message->delete();
+			}
+		}
 
 		if ( !$insert ) {
 			if ( isset($changedAttributes['status']) && $this->attributes['status'] < Order::STATUS_DELIVERY ) {
@@ -189,22 +197,16 @@ class Order extends ActiveRecord
 		Yii::$app->user->logout();
 	}
 
->>>>>>> Stashed changes
-	public function getStatus($status = null)
-	{
-		$statuses = [
-			self::STATUS_NEW => "Новый заказ",
-			self::STATUS_PREPARE => "Подготовлен для отправки",
-			self::STATUS_DELIVERY => "В процессе доставки",
-			self::STATUS_COMPLETE => "Выполнен",
-			self::STATUS_CANCEL => "Отменен",
-			self::STATUS_HOLD => "Отложен",
-		];
-		if (is_null($status)) {
-			return $statuses;
-		} else {
-			return $statuses[$status];
+	public function beforeDelete() {
+		foreach ($this->messages as $message) {
+			$message->delete();
 		}
+		return parent::beforeDelete();
+	}
+
+	public function getStatus()
+	{
+		return self::getStatusList()[$this->status];
 	}
 
 	public static function getStatusList()

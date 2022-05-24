@@ -20,7 +20,7 @@ $menu = [
 	["label" => "Технические газы", "url" => Url::to("/#product")],
 	["label" => "Наши услуги", "url" => Url::to("/service/index")],
 	["label" => "Контакты", "url" => Url::to("/contact")],
-    ["label" => "Дополнительно", "url" => Url::to("/site/addition")]
+    ["label" => "Каталог", "url" => Url::to("/site/addition")]
 ];
 
 AppAsset::register($this);

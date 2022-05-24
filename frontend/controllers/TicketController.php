@@ -26,7 +26,9 @@ class TicketController extends \yii\web\Controller
 				}
 			}
 			$ticket->client_id = $client->id;
-			$ticket->comment = $post["Ticket"]["comment"];
+			if (isset($post["Ticket"]["comment"])) {
+				$ticket->comment = $post["Ticket"]["comment"];
+			}
 			if (isset($post["Ticket"]["service_id"])) {
 				$ticket->service_id = $post["Ticket"]["service_id"];
 			} else {

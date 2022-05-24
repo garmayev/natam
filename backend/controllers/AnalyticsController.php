@@ -25,6 +25,7 @@ class AnalyticsController extends BaseController
 		if (!is_null($to_date)) {
 			$models->andWhere(['<', 'created_at', \Yii::$app->formatter->asTimestamp($to_date . " 23:59")]);
 		}
+		$models->orderBy(['id' => SORT_DESC]);
 		if ($export) {
 			if (ob_get_length()) ob_end_clean();
 			header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -68,24 +69,26 @@ class AnalyticsController extends BaseController
 	{
 		$result = [];
 		foreach ($models as $model) {
-			$result[$model->id] = ['model' => $model];
+			$result[$model->id] = ['model' => $model, 'details' => []];
 			$telegram_message = TelegramMessage::find()
 				->where(['order_id' => $model->id])
 				->all();
-			foreach ($telegram_message as $message) {
-				if ( $message->status === TelegramMessage::STATUS_CLOSED ) {
-					$result[$model->id]['details'][] = [
-						'created' => $message->createdBy,
-						'updated' => $message->updatedBy,
-						'status' => $message->order_status,
-						'elapsed' => \Yii::$app->formatter->asRelativeTime($message->updated_at, $message->created_at),
-					];
-				} else {
-					$result[$model->id]['details'][] = [
-						'created' => $message->createdBy,
-						'status' => $message->order_status,
-						'elapsed' => null,
-					];
+			if (count($telegram_message)) {
+				foreach ($telegram_message as $message) {
+					if ( $message->status === TelegramMessage::STATUS_CLOSED ) {
+						$result[$model->id]['details'][] = [
+							'created' => $message->createdBy,
+							'updated' => $message->updatedBy,
+							'status' => $message->order_status,
+							'elapsed' => \Yii::$app->formatter->asRelativeTime($message->updated_at, $message->created_at),
+						];
+					} else {
+						$result[$model->id]['details'][] = [
+							'created' => $message->createdBy,
+							'status' => $message->order_status,
+							'elapsed' => null,
+						];
+					}
 				}
 			}
 		}
@@ -126,49 +129,51 @@ class AnalyticsController extends BaseController
 		$sheet = $spreadsheet->getActiveSheet();
 		$sheet->setCellValue('A1', 'Номер заказа');
 		$sheet->setCellValue('B1', \Yii::t('app', 'Created By'));
-		$sheet->setCellValue('C1', \Yii::t('app', 'Elapsed by "New Order"'));
+		$sheet->setCellValue('C1', \Yii::t('app', 'Elapsed by "{status}"', ['status' => Order::getStatusList()[Order::STATUS_NEW]]));
 		$sheet->setCellValue('D1', \Yii::t('app', 'Created By'));
-		$sheet->setCellValue('E1', \Yii::t('app', 'Elapsed by "Order Prepared"'));
+		$sheet->setCellValue('E1', \Yii::t('app', 'Elapsed by "{status}"', ['status' => Order::getStatusList()[Order::STATUS_PREPARE]]));
 		$sheet->setCellValue('F1', \Yii::t('app', 'Created By'));
-		$sheet->setCellValue('G1', \Yii::t('app', 'Elapsed by "Order Delivered"'));
+		$sheet->setCellValue('G1', \Yii::t('app', 'Elapsed by "{status}"', ['status' => Order::getStatusList()[Order::STATUS_DELIVERY]]));
 		foreach ($data as $key => $item) {
-			$sheet->setCellValue("A{$row}", $item['model']->id);
-			foreach ($item['details'] as $index => $detail) {
-				\Yii::error($detail);
-				switch ($detail['status']) {
-					case Order::STATUS_NEW:
-						if (isset($detail) && isset($detail['elapsed'])) {
-							if ( isset($detail['updated']) ) {
-								$sheet->setCellValue("B{$row}", $detail['updated']->employee->getFullName());
-							} else {
-								$sheet->setCellValue("B{$row}", $detail['created']->employee->getFullName());
+//			\Yii::error($item['details']);
+			if (count($item['model']->messages)) {
+				$sheet->setCellValue("A{$row}", $item['model']->id);
+				foreach ($item['details'] as $index => $detail) {
+					switch ($detail['status']) {
+						case Order::STATUS_NEW:
+							if (isset($detail) && isset($detail['elapsed'])) {
+								if ( isset($detail['updated']) ) {
+									$sheet->setCellValue("B{$row}", $detail['updated']->employee->getFullName());
+								} else {
+									$sheet->setCellValue("B{$row}", $detail['created']->employee->getFullName());
+								}
+								$sheet->setCellValue("C{$row}", $detail['elapsed']);
 							}
-							$sheet->setCellValue("C{$row}", $detail['elapsed']);
-						}
-						break;
-					case Order::STATUS_PREPARE:
-						if (isset($detail) && isset($detail['elapsed'])) {
-							if ( isset($detail['updated']) ) {
-								$sheet->setCellValue("D{$row}", $detail['updated']->employee->getFullName());
-							} else {
-								$sheet->setCellValue("D{$row}", $detail['created']->employee->getFullName());
+							break;
+						case Order::STATUS_PREPARE:
+							if (isset($detail) && isset($detail['elapsed'])) {
+								if ( isset($detail['updated']) ) {
+									$sheet->setCellValue("D{$row}", $detail['updated']->employee->getFullName());
+								} else {
+									$sheet->setCellValue("D{$row}", $detail['created']->employee->getFullName());
+								}
+								$sheet->setCellValue("E{$row}", $detail['elapsed']);
 							}
-							$sheet->setCellValue("E{$row}", $detail['elapsed']);
-						}
-						break;
-					case Order::STATUS_DELIVERY:
-						if (isset($detail) && isset($detail['elapsed'])) {
-							if ( isset($detail['updated']) ) {
-								$sheet->setCellValue("F{$row}", $detail['updated']->employee->getFullName());
-							} else {
-								$sheet->setCellValue("F{$row}", $detail['created']->employee->getFullName());
+							break;
+						case Order::STATUS_DELIVERY:
+							if (isset($detail) && isset($detail['elapsed'])) {
+								if ( isset($detail['updated']) ) {
+									$sheet->setCellValue("F{$row}", $detail['updated']->employee->getFullName());
+								} else {
+									$sheet->setCellValue("F{$row}", $detail['created']->employee->getFullName());
+								}
+								$sheet->setCellValue("G{$row}", $detail['elapsed']);
 							}
-							$sheet->setCellValue("G{$row}", $detail['elapsed']);
-						}
-						break;
+							break;
+					}
 				}
-			}
 			$row++;
+			}
 		}
 		return \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
 	}

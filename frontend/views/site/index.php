@@ -24,6 +24,15 @@ use yii\widgets\ListView;
 
 $this->title = Yii::$app->name;
 $this->registerJsVar("picker", "");
+$this->registerJs(<<< JS
+$('.blue.recall').on('click', (e) => {
+	// e.preventDefault();
+	$('.form_tab button:first-child').trigger('click');
+});
+$('.main_inner > .blue').on('click', (e) => {
+	$('.form_tab button:last-child').trigger('click');
+})
+JS)
 ?>
 <main>
     <section class="form" id="form">
@@ -99,7 +108,7 @@ $this->registerJsVar("picker", "");
                             </div>
                         </div>
                         <div class="form_content step swiper-slide swiper-no-swiping" data-index="3">
-                            <div class="date-address" style="display: flex;">
+                            <div class="date-address" style="display: flex; flex-direction: column;">
                                 <div class="form_item">
 									<?=
 									DateTimePicker::widget([
@@ -156,7 +165,7 @@ $this->registerJsVar("picker", "");
                                     <input type="hidden" name="Order[location][longitude]" id="location-logintude">
                                 </div>
                             </div>
-                            <div id="map" style="height: 330px; min-width: 100%; margin-bottom: 35px;"></div>
+                            <div id="map" style="height: 30vh; min-width: 100%; margin-bottom: 35px;"></div>
                             <div class="form-group" style="display: flex; flex-direction: row;">
                                 <label for="delivery_type" style="font-size: 18px; font-weight: bold; text-transform: uppercase;">Самовывоз</label>
                                 <input type="checkbox" name="Order[delivery_type]" id="delivery_type" style="margin: 0 10px; height: 18px; width: 18px;">
@@ -408,7 +417,7 @@ $this->registerJsVar("picker", "");
                     <a href="tel:71234567890" class="buy_tel"
                     >+7 3012 20 40 56</a
                     >
-                    <a href="#" class="btn blue recall">
+                    <a href="/#form" class="btn blue recall">
                         <img src="/img/phone.svg" alt="phone"/>
                         ЗАКАЗАТЬ ЗВОНОК
                     </a>

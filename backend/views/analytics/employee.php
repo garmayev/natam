@@ -65,7 +65,7 @@ echo Html::endForm();
 		echo Html::tag('td', ($completed_messages) ? count($completed_messages) : 0);
 		echo Html::tag('td', ($uncompleted_messages) ? count($uncompleted_messages) : 0);
 		echo Html::tag('td', ($total_messages) ? count($total_messages) : 0);
-		echo Html::tag('td', ($total_messages && $completed_messages) ? (count($total_messages) / count($completed_messages) * 100) . "%" : '0%');
+		echo Html::tag('td', ($total_messages && $completed_messages) ? ((count($completed_messages) / count($total_messages)) * 100) . "%" : '0%');
 		echo Html::endTag('tr');
 	}
 	?>

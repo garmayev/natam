@@ -45,7 +45,7 @@ foreach ($models as $model) {
             $class = 'panel-success';
             break;
         case Order::STATUS_CANCEL:
-            $class = 'panel_danger';
+            $class = 'panel-danger';
             break;
         case Order::STATUS_HOLD:
             $class = 'panel-warning';
@@ -64,18 +64,26 @@ foreach ($models as $model) {
                     <?php
                         if ($telegram_message->status === TelegramMessage::STATUS_CLOSED && $telegram_message->updatedBy) {
 				if (isset($telegram_message->updatedBy->employee)) {
-		                        echo "<p>Закрыл этап: {$telegram_message->updatedBy->employee->getFullname()}</p>";
+					if ($telegram_message->updated_by === $telegram_message->created_by) {
+			                        echo "<p>Открыл этап: {$telegram_message->updatedBy->employee->getFullname()}</p>";
+
+					} else {
+		                    		echo "<p>Закрыл этап: {$telegram_message->updatedBy->employee->getFullname()}</p>";
+					}
 				} else {
 					echo "<p>{$telegram_message->updatedBy->username}</p>";
 				}
-                        } else if (isset($temegram_message->createdBy)) {
+                        } else if (isset($temegram_message->created_by)) {
 	                        echo "<p>Открыл этап: {$telegram_message->createdBy->employee->getFullname()}</p>";
                         } else {
-				echo "<p>{$telegram_message->createdBy->username}</p>";
+				echo "<p>Заказали на сайте</p>";
 			}
                     ?>
                     <?= Html::tag('p', Yii::t('app', 'Created At').": ".Yii::$app->formatter->asDatetime($telegram_message->created_at)) ?>
-                    <?= Html::tag('p', Yii::t('app', 'Updated At').": ".Yii::$app->formatter->asDatetime($telegram_message->updated_at)) ?>
+                    <?= ($telegram_message->updated_by !== $telegram_message->created_by) ?
+				Html::tag('p', Yii::t('app', 'Updated At').": ".Yii::$app->formatter->asDatetime($telegram_message->updated_at)) :
+				Html::tag('p', Yii::t('app', 'Updated At').": ")
+		    ?>
                     <?= Html::tag('p', Yii::t('app', 'Elapsed Time').": ".Yii::$app->formatter->asRelativeTime($telegram_message->updated_at, $telegram_message->created_at)) ?>
                 </div>
             </div>

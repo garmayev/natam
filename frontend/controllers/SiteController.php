@@ -47,7 +47,8 @@ class SiteController extends Controller
 					->leftJoin('product p', "category.id = p.category_id AND p.isset <> 1")
 					->where(['category.main' => 1])
 					->groupBy(["category.id"])
-					->orderBy(["product_count" => SORT_DESC])
+					->orderBy(["product_count" => SORT_DESC, "id" => SORT_DESC])
+//					->orderBy(["id" => SORT_DESC])
 			]),
         	"postProvider" => new ActiveDataProvider([
         		"query" => Post::find()

@@ -95,7 +95,7 @@ if (Yii::$app->user->can("employee")) {
 			"attribute" => "status",
 			"format" => "html",
 			"content" => function ($model, $key) {
-				return Html::activeDropDownList($model, "status", $model->getStatus(), ["style" => "box-sizing: border-box; width: 100%;", "data-key" => $key, "id" => "status-{$key}", "class" => "status form-control"]);
+				return Html::activeDropDownList($model, "status", Order::getStatusList(), ["style" => "box-sizing: border-box; width: 100%;", "data-key" => $key, "id" => "status-{$key}", "class" => "status form-control"]);
 			}
 		], [
 			"attribute" => "created_at",

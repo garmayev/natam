@@ -97,4 +97,8 @@ return [
 	'Uncompleted' => 'Вышли из срока',
 	'Total' => 'Всего',
 	'Percent' => 'Процент успешности',
+	'UnCompleted' => 'Не выполнено в срок',
+
+	'Created By' => 'Создано',
+	'Elapsed by "{status}"' => 'Прошло времени на "{status}"',
 ];

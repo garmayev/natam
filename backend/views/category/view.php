@@ -41,15 +41,15 @@ echo GridView::widget([
 			"template" => "{update} {delete}",
 			"buttons" => [
 				"update" => function ($url, $model) {
-					$url = Url::to(["/admin/product/update", "id" => $model->id]);
+					$url = Url::to(["/product/update", "id" => $model->id]);
 					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-pencil"]]), $url);
 				},
 				"view" => function ($url, $model) {
-					$url = Url::to(["/admin/product/view", "id" => $model->id]);
+					$url = Url::to(["/product/view", "id" => $model->id]);
 					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-eye-open"]]), $url);
 				},
 				"delete" => function ($url, $model) {
-					$url = Url::to(["/admin/product/delete", "id" => $model->id]);
+					$url = Url::to(["/product/delete", "id" => $model->id]);
 					return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-trash"]]), $url);
 				}
 			]

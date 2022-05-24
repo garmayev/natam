@@ -122,18 +122,24 @@ class TelegramMessage extends ActiveRecord
 
 	public function hide()
 	{
-		$response = \Yii::$app->telegram->editMessageText([
-			'chat_id' => $this->chat_id,
-			'message_id' => $this->message_id,
-			'text' => \Yii::t('app', 'Order #{n} is updated again', ['n' => $this->order_id]),
-		]);
-		if ( $response->ok ) {
-			$this->status = self::STATUS_CLOSED;
-			$this->updated_by = \Yii::$app->user->id;
-			$this->updated_at = time();
-			$this->save();
-		} else {
+		try {
+			$response = \Yii::$app->telegram->editMessageText([
+				'chat_id' => $this->chat_id,
+				'message_id' => $this->message_id,
+				'text' => \Yii::t('app', 'Order #{n} is updated again', ['n' => $this->order_id]),
+			]);
+			if ( $response->ok ) {
+				$this->status = self::STATUS_CLOSED;
+				$this->updated_by = \Yii::$app->user->id;
+				$this->updated_at = time();
+				$this->save();
+			} else {
+				\Yii::error($response->result);
+				\Yii::error($message->attributes);
+			}
+		} catch (GuzzleHttp\Exception\ClientException $e) {
 			\Yii::error($response->result);
+			\Yii::error($message->attributes);
 		}
 	}
 
@@ -152,7 +158,7 @@ class TelegramMessage extends ActiveRecord
 				$message = new TelegramMessage([
 					'order_id' => $order->id,
 					'order_status' => $order->status,
-					'message_id' => 0,
+					'message_id' => $response->result->message_id,
 					'content' => $order->generateTelegramText(),
 					'chat_id' => $employee->chat_id,
 					'updated_at' => null,
