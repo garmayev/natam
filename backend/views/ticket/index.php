@@ -41,7 +41,9 @@ echo \yii\grid\GridView::widget([
 					return "Общие вопросы";
 				}
 			}
-		], [
+		],
+		"created_at:datetime",
+		[
 			'class' => \yii\grid\ActionColumn::className(),
 			'headerOptions' => ["width" => '80'],
 			'template' => '{view} {update} {delete}'
