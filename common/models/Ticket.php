@@ -45,6 +45,7 @@ class Ticket extends \yii\db\ActiveRecord
 			"phone" => Yii::t("app", "Phone"),
 			"status" => Yii::t("app", "Status"),
 			"comment" => Yii::t("app", "Comment"),
+			"created_at" => Yii::t("app", "Created At"),
 		];
 	}
 
