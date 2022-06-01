@@ -18,7 +18,7 @@ class AppAsset extends AssetBundle
         'css/normalize.css',
 	    '//fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap',
 	    'css/slick.css',
-	    'css/style.css',
+	    'css/style_new.css',
 	    'css/programmer.css',
 	    '//unpkg.com/aos@2.3.1/dist/aos.css',
 	    ['https://fonts.googleapis.com', 'rel' => 'preconnected'],
