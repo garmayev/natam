@@ -53,7 +53,7 @@ class Ticket extends \yii\db\ActiveRecord
 		return [
 			[["comment", "phone"], "string"],
 			[["email"], "email"],
-			[["status", "service_id"], "integer"],
+			[["status", "service_id", "created_at"], "integer"],
 			[["status"], "default", "value" => self::STATUS_OPEN],
 			[["comment"], "match", "pattern" => '/http[s]*:\/\//', "not" => true],
 			[["comment"], "match", "pattern" => '/([a-z0-9]*@[a-z0-9\-]*\.[a-z]*)/', "not" => true],
@@ -110,6 +110,7 @@ class Ticket extends \yii\db\ActiveRecord
 		if ( $this->client->company ) {
 			$text .= "<b>Компания</b>: {$this->client->company}\n";
 		}
+		$text .= "<b>Дата создания</b>: ".Yii::$app->formatter->asDatetime($this->created_at);
 		preg_match('/http[s]*:\/\//m', $this->comment, $matches);
 		Yii::error(count($matches));
 		if ( count($matches) === 0 ) {
@@ -122,23 +123,7 @@ class Ticket extends \yii\db\ActiveRecord
 					'text' => $text,
 					"parse_mode" => "HTML",
 				]);
-//				$response = $client->createRequest()
-//					->setMethod("POST")
-//					->setData(["chat_id" => $employee->chat_id, "text" => $text, "parse_mode" => "html"])
-//					->setUrl("https://api.telegram.org/bot{$bot_id}/sendMessage")
-//					->send();
 			}
 		}
-<<<<<<< Updated upstream
-		$bot_id = Yii::$app->params["telegram"]["bot_id"];
-		$employees = Employee::find()->all();
-		foreach ($employees as $employee)
-			$response = $client->createRequest()
-				->setMethod("POST")
-				->setData(["chat_id" => $employee->phone, "text" => $text, "parse_mode" => "markdown"])
-				->setUrl("https://api.telegram.org/bot{$bot_id}/sendMessage")
-				->send();
-=======
->>>>>>> Stashed changes
 	}
 }
