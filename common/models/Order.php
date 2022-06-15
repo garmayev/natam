@@ -76,13 +76,13 @@ class Order extends ActiveRecord
 					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
 				],
 			],
-//			'relations' => [
-//				'class' => SaveRelationsBehavior::class,
-//				'relations' => [
-//					'location',
-//					'client',
-//				],
-//			],
+			'relations' => [
+				'class' => SaveRelationsBehavior::class,
+				'relations' => [
+					'location',
+					'client',
+				],
+			],
 			'rel' => [
 				'class' => UpdateBehavior::className(),
 			],
@@ -111,7 +111,7 @@ class Order extends ActiveRecord
 	{
 		return [
 			[["address", "comment"], "string"],
-			[["client_id"], "integer"],
+			[["client_id", "boss_chat_id"], "integer"],
 			[["client_id"], "exist", "targetClass" => Client::className(), "targetAttribute" => "id"],
 			[["status"], "default", "value" => self::STATUS_NEW],
 			[['delivery_type'], "default", "value" => self::DELIVERY_COMPANY],
@@ -159,7 +159,9 @@ class Order extends ActiveRecord
 			$this->location_id = null;
 			$this->delivery_type = self::DELIVERY_SELF;
 		}
-		$this->comment = $data["Order"]["comment"];
+		if (isset($data["Order"]["comment"])) {
+			$this->comment = $data["Order"]["comment"];
+		}
 		return $parent;
 	}
 
@@ -167,34 +169,39 @@ class Order extends ActiveRecord
 	{
 		parent::afterSave($insert, $changedAttributes);
 
-		if ( Yii::$app->user->isGuest ) {
-			Yii::$app->user->switchIdentity($this->client->user);
-		}
-
-		$messages = TelegramMessage::find()
-			->where(['order_id' => $this->id])
-			->andWhere(['status' => TelegramMessage::STATUS_OPENED])
-			->all();
-		
-		foreach ($messages as $message) {
-			$message->hide();
-			\Yii::error(\Yii::$app->telegram->input->callback_query->message['message_id']);
-			if ($message->message_id !== \Yii::$app->telegram->input->callback_query->message['message_id']) {
-				$message->delete();
+		if ($this->boss_chat_id === null) {
+			if ( Yii::$app->user->isGuest ) {
+				Yii::$app->user->switchIdentity($this->client->user);
+			} else {
+				$oldUser = Yii::$app->user->identity;
 			}
-		}
 
-		if ( !$insert ) {
-			if ( isset($changedAttributes['status']) && $this->attributes['status'] < Order::STATUS_DELIVERY ) {
-				$employees = Employee::findAll(['state_id' => $this->attributes['status']]);
+			$messages = TelegramMessage::find()
+				->where(['order_id' => $this->id])
+				->andWhere(['status' => TelegramMessage::STATUS_OPENED])
+				->all();
+			foreach ($messages as $message) {
+				$message->hide();
+				// \Yii::error(\Yii::$app->telegram->input->callback_query->message['message_id']);
+				// if ($message->id !== \Yii::$app->telegram->input->message->id) {
+				// 	$message->delete();
+				// }
+			}
+			if ( !$insert ) {
+				if ( isset($changedAttributes['status']) && $this->status < Order::STATUS_DELIVERY ) {
+					$employees = Employee::findAll(['state_id' => $this->attributes['status']]);
+					foreach ($employees as $employee) TelegramMessage::send($employee, $this);
+				}
+			} else if (is_null($changedAttributes['status'])) {
+				$employees = Employee::findAll(['state_id' => $this->status]);
 				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 			}
-		} else if (is_null($changedAttributes['status'])) {
-			$employees = Employee::findAll(['state_id' => $this->status]);
-			foreach ($employees as $employee) TelegramMessage::send($employee, $this);
+			if (isset($oldUser)) {
+				Yii::$app->user->switchIdentity($oldUser);
+			} else {
+				// Yii::$app->user->logout();
+			}
 		}
-
-		Yii::$app->user->logout();
 	}
 
 	public function beforeDelete()

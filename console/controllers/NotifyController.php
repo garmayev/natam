@@ -35,8 +35,7 @@ class NotifyController extends \yii\console\Controller
 			return false;
 		}
 		foreach ($models as $model) {
-			$this->stdout("Заказ #{$model->id}\n", Console::BOLD);
-			if ( $this->isNeedNextMessage($model) ) {
+			/* if ( $this->isNeedNextMessage($model) ) {
 				$this->stdout("\tТребуется отправка сообщения сотруднику\n");
 				$employee = $this->findNextEmployee($model);
 				if ( $employee ) {
@@ -53,8 +52,9 @@ class NotifyController extends \yii\console\Controller
 				}
 			} else {
 				$this->stdout("\tОтправка уведомления не требуется");
-			}
+			} */
 			if ( $this->isNeedAlert($model) ) {
+				$this->stdout("Заказ #{$model->id}\n", Console::BOLD);
 				$this->stdout("\tТребуется отправка сообщения начальнику\n");
 				$response = Telegram::sendMessage([
 					"chat_id" => $this->settings["alert"][$model->status - 1]["chat_id"],
@@ -63,7 +63,7 @@ class NotifyController extends \yii\console\Controller
 				if ($response->isOk) {
 					\Yii::$app->user->switchIdentity(User::findOne(1));
 					$model->boss_chat_id = $this->settings["alert"][$model->status - 1]["chat_id"];
-					$model->save();
+					$model->save(false);
 				}
 			}
 		}
@@ -124,7 +124,8 @@ class NotifyController extends \yii\console\Controller
 		if ( $timeout ) {
 			echo "\t\tTime is out\n";
 		} else {
-			echo "\t\tTime is not out\n";
+			// echo "\t\tTime is not out\n";
+			return false;
 		}
 		$result = ($timeout && empty($model->boss_chat_id));
 		if (!empty($model->boss_chat_id)) {

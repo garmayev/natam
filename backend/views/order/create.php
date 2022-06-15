@@ -224,7 +224,7 @@ $this->registerCss("
 			echo $form->field($location, "latitude", ["enableClientValidation" => false])->hiddenInput(['name' => 'Order[location][latitude]'])->label(false);
 			echo $form->field($location, "longitude", ["enableClientValidation" => false])->hiddenInput(['name' => 'Order[location][longitude]'])->label(false);
 			echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
-			echo $form->field($model, "status")->dropDownList($model->getStatus());
+			echo $form->field($model, "status")->dropDownList(Order::getStatusList());
 			echo \kartik\datetime\DateTimePicker::widget([
 				'name' => 'Order[delivery_date]',
 				'value' => ($model->delivery_date > 0) ? Yii::$app->formatter->asDatetime($model->delivery_date, 'php:Y-m-d H:i') : "",

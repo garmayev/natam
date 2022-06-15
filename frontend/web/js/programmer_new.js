@@ -38,6 +38,20 @@ $(".main_inner > .blue, .main_content > .blue").on("click", (e) => {
     }
 })
 
+$(".cart_product_id").on('change', (e) => {
+    let target = $(e.currentTarget);
+    let product_id = target.val();
+    $.ajax({
+        url: '/product/get-product',
+        data: {id: product_id},
+        success: (response) => {
+            console.log(target);
+            target.next().html(response.price + "<span> руб.</span>");
+        }
+    })
+});
+
+
 $.ajax({
     url: '/cart/get-products',
     success: (response) => {

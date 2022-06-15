@@ -39,7 +39,7 @@ class TelegramController extends \yii\rest\Controller
 		if ( !Yii::$app->user->can($permission) ) {
 			$message = isset($telegram->input->message) ? $telegram->input->message : $telegram->input->callback_query;
 			$result = $telegram->sendMessage([
-				'chat_id' => $message->from['id'],
+				'chat_id' => $message->chat->id,
 				"text" => Yii::t("telegram", "You don`t have permissions for this action")
 			]);
 			return false;
@@ -292,8 +292,8 @@ class TelegramController extends \yii\rest\Controller
 		Command::run("/manager", [$this, "manager"]);
 		Command::run("/store", [$this, "store"]);
 		Command::run("/driver", [$this, "driver"]);
-		Command::run("/all_orders", [$this, "orders"]);
-		Command::run("/status_store", [$this, "status_store"]);
+//		Command::run("/all_orders", [$this, "orders"]);
+//		Command::run("/status_store", [$this, "status_store"]);
 	}
 
 	public static function start($telegram, $args = null)

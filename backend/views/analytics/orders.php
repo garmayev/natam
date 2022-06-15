@@ -9,6 +9,7 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\View;
+use garmayev\staff\models\Employee;
 
 
 /**
@@ -74,9 +75,16 @@ foreach ($models as $model) {
 					echo "<p>{$telegram_message->updatedBy->username}</p>";
 				}
                         } else if (isset($temegram_message->created_by)) {
-	                        echo "<p>Открыл этап: {$telegram_message->createdBy->employee->getFullname()}</p>";
+				if ($telegram_message->order_status === Order::STATUS_DELIVERY) {
+					$e = Employee::findOne(['chat_id' => $telegram_message->chat_id]);
+					echo "<p>Заявка отправлена: {$e->getFullname()}</p>";
+				} else {
+	                    		echo "<p>Открыл этап: {$telegram_message->createdBy->employee->getFullname()}</p>";
+				}
                         } else {
-				echo "<p>Заказали на сайте</p>";
+					$e = Employee::findOne(['chat_id' => $telegram_message->chat_id]);
+					echo "<p>Заявка отправлена: {$e->getFullname()}</p>";
+//				echo "<p>Заказали на сайте</p>";
 			}
                     ?>
                     <?= Html::tag('p', Yii::t('app', 'Created At').": ".Yii::$app->formatter->asDatetime($telegram_message->created_at)) ?>

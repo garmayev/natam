@@ -222,7 +222,7 @@ li {
 }
 
 .header {
-   min-height: 800px;
+//   min-height: 800px;
    padding-bottom: 20px;
    background: top center/cover url("../img/header.png");
 }
