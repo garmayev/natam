@@ -34,6 +34,7 @@ $this->beginPage();
     <meta name="yandex-verification" content="a152829f9793ec22" />
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="https://natam03.ru/favicon.png" />
     <?php $this->registerCsrfMetaTags() ?>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>

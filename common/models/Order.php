@@ -111,7 +111,7 @@ class Order extends ActiveRecord
 	{
 		return [
 			[["address", "comment"], "string"],
-			[["client_id", "boss_chat_id"], "integer"],
+			[["client_id"], "integer"],
 			[["client_id"], "exist", "targetClass" => Client::className(), "targetAttribute" => "id"],
 			[["status"], "default", "value" => self::STATUS_NEW],
 			[['delivery_type'], "default", "value" => self::DELIVERY_COMPANY],
@@ -168,7 +168,8 @@ class Order extends ActiveRecord
 	public function afterSave($insert, $changedAttributes)
 	{
 		parent::afterSave($insert, $changedAttributes);
-
+		// \Yii::error(empty($changedAttributes['boss_chat_id']) && ($this->boss_chat_id === null));
+		// \Yii::error($this->boss_chat_id);
 		if ($this->boss_chat_id === null) {
 			if ( Yii::$app->user->isGuest ) {
 				Yii::$app->user->switchIdentity($this->client->user);
@@ -189,7 +190,7 @@ class Order extends ActiveRecord
 			}
 			if ( !$insert ) {
 				if ( isset($changedAttributes['status']) && $this->status < Order::STATUS_DELIVERY ) {
-					$employees = Employee::findAll(['state_id' => $this->attributes['status']]);
+					$employees = Employee::findAll(['state_id' => $this->status]);
 					foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 				}
 			} else if (is_null($changedAttributes['status'])) {

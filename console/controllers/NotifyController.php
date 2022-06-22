@@ -32,7 +32,7 @@ class NotifyController extends \yii\console\Controller
 
 		if (!$this->checkHours()) {
 			$this->stdout("Все работники отдыхают\n");
-			return false;
+			// return false;
 		}
 		foreach ($models as $model) {
 			/* if ( $this->isNeedNextMessage($model) ) {

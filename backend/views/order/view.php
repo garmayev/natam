@@ -33,7 +33,13 @@ $totalCost = 0;
 			<?= Yii::t("app", "Information about Order") ?>
         </div>
         <div class="panel-body">
+	    <?php 
+		if ($model->delivery_type !== Order::DELIVERY_SELF) {
+	    ?>
             <p>Адрес доставки: <?= isset($model->address) ? $model->address : $model->location->title ?></p>
+	    <?php
+	    }
+	    ?>
             <p>Текущий статус: <?= $model->getStatus(($model->status === null) ? 0 : $model->status) ?></p>
             <p>Дата доставки: <?= Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i") ?></p>
             <div><p>Комментарий: </p><?= $model->comment ?></div>

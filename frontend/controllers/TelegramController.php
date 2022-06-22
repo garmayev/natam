@@ -390,6 +390,7 @@ class TelegramController extends \yii\rest\Controller
 			if ( isset($args) ) {
 				$order = Order::findOne($args["id"]);
 				$order->status = Order::STATUS_PREPARE;
+				$order->boss_chat_id = null;
 				if ( !$order->save() ) {
 					Yii::error($order->getErrorSummary(true));
 				}
@@ -412,6 +413,7 @@ class TelegramController extends \yii\rest\Controller
 				if ( isset($order->delivery_type) && $order->delivery_type === Order::DELIVERY_COMPANY ) {
 					$employee = Employee::findOne($args["driver_id"]);
 					$order->status = Order::STATUS_DELIVERY;
+					$order->boss_chat_id = null;
 					if (!$order->save()) {
 						Yii::error($order->getErrorSummary(true));
 					} else {
@@ -447,6 +449,7 @@ class TelegramController extends \yii\rest\Controller
 					$message->hide();
 				}
 				$order->status = Order::STATUS_COMPLETE;
+				$order->boss_chat_id = null;
 				if ( !$order->save() ) {
 					Yii::error($order->getErrorSummary(true));
 				}
