@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use common\models\Client;
+use common\models\search\ClientSearch;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Url;
@@ -11,10 +12,11 @@ use yii\web\Response;
 class ClientController extends BaseController
 {
 	public function actionIndex() {
+		$searchModel = new ClientSearch();
+		$dataProvider = $searchModel->search($this->request->queryParams);
 		return $this->render('index', [
-			"clientProvider" => new ActiveDataProvider([
-				"query" => Client::find()
-			])
+			"clientProvider" => $dataProvider,
+			"searchModel" => $searchModel
 		]);
 	}
 

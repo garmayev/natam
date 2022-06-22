@@ -1,6 +1,7 @@
 <?php
 
 use common\models\Client;
+use common\models\search\ClientSearch;
 use yii\bootstrap\ActiveForm;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
@@ -11,12 +12,14 @@ use yii\grid\GridView;
  * @var $this View
  * @var $clientProvider ActiveDataProvider
  * @var $model Client
+ * @var $searchModel ClientSearch
  */
 
 $this->title = "Клиенты";
 
 echo GridView::widget([
 	"dataProvider" => $clientProvider,
+	"filterModel" => $searchModel,
 	"summary" => "",
 	"columns" => [
 		"name",
