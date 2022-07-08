@@ -24,7 +24,8 @@ class OrderSearch extends Model
 	public function rules()
 	{
 		return [
-			[["client_name", "client_phone", "location_title", "status", "comment"], "safe"],
+//			[["status"], "in", "range" => [1, 2, 3, 4, 5, 6]],
+			[["client_name", "client_phone", "status", "location_title", "comment"], "safe"],
 			[["created_start", "created_finish", "delivery_start", "delivery_finish"], "safe"]
 		];
 	}
@@ -32,6 +33,8 @@ class OrderSearch extends Model
 	public function search($params)
 	{
 		$query = Order::find();
+
+		\Yii::error($params);
 
 //		$query = self::find();
 		$dataProvider = new ActiveDataProvider([
@@ -44,6 +47,7 @@ class OrderSearch extends Model
 		]);
 
 		if (!($this->load($params) && $this->validate())) {
+			$query->andFilterWhere(['<', 'status', Order::STATUS_COMPLETE]);
 			return $dataProvider;
 		}
 
@@ -51,7 +55,7 @@ class OrderSearch extends Model
 		$query->innerJoinWith("location", true);
 
 
-		$query->filterWhere(["<", "status", Order::STATUS_COMPLETE])
+		$query
 			->andFilterWhere(["like", "client.name", $this->client_name])
 			->andFilterWhere(["like", "location.title", $this->location_title])
 			->andFilterWhere(["like", "comment", $this->comment])
@@ -67,25 +71,27 @@ class OrderSearch extends Model
 			$query->andFilterWhere(["like", "phone", $this->phoneNormalize()]);
 		}
 
-		if ($this->created_start) {
-			$query->andFilterWhere([">=", "created_at", \Yii::$app->formatter->asTimestamp($this->created_start)]);
-		}
-		if ($this->created_finish) {
-			$query->andFilterWhere(["<=", "created_at", \Yii::$app->formatter->asTimestamp($this->created_finish)]);
+//		\Yii::error($this->created_start);
+
+		if (!empty($this->status)) {
+			$query->andFilterWhere(["in", "status", $this->status]);
 		}
 
-		if ($this->delivery_start) {
-			$query->andFilterWhere([">=", "delivery_date", \Yii::$app->formatter->asTimestamp($this->delivery_start)]);
+		if (!empty($this->created_start)) {
+			$query->andFilterWhere([">", "created_at", \Yii::$app->formatter->asTimestamp($this->created_start)]);
 		}
-		if ($this->delivery_finish) {
-			$query->andFilterWhere(["<=", "delivery_date", \Yii::$app->formatter->asTimestamp($this->delivery_finish)]);
+		if (!empty($this->created_finish)) {
+			$query->andFilterWhere(["<", "created_at", \Yii::$app->formatter->asTimestamp($this->created_finish)]);
 		}
-//		var_dump("Created Start ".\Yii::$app->formatter->asTimestamp($this->created_start)."<br />");
-//		var_dump("Delivery Start ".\Yii::$app->formatter->asTimestamp($this->delivery_start)."<br />");
-//		var_dump("Delivery Finish ".\Yii::$app->formatter->asTimestamp($this->delivery_finish)."<br />");
-//		$query->andFilterWhere(["<=", "delivery_date", \Yii::$app->formatter->asTimestamp(isset($this->delivery_start) ? \Yii::$app->formatter->asTimestamp($this->delivery_start) : 0)]);
-//		$query->andFilterWhere([">=", "delivery_date", \Yii::$app->formatter->asTimestamp(isset($this->delivery_finish) ? \Yii::$app->formatter->asTimestamp($this->delivery_finish) : time())]);
-//		var_dump($query->createCommand()->getRawSql()); die;
+
+		if (!empty($this->delivery_start)) {
+			$query->andFilterWhere([">", "delivery_date", \Yii::$app->formatter->asTimestamp($this->delivery_start)]);
+		}
+		if (!empty($this->delivery_finish)) {
+			$query->andFilterWhere(["<", "delivery_date", \Yii::$app->formatter->asTimestamp($this->delivery_finish)]);
+		}
+
+		\Yii::error($query->createCommand()->getRawSql());
 
 		return $dataProvider;
 	}

@@ -101,4 +101,10 @@ return [
 
 	'Created By' => 'Создано',
 	'Elapsed by "{status}"' => 'Прошло времени на "{status}"',
+
+	'Notify Settings' => 'Настройки уведомления',
+	'Birthday' => 'Дата рождения',
+	'Family' => 'Фамилия',
+	'Fullname' => 'ФИО',
+	'Staff' => 'Штат'
 ];

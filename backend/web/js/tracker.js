@@ -9,6 +9,8 @@ let map, cars, orders, carCluster, orderCluster, home, objects,
     count = 0, token = '', subscribe = '';
 let index = 0, app = {};
 
+let spik_cars = carUnits;
+
 $(() => {
     function ajax(url, data = null) {
         return new Promise(function (resolve, reject) {
@@ -257,9 +259,13 @@ $(() => {
                 if (carPoints[index]) {
                     carPoints[index].geometry.setCoordinates([collectionItem.Navigation.Location.Latitude, collectionItem.Navigation.Location.Longitude]);
                 } else {
+                    let driver_name = "";
+                    if ( (typeof(carUnits[unitItem.UnitId]) !== "undefined") && carUnits[unitItem.UnitId].driver !== null ) {
+                        driver_name = `${carUnits[unitItem.UnitId].driver.family} ${carUnits[unitItem.UnitId].driver.name}`;
+                    }
                     let placemark = new ymaps.Placemark([collectionItem.Navigation.Location.Latitude, collectionItem.Navigation.Location.Longitude], {
-                        balloonContentHeader: `<h4 data-key="${index}">Заказ #${unitItem.Name}</h4>`,
-                        balloonContentBody: `<p>${(collectionItem.Address !== '') ? collectionItem.Address : 'Unknown'}</p><p>Текущая скорость: ${collectionItem.Navigation.Speed}</p>`,
+                        balloonContentHeader: `<h4 data-key="${index}">Автомобиль #${unitItem.Name}</h4>`,
+                        balloonContentBody: `<p><b>Водитель</b>: ${driver_name}</p><p><b>Текущий адрес</b>: ${(collectionItem.Address !== '') ? collectionItem.Address : 'Unknown'}</p><p><b>Текущая скорость</b>: ${collectionItem.Navigation.Speed}</p>`,
                     }, {
                         iconLayout: 'default#image',
                         iconImageHref: '/img/track_icon.png',

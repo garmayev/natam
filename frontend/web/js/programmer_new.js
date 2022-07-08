@@ -38,20 +38,6 @@ $(".main_inner > .blue, .main_content > .blue").on("click", (e) => {
     }
 })
 
-$(".cart_product_id").on('change', (e) => {
-    let target = $(e.currentTarget);
-    let product_id = target.val();
-    $.ajax({
-        url: '/product/get-product',
-        data: {id: product_id},
-        success: (response) => {
-            console.log(target);
-            target.next().html(response.price + "<span> руб.</span>");
-        }
-    })
-});
-
-
 $.ajax({
     url: '/cart/get-products',
     success: (response) => {
@@ -157,3 +143,16 @@ if ($('.alert').html() !== '') {
 }
 
 $("#order-client-phone, #ticket-client-phone").mask("+7(999) 999 9999")
+
+$(".cart_product_id").on('change', (e) => {
+    let target = $(e.currentTarget);
+    let product_id = target.val();
+    $.ajax({
+        url: '/product/get-product',
+        data: {id: product_id},
+        success: (response) => {
+            console.log(response);
+            target.next().html(response.price + "<span> руб.</span>");
+        }
+    })
+});

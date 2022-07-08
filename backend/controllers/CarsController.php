@@ -59,7 +59,7 @@ class CarsController extends \yii\rest\Controller
 
 	public function actionLogin()
 	{
-		\Yii::$app->response->format = Response::FORMAT_JSON;
+//		\Yii::$app->response->format = Response::FORMAT_JSON;
 		return $this->send([
 			"Login" => "garmayev@yandex.ru",
 			"Password" => "12345",
@@ -72,7 +72,7 @@ class CarsController extends \yii\rest\Controller
 
 	public function actionUnits($token)
 	{
-		\Yii::$app->response->format = Response::FORMAT_JSON;
+//		\Yii::$app->response->format = Response::FORMAT_JSON;
 		return $this->send([
 			"Offset" => 0,
 			"Count" => 25
@@ -81,7 +81,7 @@ class CarsController extends \yii\rest\Controller
 
 	public function actionSubscribe($token, $ids)
 	{
-		\Yii::$app->response->format = Response::FORMAT_JSON;
+//		\Yii::$app->response->format = Response::FORMAT_JSON;
 		return $this->send([
 			"UnitIds" => json_decode($ids),
 		], $this->actions["SUBSCRIBE"], $token);
@@ -89,7 +89,7 @@ class CarsController extends \yii\rest\Controller
 
 	public function actionOnline($token, $subscribe)
 	{
-		\Yii::$app->response->format = Response::FORMAT_JSON;
+//		\Yii::$app->response->format = Response::FORMAT_JSON;
 		return $this->send([
 			"Id" => $subscribe
 		], $this->actions["ONLINE_DATA"], $token);

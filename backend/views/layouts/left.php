@@ -36,7 +36,7 @@ if (!Yii::$app->user->can("employee")) {
 			], [
 				"label" => Yii::t("app", "Client info"),
 				"url" => Url::to(["client/view", "id" => $clientInfo->id]),
-                "visible" => false,
+				"visible" => false,
 			]
 		];
 	}
@@ -89,23 +89,35 @@ if (!Yii::$app->user->can("employee")) {
 			"label" => Yii::t("app", "Analytic"),
 			"icon" => "bar-chart-o",
 			"items" => [
-//				[
-//					"label" => Yii::t("app", "Analytics by orders"),
-//					"url" => Url::to(["/analytics/month"])
-//				],
 				[
 					"label" => Yii::t("app", "Analytics by orders"),
 					"url" => Url::to(["/analytics/orders"])
 				],
-                [
-                        "label" => Yii::t("app", "Analytics by employee"),
-                    "url" => Url::to(["/analytics/employee"])
-                ]
+				[
+					"label" => Yii::t("app", "Analytics by employee"),
+					"url" => Url::to(["/analytics/employee"])
+				]
 			]
 		], [
 			"label" => Yii::t("app", "Settings"),
-			"url" => Url::to(["/settings/index"]),
-			"icon" => "cog"
+			"icon" => "cog",
+			"items" => [
+				[
+					"label" => Yii::t("app", "Notify Settings"),
+					"url" => Url::to(["/settings/index"]),
+				], [
+					"label" => Yii::t("user", "Users"),
+					"items" => [
+						[
+							"label" => Yii::t("yii2mod.rbac", "Assignments"),
+							"url" => Url::to(["/rbac/assignment/index"])
+						]
+					]
+				], [
+                        "label" => Yii::t("app", "Staff"),
+                    "url" => Url::to(["/staff/index"])
+                ]
+			]
 		]
 	];
 	if ($clientInfo = Yii::$app->user->identity->client) {
@@ -130,7 +142,7 @@ if (!Yii::$app->user->can("employee")) {
 				if ($employee !== null) {
 					echo Html::tag("p", "{$employee->name} {$employee->family}");
 				} else {
-					echo Html::tag("p", (Yii::$app->user->identity->profile->name) ? Yii::$app->user->identity->profile->name : Yii::$app->user->identity->username );
+					echo Html::tag("p", (Yii::$app->user->identity->profile->name) ? Yii::$app->user->identity->profile->name : Yii::$app->user->identity->username);
 				}
 				?>
 

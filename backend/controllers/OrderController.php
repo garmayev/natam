@@ -22,18 +22,17 @@ class OrderController extends BaseController
 
 	public function actionIndex()
 	{
-		if (Yii::$app->user->can("employee")) {
-			$query = Order::find()->where(["<", "status", Order::STATUS_COMPLETE]);
-		} else {
-			$client = Client::findOne(["phone" => Yii::$app->user->identity->username]);
-			$query = Order::find()->where(["client_id" => $client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE]);
-		}
+		$searchModel = new OrderSearch();
+//		if (Yii::$app->user->can("employee")) {
+//			$query = Order::find()->where(["<", "status", Order::STATUS_COMPLETE]);
+//		} else {
+//			$client = Client::findOne(["phone" => Yii::$app->user->identity->username]);
+//			$query = Order::find()->where(["client_id" => $client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE]);
+//		}
 //		Yii::error($query->createCommand()->getRawSql());
 		return $this->render("index", [
-			"orderProvider" => new ActiveDataProvider([
-				"query" => $query
-			]),
-//			"searchModel" => $order,
+			"orderProvider" => $searchModel->search(Yii::$app->request->queryParams),
+			"searchModel" => $searchModel,
 		]);
 	}
 

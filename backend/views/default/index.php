@@ -1,12 +1,14 @@
 <?php
 /**
  * @var $this View
+ * @var $cars array
  */
 
 use common\models\Client;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
+$this->registerJsVar("carUnits", $cars);
 
 if (Yii::$app->user->can("employee")) {
 	$this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU", ["depends" => \yii\web\JqueryAsset::class]);

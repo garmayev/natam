@@ -3,6 +3,7 @@
 namespace common\models;
 
 use garmayev\staff\models\Employee;
+use GuzzleHttp\Exception\ClientException;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -108,6 +109,11 @@ class TelegramMessage extends ActiveRecord
 		}
 	}
 
+	public function isExpired($time)
+	{
+		return $time < $this->getTimeElapsed();
+	}
+
 	public static function findByOrder($order_id)
 	{
 		return self::findAll(['order_id' => $order_id]);
@@ -133,13 +139,9 @@ class TelegramMessage extends ActiveRecord
 				$this->updated_by = \Yii::$app->user->id;
 				$this->updated_at = time();
 				$this->save();
-			} else {
-				\Yii::error($response->result);
-				\Yii::error($message->attributes);
 			}
-		} catch (GuzzleHttp\Exception\ClientException $e) {
-			\Yii::error($response->result);
-			\Yii::error($message->attributes);
+		} catch (ClientException $e) {
+			\Yii::error($this->attributes);
 		}
 	}
 

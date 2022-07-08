@@ -2,9 +2,10 @@
 
 namespace backend\controllers;
 
-use yii\web\Response;
+use backend\models\SPIK;
+use yii\web\Controller;
 
-class SpikController extends \yii\rest\Controller
+class SpikController extends Controller
 {
 //	private $base_url = "http://login.scout-gps.ru:8081/";
 //	private $actions = [
@@ -156,4 +157,8 @@ class SpikController extends \yii\rest\Controller
 //		$this->actionSubscribe();
 //		return $this->actionOnline();
 //	}
+
+	public function actionIndex()
+	{
+	}
 }

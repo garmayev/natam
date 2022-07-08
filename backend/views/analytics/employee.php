@@ -6,6 +6,7 @@ use common\models\Order;
 use common\models\Settings;
 use common\models\TelegramMessage;
 use garmayev\staff\models\Employee;
+use garmayev\staff\models\State;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use yii\data\ArrayDataProvider;
@@ -41,32 +42,71 @@ echo Html::endForm();
 ?>
 <table class="table table-striped">
     <thead>
-        <td>ФИО</td>
-        <td><?= Yii::t('app', 'Completed') ?></td>
-        <td><?= Yii::t('app', 'UnCompleted') ?></td>
-        <td><?= Yii::t('app', 'Total') ?></td>
-        <td><?= Yii::t('app', 'Percent') ?></td>
+    <td>ФИО</td>
+    <td><?= Yii::t('app', 'Completed') ?></td>
+    <td><?= Yii::t('app', 'UnCompleted') ?></td>
+    <td><?= Yii::t('app', 'Total') ?></td>
+    <td><?= Yii::t('app', 'Percent') ?></td>
     </thead>
 	<?php
 	foreach ($models as $model) {
-		echo Html::beginTag('tr');
-        $query = TelegramMessage::find()
-	        ->where(['updated_by' => $model->user_id])
-            ->andWhere(['in', 'order_id', ArrayHelper::getColumn($orders, 'id')]);
+        $class = "";
+        $total_messages = $completed_messages = $uncompleted_messages = null;
+        switch ($model->state_id) {
+            case 1:
+                $class = "success";
+                break;
+            case 2:
+                $class = "info";
+                break;
+            case 3:
+                $class = "warning";
+                break;
+        }
+		echo Html::beginTag('tr', ["class" => $class]);
+		$query = TelegramMessage::find()
+			->where(['updated_by' => $model->user_id])
+			->andWhere(['in', 'order_id', ArrayHelper::getColumn($orders, 'id')])
+            ->groupBy(['order_id']);
 		$total_messages = (clone $query)
 			->all();
 		$completed_messages = (clone $query)
-            ->andWhere(['<', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)])
+			->andWhere(['<', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)])
 			->all();
 		$uncompleted_messages = (clone $query)
-            ->andWhere(['>', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)])
+			->andWhere(['>', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)])
 			->all();
+        Yii::error($query->createCommand()->getRawSql());
 		echo Html::tag('td', $model->getFullname());
-		echo Html::tag('td', ($completed_messages) ? count($completed_messages) : 0);
-		echo Html::tag('td', ($uncompleted_messages) ? count($uncompleted_messages) : 0);
+		echo Html::tag('td', ($completed_messages) ?
+            Html::a(count($completed_messages),
+                [
+                    "orders-by-status",
+                    "from_date" => Yii::$app->formatter->asDate((isset($_GET['from_date'])) ? $_GET['from_date'] : strtotime("-3 month"), "php:d-m-Y"),
+                    "to_date" => Yii::$app->formatter->asDate((isset($_GET['to_date'])) ? $_GET['to_date'] : strtotime("+3 month"), "php:d-m-Y"),
+                    "employee" => $model->id,
+                ]
+            ) : 0);
+		echo Html::tag('td', ($uncompleted_messages) ?
+			Html::a(count($uncompleted_messages),
+				[
+					"orders-by-status",
+					"from_date" => Yii::$app->formatter->asDate((isset($_GET['from_date'])) ? $_GET['from_date'] : strtotime("-3 month"), "php:d-m-Y"),
+					"to_date" => Yii::$app->formatter->asDate((isset($_GET['to_date'])) ? $_GET['to_date'] : strtotime("+3 month"), "php:d-m-Y"),
+					"employee" => $model->id,
+                    "expired" => "expired"
+				]
+			) : 0);
 		echo Html::tag('td', ($total_messages) ? count($total_messages) : 0);
 		echo Html::tag('td', ($total_messages && $completed_messages) ? ((count($completed_messages) / count($total_messages)) * 100) . "%" : '0%');
 		echo Html::endTag('tr');
 	}
 	?>
+</table>
+<table class="table">
+    <tr>
+        <td class="success"><?= State::findOne(1)->title ?></td>
+        <td class="info"><?= State::findOne(2)->title ?></td>
+        <td class="warning"><?= State::findOne(3)->title ?></td>
+    </tr>
 </table>

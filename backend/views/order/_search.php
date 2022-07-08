@@ -1,6 +1,8 @@
 <?php
 
+use common\models\Order;
 use common\models\search\OrderSearch;
+use kartik\select2\Select2;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -8,6 +10,18 @@ use yii\widgets\ActiveForm;
  * @var $this View
  * @var $model OrderSearch
  */
+
+$this->registerCss(<<< CSS
+.field-ordersearch-status > label {
+    display: none;
+}
+.select2-selection__rendered {
+    width: 100% !important;
+}
+.select2-container--krajee {
+display: inline-block;
+}
+CSS)
 ?>
 <a class="btn btn-primary" role="button" data-toggle="collapse" href="#filter" aria-expanded="false"
    aria-controls="filter" style="margin-left: 10px;">
@@ -18,13 +32,27 @@ use yii\widgets\ActiveForm;
 	$form = ActiveForm::begin([
 		"action" => 'index',
 		"method" => "get",
-		"options" => [
-			"style" => "margin-top: 15px;"
-		]
+//		"options" => [
+//			"style" => "margin-top: 15px;"
+//		]
 	]);
 	echo $form->field($model, "client_name", ["options" => ["class" => "col-xs-12 col-md-12 col-lg-12"]])->textInput(["placeholder" => Yii::t("app", "Customer`s name")])->label(false);
 	echo $form->field($model, "location_title", ["options" => ["class" => "col-xs-12 col-md-12 col-lg-12"]])->textInput(["placeholder" => Yii::t("app", "Address")])->label(false);
 	echo $form->field($model, "client_phone", ["options" => ["class" => "col-xs-12 col-md-12 col-lg-12"]])->textInput(["placeholder" => Yii::t("app", "Customer`s phone")])->label(false);
+
+//    echo "<label>Theme MATERIAL (Single)</label>";
+	echo $form->field($model, 'status')->widget(Select2::class, [
+		'data' => Order::getStatusList(),
+		'options' => [
+			'multiple' => true,
+//			'autocomplete' => 'off',
+			'placeholder' => 'Выберите один или несколько статусов',
+//			'style' => 'width: 100%'
+		],
+		'pluginOptions' => [
+			'allowClear' => true
+		]
+	]);
 
 	echo $form->field($model, "created_start", ['options' => ['class' => 'col-xs-12 col-md-6 col-lg-6']])->widget(\kartik\datetime\DateTimePicker::className(), [
 		'options' => [
@@ -76,8 +104,7 @@ use yii\widgets\ActiveForm;
 		],
 	])->label(false);
 
-	//echo \yii\helpers\Html::resetButton("Reset", ["class" => "btn btn-default", "style" => "margin-right: 10px"]);
-	echo \yii\helpers\Html::a("Сбросить", ["/admin/order/index"], ["class" => "btn btn-default", "style" => "margin-right: 10px"]);
+	echo \yii\helpers\Html::a("Сбросить", ["index"], ["class" => "btn btn-default", "style" => "margin-right: 10px"]);
 	echo \yii\helpers\Html::submitButton("Применить", ["class" => "btn btn-success", "style" => "margin-right: 10px"]);
 	ActiveForm::end();
 	?>

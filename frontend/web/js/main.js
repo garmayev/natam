@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
     AOS.init();
     window.onload = function () {
         document.querySelector(".preloader").classList.add("active");
@@ -23,29 +24,12 @@ $(document).ready(function () {
             },
         ],
     });
-    if ($(".about_slider").length > 0) {
-        if ( window.location.pathname === "/" )
-	    $(".about_slider").slick({
-    	    dots: false,
-    	    infinite: true,
-    	    slidesToShow: 1,
-    	    slidesToScroll: 1,
-    	    responsive: [
-        	{
-            	    breakpoint: 1000,
-            	    settings: {
-                	slidesToShow: 1,
-            	    },
-        	},
-        	{
-            	    breakpoint: 630,
-            	    settings: {
-                	slidesToShow: 1,
-            	    },
-        	},
-    	    ],
-	});
-    }
+    $(".about_slider").slick({
+        dots: false,
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+    });
     $(".nav_toggle, .close, .shadow").on("click", function () {
         $(".nav").toggleClass("active");
         $(".shadow").toggleClass("active");
@@ -83,3 +67,36 @@ $(document).ready(function () {
         }
     });
 });
+
+let drill = document.querySelector('.journal')
+
+window.addEventListener("scroll", function () {
+    let value = -window.scrollY;
+
+    if (drill != undefined) {
+        if (value > -1020) {
+            drill.style.top = 0 + value * -0.03 + "%";
+
+        }
+    }
+
+
+});
+
+let gaz = document.querySelector('.gaz')
+
+window.addEventListener("scroll", function () {
+    let value = -window.scrollY;
+
+
+    if (value > -4200) {
+        if (value < -3550) {
+            gaz.style.top = -210 + value * -0.05 + "%";
+
+        }
+
+    }
+    console.log('gaz ' + value)
+
+});
+

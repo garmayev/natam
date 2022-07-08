@@ -1,9 +1,5 @@
 <?php
 
-use common\models\User;
-use dektrium\user\Module;
-use frontend\models\Staff;
-
 $params = array_merge(
     require __DIR__ . '/../../common/config/params.php',
     require __DIR__ . '/../../common/config/params-local.php',
@@ -90,9 +86,10 @@ return [
 		'rbac' => [
 			'class' => \yii2mod\rbac\Module::class,
 		],
-		'staff' => [
-			'class' => \garmayev\staff\Module::class,
-		],
+//		'staff' => [
+//			'class' => \garmayev\staff\Module::class,
+//			'user_class' => \common\models\User::class,
+//		],
 		'user' => [
 			'class' => 'dektrium\user\Module',
 			'modelMap' => [

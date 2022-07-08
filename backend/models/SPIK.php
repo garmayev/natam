@@ -22,7 +22,7 @@ class SPIK extends \yii\base\Model
 				"Accept" => "json",
 				"Content-Type" => "application/json"
 			]);
-		if ( isset($this->token) ) {
+		if ( !empty($this->token) ) {
 			$this->response->addHeaders([
 				"ScoutAuthorization" => $this->token
 			]);
@@ -36,17 +36,16 @@ class SPIK extends \yii\base\Model
 			->setData(json_encode([
 				"Login" => $this->login,
 				"Password" => $this->password,
-				"TimeStampUtc" => "/Date(".(time()).")/",
+				"TimeStampUtc" => "/Date(".(time() * 1000).")/",
 				"TimeZoneOlsonId" => 'Asia/Irkutsk',
-				"CultureName" => 'ru-ru',
-				"UiCultureName" => 'ru-ru'
+				"CultureName" => 'ru-RU',
+				"UiCultureName" => 'ru-RU'
 			]))
 			->setOptions([
 				CURLOPT_SSL_VERIFYHOST => false
 			])
 			->setUrl("http://login.scout-gps.ru:8081/spic/auth/rest/Login")
 			->send();
-		var_dump($result->getContent());
 		if ( $result->isOk ) {
 			$this->token = $result->getData()["SessionId"];
 		}

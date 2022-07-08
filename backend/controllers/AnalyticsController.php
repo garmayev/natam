@@ -8,6 +8,8 @@ use common\models\TelegramMessage;
 use garmayev\staff\models\Employee;
 use kartik\mpdf\Pdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet;
 use SebastianBergmann\CodeCoverage\Report\Xml\Totals;
@@ -33,16 +35,41 @@ class AnalyticsController extends BaseController
 			$writer = $this->createSpreadByOrder($models->all());
 			$writer->save('php://output');
 			die;
-		} else {
-			return $this->render("orders", [
-				"models" => $models->all()
-			]);
 		}
+		return $this->render("orders", [
+			"models" => $models->all(),
+		]);
+	}
+
+	public function actionOrdersByStatus($from_date = null, $to_date = null, $employee = null, $expired = null)
+	{
+		if (!is_null($from_date)) {
+			$fromTimestamp = \Yii::$app->formatter->asTimestamp($from_date . " 00:00");
+		}
+		if (!is_null($to_date)) {
+			$toTimestamp = \Yii::$app->formatter->asTimestamp($to_date . " 23:59");
+		}
+		$employee = Employee::findOne($employee);
+		$user = $employee->user;
+		$messages = TelegramMessage::find()
+			->where([">", 'updated_at', $fromTimestamp])
+			->andWhere(["<", "updated_at", $toTimestamp])
+			->andWhere(["updated_by" => $user->id])
+			->andWhere(["chat_id" => $employee->chat_id])
+			->andWhere(["order_status" => $employee->state_id]);
+		if ( $expired ) {
+			$messages->andWhere(['>', '`updated_at` - `created_at`', Settings::getInterval($employee->state_id - 1)]);
+		} else {
+			$messages->andWhere(['<', '`updated_at` - `created_at`', Settings::getInterval($employee->state_id - 1)]);
+		}
+		return $this->render("orders_by_status", [
+			"messages" => $messages->all(),
+		]);
 	}
 
 	public function actionEmployee($from_date = null, $to_date = null, $filter = null, $export = null)
 	{
-		$employees = Employee::find()->all();
+		$employees = Employee::find()->orderBy(['state_id' => SORT_ASC])->all();
 		$orders = Order::find();
 		if (!is_null($from_date)) {
 			$orders->andWhere(['>', 'created_at', \Yii::$app->formatter->asTimestamp($from_date . ' 00:00')]);
@@ -101,7 +128,8 @@ class AnalyticsController extends BaseController
 		foreach ($models as $model) {
 			$query = TelegramMessage::find()
 				->where(['updated_by' => $model->user_id])
-				->andWhere(['in', 'order_id', ArrayHelper::getColumn($orders, 'id')]);
+				->andWhere(['in', 'order_id', ArrayHelper::getColumn($orders, 'id')])
+				->groupBy('order_id');
 			$total_messages = (clone $query)
 				->all();
 			$completed_messages = (clone $query)
@@ -115,7 +143,7 @@ class AnalyticsController extends BaseController
 				'completed_messages' => count($completed_messages),
 				'uncompleted_messages' => count($uncompleted_messages),
 				'total_messages' => count($total_messages),
-				'percent' => (count($completed_messages) > 0) ? (count($total_messages) / count($completed_messages)) * 100 : 0,
+				'percent' => (count($completed_messages) > 0) ? (count($completed_messages) / count($total_messages)) * 100 : 0,
 			];
 		}
 		return $result;
@@ -184,17 +212,59 @@ class AnalyticsController extends BaseController
 		$data = $this->getDataByEmployee($models, $orders);
 		$row = 2;
 		$sheet = $spreadsheet->getActiveSheet();
+		$argb = [
+			[
+				"fill" => [
+					"fillType" => Fill::FILL_SOLID,
+					"startColor" => [
+						"argb" => "99EEEEEE"
+					],
+				]
+			],
+			[
+				"fill" => [
+					"fillType" => Fill::FILL_SOLID,
+					"startColor" => [
+						"argb" => "99DFF0D8"
+					],
+				]
+			],
+			[
+				"fill" => [
+					"fillType" => Fill::FILL_SOLID,
+					"startColor" => [
+						"argb" => "99DAEDF7"
+					],
+				]
+			],
+			[
+				"fill" => [
+					"fillType" => Fill::FILL_SOLID,
+					"startColor" => [
+						"argb" => "99FCF8E3"
+					],
+				]
+			],
+		];
+		$sheet->getDefaultRowDimension()->setRowHeight(17);
 		$sheet->setCellValue('A1', "ФИО сотрудника");
+		$sheet->getColumnDimension('A')->setWidth(20);
 		$sheet->setCellValue('B1', "Выполненые в срок");
+		$sheet->getColumnDimension('B')->setWidth(20);
 		$sheet->setCellValue('C1', "Невыполненые в срок");
+		$sheet->getColumnDimension('C')->setWidth(25);
 		$sheet->setCellValue('D1', "Всего действий");
+		$sheet->getColumnDimension('D')->setWidth(20);
 		$sheet->setCellValue('E1', "Процент успешности");
+		$sheet->getColumnDimension('E')->setWidth(25);
 		foreach ($data as $key => $item) {
+//			\Yii::error($argb[$item['employee']->state_id]);
+			$sheet->getStyle("A{$row}:E{$row}")->applyFromArray($argb[$item['employee']->state_id]);
 			$sheet->setCellValue("A{$row}", $item['employee']->getFullName());
 			$sheet->setCellValue("B{$row}", $item['completed_messages']);
 			$sheet->setCellValue("C{$row}", $item['uncompleted_messages']);
 			$sheet->setCellValue("D{$row}", $item['total_messages']);
-			$sheet->setCellValue("E{$row}", "{$item['percent']}%");
+			$sheet->setCellValue("E{$row}", \Yii::$app->formatter->asPercent($item['percent'] / 100, 2));
 			$row++;
 		}
 		return \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');

@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use common\models\LoginForm;
+use common\models\staff\Employee;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
@@ -56,7 +57,10 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index');
+		$cars = $this->cars();
+        return $this->render('index', [
+			"cars" => $cars
+        ]);
     }
 
     /**
@@ -95,4 +99,19 @@ class SiteController extends Controller
 
         return $this->goHome();
     }
+
+	public function cars()
+	{
+		$units = [];
+		$token = \Yii::$app->runAction('cars/login')["SessionId"];
+		$ids = \Yii::$app->runAction('cars/units', ['token' => "$token"]);
+		foreach ( $ids["Units"] as $id ) {
+			$units[$id["UnitId"]] = [
+				"name" => $id["Name"],
+				"driver" => Employee::findOne(["car" => $id["UnitId"]])
+			];
+		}
+		Yii::$app->response->format = Response::FORMAT_HTML;
+		return $units;
+	}
 }

@@ -3,6 +3,8 @@
 use common\models\Client;
 use common\models\HistoryEvent;
 use common\models\Order;
+use common\models\TelegramMessage;
+use garmayev\staff\models\Employee;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
 use yii\helpers\Html;
@@ -33,13 +35,13 @@ $totalCost = 0;
 			<?= Yii::t("app", "Information about Order") ?>
         </div>
         <div class="panel-body">
-	    <?php 
-		if ($model->delivery_type !== Order::DELIVERY_SELF) {
-	    ?>
-            <p>Адрес доставки: <?= isset($model->address) ? $model->address : $model->location->title ?></p>
-	    <?php
-	    }
-	    ?>
+			<?php
+			if ($model->delivery_type !== Order::DELIVERY_SELF) {
+				?>
+                <p>Адрес доставки: <?= isset($model->address) ? $model->address : $model->location->title ?></p>
+				<?php
+			}
+			?>
             <p>Текущий статус: <?= $model->getStatus(($model->status === null) ? 0 : $model->status) ?></p>
             <p>Дата доставки: <?= Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i") ?></p>
             <div><p>Комментарий: </p><?= $model->comment ?></div>
@@ -83,79 +85,38 @@ $totalCost = 0;
             Сроки выполнения заказа
         </div>
         <div class="panel-body">
+            <table class="table">
+                <thead>
+
+                </thead>
+                <tbody>
 			<?php
-			$query = HistoryEvent::find();
-			$query->filterWhere(['field_id' => $model->id])->andFilterWhere(['table' => Order::tableName()]);
-			$query->andFilterWhere(["or", ["field_name" => "status"], ["field_name" => "id"]]);
-			$updates = new ActiveDataProvider([
-				'query' => $query
-			]);
-			echo \yii\grid\GridView::widget([
-				"dataProvider" => $updates,
-				"summary" => "",
-				"columns" => [
-					[
-						"label" => "Название события",
-						"content" => function ($model) {
-							/**
-							 * @var \common\models\HistoryEvent $model
-							 */
-							if ($model->field_name === "id") {
-								return Html::tag("span", "Новый заказ");
-							}
-							return Html::tag("span", "Статус изменен");
-						}
-					], [
-						"label" => "Новое значение",
-						"content" => function ($model) {
-							/**
-							 * @var \common\models\HistoryEvent $model
-							 */
-							if (isset($model->old_value) && isset($model->new_value)) {
-								switch ($model->new_value) {
-									case 2:
-										return "Подготовлен для отправки";
-									case 3:
-										return "В процессе доставки";
-								}
-							} else {
-								return Html::tag("span", "Заказ #{$model->field_id} создан");
-							}
-						}
-					],
-//					[
-//                        'label' => Yii::t('app', 'Created By'),
-//                        'value' => function ($model) {
-//                            $client = Client::findOne(["user_id" => $model->user_id]);
-//                            return ($client) ? $client->name : $model->user->username;
-//                        }
-//					],
-					'user.username',
-					[
-						"label" => "Дата события",
-						"content" => function ($model) {
-							return Yii::$app->formatter->asDatetime($model->date);
-						}
-					]
-				]
-			])
-			//			$result = [0, 0, 0, 0, 0];
-			//			$updates = \frontend\models\Updates::find()->where(["order_id" => $model->id])->orderBy(["employee_id" => SORT_ASC])->all();
-			//			foreach ($updates as $update) {
-			//				if ($update->per_time !== null)
-			//					$result[$update->staff_id] += $update->created_at - $update->updated_at;
-			//			}
-			//
-			//			if (isset($result[0])) {
-			//				echo Html::tag("p", "Менеджер: {$result[0]} сек");
-			//			}
-			//			if (isset($result[1])) {
-			//				echo Html::tag("p", "Кладовщик: {$result[1]} сек");
-			//			}
-			//			if (isset($result[2])) {
-			//				echo Html::tag("p", "Водитель: {$result[2]} сек");
-			//			}
-			?>
+			$query = TelegramMessage::find();
+			$query
+                ->filterWhere(['order_id' => $model->id])
+                ->groupBy('order_status');
+			$messages = $query->all();
+            $created_by = Client::findOne($model->client_id);
+            if (empty($created_by)) {
+                $created_by = Employee::findOne($model->client_id);
+            }
+			echo "
+<tr>
+<td>".Order::getStatusList()[1]."</td>
+<td>".$created_by->getFullname()."</td>
+<td>".Yii::$app->formatter->asDatetime($model->created_at)."</td>
+</tr>";
+            foreach ($messages as $message) {
+                echo "
+<tr>
+<td>".Order::getStatusList()[$message->order_status + 1]."</td>
+<td>".Employee::findOne(["user_id" => $message->updated_by])->getFullname()."</td>
+<td>".Yii::$app->formatter->asDuration($message->updated_at - $message->created_at)."</td>
+</tr>";
+            }
+            ?>
+                </tbody>
+            </table>
         </div>
     </div>
 <?php

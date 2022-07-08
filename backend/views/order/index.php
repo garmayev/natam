@@ -52,14 +52,14 @@ $gridColumns = [
 		}
 	],
 ];
-//echo ExportMenu::widget([
-//	'dataProvider' => $orderProvider,
-//	'columns' => $gridColumns
-//]);
-
-//echo $this->render("_search", ["model" => $searchModel]);
+echo ExportMenu::widget([
+	'dataProvider' => $orderProvider,
+	'columns' => $gridColumns
+]);
 
 if (Yii::$app->user->can("employee")) {
+	echo $this->render("_search", ["model" => $searchModel]);
+
 	$columns = [
 		[
 			"attribute" => "id",
