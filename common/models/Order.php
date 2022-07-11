@@ -42,6 +42,7 @@ use yii\db\ActiveRecord;
  * @property Location $location
  * @property int $delivery_type [int(11)]
  * @property TelegramMessage[] $messages
+ * @property int $totalPrice
  */
 class Order extends ActiveRecord
 {
@@ -268,6 +269,14 @@ class Order extends ActiveRecord
 		return $price;
 	}
 
+	public function getTotalPrice()
+	{
+		if ( isset($this->delivery_distance) )
+		return $this->price + (intval($this->delivery_distance) * Settings::getDeliveryCost());
+
+		return $this->price;
+	}
+
 	public function getCount($product_id)
 	{
 		$query = Yii::$app->db->createCommand("SELECT `product_count` FROM `order_product` WHERE order_id={$this->id} AND product_id={$product_id}")->queryOne();
@@ -384,6 +393,7 @@ class Order extends ActiveRecord
 		} else {
 			$result .= "<b>Адрес доставки</b>: Самовывоз\n";
 		}
+		$result .= "<b>Статус</b>: ".$this->getStatus()."\n";
 		$delivery_price = 0;
 		if ($this->delivery_distance !== null) {
 			$delivery_price = intval($this->delivery_distance) * Settings::getDeliveryCost();

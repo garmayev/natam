@@ -27,7 +27,7 @@ class DefaultController extends BaseController
 	{
 		$cars = $this->cars();
 		$client = Client::findOne(["user_id" => \Yii::$app->user->id]);
-		if ( $client->chat_id ) {
+		if ( empty($client->chat_id) ) {
 			$qrCode = (new QrCode("https://t.me/".\Yii::$app->telegram->botUsername."?start={$client->phone}"))
 				->setSize(300)
 				->setMargin(10);

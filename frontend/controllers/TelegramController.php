@@ -19,7 +19,7 @@ use Yii;
  */
 class TelegramController extends \yii\rest\Controller
 {
-	protected static function findUser($chat_id) {
+	protected function findUser($chat_id) {
 		$employee = Employee::find()->where(["chat_id" => $chat_id])->one();
 		if ( $employee ) {
 			$user = $employee->user;
@@ -37,11 +37,11 @@ class TelegramController extends \yii\rest\Controller
 
 	protected static function checkPermission($telegram, $permission) {
 		if ( !Yii::$app->user->can($permission) ) {
-			$message = isset($telegram->input->message) ? $telegram->input->message : $telegram->input->callback_query;
-			$result = $telegram->sendMessage([
-				'chat_id' => $message->chat->id,
-				"text" => Yii::t("telegram", "You don`t have permissions for this action")
-			]);
+//			$message = isset($telegram->input->message) ? $telegram->input->message : $telegram->input->callback_query;
+//			$result = $telegram->sendMessage([
+//				'chat_id' => $message->chat->id,
+//				"text" => Yii::t("telegram", "You don`t have permissions for this action")
+//			]);
 			return false;
 		}
 		return true;
@@ -65,7 +65,6 @@ class TelegramController extends \yii\rest\Controller
 				"input_data" => $data,
 				"message" => 'user is not logged',
 			]);
-			return false;
 		}
 		Yii::$app->user->switchIdentity($user, 0);
 		$this->enableCsrfValidation = false;
@@ -299,12 +298,19 @@ class TelegramController extends \yii\rest\Controller
 		Command::run("/driver", [$this, "driver"]);
 
 		Command::run("/all_orders", [$this, "orders"]);
+		Command::run("/order", [$this, "view"]);
 //		Command::run("/status_store", [$this, "status_store"]);
 	}
 
 	public static function start($telegram, $args = null)
 	{
+		\Yii::error(\Yii::$app->user->isGuest);
 		if ( isset($telegram->input->message) ) {
+			if (\Yii::$app->user->isGuest) {
+				$client = Client::findOne(["phone" => array_keys($args)[0]]);
+				$client->chat_id = $telegram->input->message->chat->id;
+				$client->save();
+			}
 			$telegram->sendMessage([
 				'chat_id' => $telegram->input->message->chat->id,
 				"text" => "Welcome!",
@@ -335,16 +341,31 @@ class TelegramController extends \yii\rest\Controller
 			$keyboard = [];
 			foreach ($orders as $order) {
 				$keyboard[] = [
-					["text" => "Заказ #{$order->id} Стоимость: {$order->price}"]
+					["text" => "Заказ #{$order->id} Стоимость: {$order->totalPrice}", "callback_data" => "/order order_id={$order->id}"]
 				];
 			}
-			$telegram->sendMessage([
-				'chat_id' => $telegram->input->message->chat->id,
-				"text" => "Список заказов",
-				"reply_markup" => json_encode([
-					"inline_keyboard" => $keyboard
-				]),
-			]);
+			// \Yii::error($keyboard);
+			$chat_id = isset($telegram->input->message) ? $telegram->input->message->chat->id : $telegram->input->callback_query->from["id"];
+			if ( isset($telegram->input->message) ) {
+				$telegram->sendMessage([
+					'chat_id' => $chat_id,
+					"text" => "Список заказов",
+					"reply_markup" => json_encode([
+						"inline_keyboard" => $keyboard
+					]),
+				]);
+
+			} else {
+				\Yii::error($telegram->input->callback_query);
+				$telegram->editMessageText([
+					"chat_id" => $chat_id,
+					"message_id" => $telegram->input->callback_query->message['message_id'],
+					"text" => "Список заказов",
+					"reply_markup" => json_encode([
+						"inline_keyboard" => $keyboard
+					])
+				]);
+			}
 		} else {
 			$telegram->sendMessage([
 				'chat_id' => $telegram->input->message->chat->id,
@@ -355,21 +376,24 @@ class TelegramController extends \yii\rest\Controller
 
 	public static function view($telegram, $args = null)
 	{
-		$order = Order::findOne($args["order_id"]);
-		$telegram->editMessageText([
-			"message_id" => $telegram->input->callback_query->message["message_id"],
-			'chat_id' => $telegram->input->callback_query->message["chat"]["id"],
-			"text" => $order->generateTelegramText(),
-			"reply_markup" => json_encode([
-				"inline_keyboard" => [
-					[
-						["text" => "Повторить заказ", "callback_data" => "/copy order_id={$order->id}"],
-						["text" => "Изменить заказ", "callback_data" => "/update order_id={$order->id}"],
-						["text" => "Отмена", "callback_data" => "/all_orders"],
+		if (isset($args["order_id"])) {
+			$order = Order::findOne($args["order_id"]);
+			$telegram->editMessageText([
+				"message_id" => $telegram->input->callback_query->message["message_id"],
+				'chat_id' => $telegram->input->callback_query->message["chat"]["id"],
+				"text" => $order->generateTelegramText(),
+				"parse_mode" => "html",
+				"reply_markup" => json_encode([
+					"inline_keyboard" => [
+						[
+//							["text" => "Повторить заказ", "callback_data" => "/copy order_id={$order->id}"],
+//							["text" => "Изменить заказ", "callback_data" => "/update order_id={$order->id}"],
+							["text" => "Отмена", "callback_data" => "/all_orders"],
+						]
 					]
-				]
-			]),
-		]);
+				]),
+			]);
+		}
 	}
 
 	public static function inlineCheck($telegram, $args = null)
