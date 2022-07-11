@@ -2,8 +2,10 @@
 
 namespace backend\controllers;
 
+use common\models\Client;
 use common\models\Order;
 use common\models\staff\Employee;
+use Da\QrCode\QrCode;
 use yii\filters\AccessControl;
 use yii\web\Response;
 
@@ -24,6 +26,13 @@ class DefaultController extends BaseController
 	public function actionIndex()
 	{
 		$cars = $this->cars();
+		$client = Client::findOne(["user_id" => \Yii::$app->user->id]);
+		if ( $client->chat_id ) {
+			$qrCode = (new QrCode("https://t.me/@natam_trade_bot?start={$client->phone}"))
+				->setSize(300)
+				->setMargin(10);
+			$qrCode->writeFile(\Yii::getAlias('@webroot') . "/images/qr/{$client->phone}.png");
+		}
 		return $this->render('index', [
 			"cars" => $cars
 		]);

@@ -5,6 +5,7 @@
  */
 
 use common\models\Client;
+use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
 
@@ -45,5 +46,7 @@ if (Yii::$app->user->can("employee")) {
 		]);
 		echo \yii\helpers\Html::submitButton("Submit", ["class" => ["btn", "btn-success"]]);
 		ActiveForm::end();
-	}
+	} else {
+		echo Html::img("/admin/images/qr/{$clientInfo->phone}.png", ['width' => '300px']);
+    }
 }

@@ -116,6 +116,11 @@ class TelegramController extends \yii\rest\Controller
 						}
 					}
 					break;
+				case "/all_orders":
+					$client = Client::findOne(['user_id' => Yii::$app->user->id]);
+					$orders = Order::find()->where(['client_id' => $client->id])->andWhere(["<", "status", Order::STATUS_COMPLETE])->all();
+					$telegram->send();
+					break;
 			}
 		} else if ( isset($telegram->callback_query) ) {
 			$text = $telegram->callback_query["data"];
@@ -292,7 +297,8 @@ class TelegramController extends \yii\rest\Controller
 		Command::run("/manager", [$this, "manager"]);
 		Command::run("/store", [$this, "store"]);
 		Command::run("/driver", [$this, "driver"]);
-//		Command::run("/all_orders", [$this, "orders"]);
+
+		Command::run("/all_orders", [$this, "orders"]);
 //		Command::run("/status_store", [$this, "status_store"]);
 	}
 
@@ -321,7 +327,8 @@ class TelegramController extends \yii\rest\Controller
 		if ( self::checkPermission($telegram, "employee") ) {
 			$orders = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
 		} else {
-			$orders = Order::find()->where(["client_id" => Yii::$app->user->identity->client->id])->all();
+			$client = Client::findOne(["user_id" => Yii::$app->user->id]);
+			$orders = Order::find()->where(["client_id" => $client->id])->all();
 		}
 
 		if ( count($orders) ) {
