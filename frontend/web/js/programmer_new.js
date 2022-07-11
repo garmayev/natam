@@ -156,3 +156,11 @@ $(".cart_product_id").on('change', (e) => {
         }
     })
 });
+
+$(".btn.recall").on("click", (e) => {
+    e.preventDefault();
+    $(".form_tab button:first-child").trigger("click");
+    $('html, body').animate({
+        scrollTop: $('#form').offset().top
+    });
+});
