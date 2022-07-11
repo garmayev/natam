@@ -40,7 +40,7 @@ echo Html::submitButton('Export', ['class' => ['btn', 'btn-success'], 'name' => 
 echo Html::submitButton('Filter', ['class' => ['btn', 'btn-primary'], 'name' => 'filter', 'value' => 'filter']);
 echo Html::endForm();
 ?>
-<table class="table table-striped">
+<table class="table table-striped table-hover">
     <thead>
     <td>ФИО</td>
     <td><?= Yii::t('app', 'Completed') ?></td>
@@ -76,7 +76,6 @@ echo Html::endForm();
 		$uncompleted_messages = (clone $query)
 			->andWhere(['>', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)])
 			->all();
-        Yii::error($query->createCommand()->getRawSql());
 		echo Html::tag('td', $model->getFullname());
 		echo Html::tag('td', ($completed_messages) ?
             Html::a(count($completed_messages),
@@ -98,7 +97,8 @@ echo Html::endForm();
 				]
 			) : 0);
 		echo Html::tag('td', ($total_messages) ? count($total_messages) : 0);
-		echo Html::tag('td', ($total_messages && $completed_messages) ? ((count($completed_messages) / count($total_messages)) * 100) . "%" : '0%');
+        $percent = ($total_messages && $completed_messages) ? ((count($completed_messages) / count($total_messages)) * 100) : 0;
+		echo Html::tag('td', Yii::$app->formatter->asDecimal($percent, 2)."%", ["style" => "text-align: center"]);
 		echo Html::endTag('tr');
 	}
 	?>
