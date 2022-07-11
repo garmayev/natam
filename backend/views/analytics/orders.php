@@ -79,6 +79,8 @@ foreach ($models as $model) {
 					$e = Employee::findOne(['chat_id' => $telegram_message->chat_id]);
 					echo "<p>Заявка отправлена: {$e->getFullname()}</p>";
 				} else {
+					$emlpoyee = $telegram_message->createdBy->employee;
+					if (isset($employee))
 	                    		echo "<p>Открыл этап: {$telegram_message->createdBy->employee->getFullname()}</p>";
 				}
                         } else {
