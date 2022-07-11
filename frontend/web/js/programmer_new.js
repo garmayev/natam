@@ -1,7 +1,7 @@
 if ((window.location.pathname !== `/`)) {
     $("body").removeClass("home");
+    $(".header").css({"max-height": "200px", "min-height": "200px"});
 } else {
-
     if ($('.about_slider').length > 0) {
         $('.about_slider').slick({
             dots: false,

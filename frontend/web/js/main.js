@@ -4,32 +4,36 @@ $(document).ready(function () {
     window.onload = function () {
         document.querySelector(".preloader").classList.add("active");
     };
-    $(".news_slider").slick({
-        dots: false,
-        infinite: true,
-        slidesToShow: 3,
-        slidesToScroll: 1,
-        responsive: [
-            {
-                breakpoint: 1000,
-                settings: {
-                    slidesToShow: 2,
+    if ( $(".news_slider").length ) {
+        $(".news_slider").slick({
+            dots: false,
+            infinite: true,
+            slidesToShow: 3,
+            slidesToScroll: 1,
+            responsive: [
+                {
+                    breakpoint: 1000,
+                    settings: {
+                        slidesToShow: 2,
+                    },
                 },
-            },
-            {
-                breakpoint: 630,
-                settings: {
-                    slidesToShow: 1,
+                {
+                    breakpoint: 630,
+                    settings: {
+                        slidesToShow: 1,
+                    },
                 },
-            },
-        ],
-    });
-    $(".about_slider").slick({
-        dots: false,
-        infinite: true,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-    });
+            ],
+        });
+    }
+    if ( $(".about_slider").length ) {
+        $(".about_slider").slick({
+            dots: false,
+            infinite: true,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+        });
+    }
     $(".nav_toggle, .close, .shadow").on("click", function () {
         $(".nav").toggleClass("active");
         $(".shadow").toggleClass("active");
@@ -96,7 +100,7 @@ window.addEventListener("scroll", function () {
         }
 
     }
-    console.log('gaz ' + value)
+    // console.log('gaz ' + value)
 
 });
 
