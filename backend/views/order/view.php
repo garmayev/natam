@@ -107,10 +107,12 @@ $totalCost = 0;
 <td>".Yii::$app->formatter->asDatetime($model->created_at)."</td>
 </tr>";
             foreach ($messages as $message) {
+		$employee = Employee::findOne(["user_id" => $message->updatedBy]);
+		$name = isset($employee) ? $employee->fullname : "";
                 echo "
 <tr>
 <td>".Order::getStatusList()[$message->order_status + 1]."</td>
-<td>".Employee::findOne(["user_id" => $message->updated_by])->getFullname()."</td>
+<td>".$name."</td>
 <td>".Yii::$app->formatter->asDuration($message->updated_at - $message->created_at)."</td>
 </tr>";
             }
