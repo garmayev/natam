@@ -30,4 +30,14 @@ class Settings extends \yii\db\ActiveRecord
 		$value = json_decode(Settings::findOne(1)->content, true);
 		return (isset($value["notify"]["limit"][$index])) ? $value["notify"]["limit"][$index] : 0;
 	}
+
+	public static function getDeliveryCost()
+	{
+		$value = json_decode(Settings::findOne(1)->content, true);
+		if ( isset($value["delivery_cost"]) ) {
+			return $value["delivery_cost"];
+		} else {
+			return 0;
+		}
+	}
 }

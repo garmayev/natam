@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "247e000eea9e733f06e42f17655a3e8e",
+    "content-hash": "92de6e9a2307c4c346df1f054d1ea9ea",
     "packages": [
         {
             "name": "2amigos/yii2-arrayquery-component",
@@ -340,6 +340,47 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "buttflattery/yii2-formwizard",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/buttflattery/yii2-formwizard.git",
+                "reference": "13a963c777a2e580698841526573fab49fc8a0b3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/buttflattery/yii2-formwizard/zipball/13a963c777a2e580698841526573fab49fc8a0b3",
+                "reference": "13a963c777a2e580698841526573fab49fc8a0b3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "default-branch": true,
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "buttflattery\\formwizard\\": "//src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "omer aslam",
+                    "email": "buttflattery@hotmail.com"
+                }
+            ],
+            "description": "A yii2 widget for form wizard, to create a multistep form.",
+            "support": {
+                "issues": "https://github.com/buttflattery/yii2-formwizard/issues",
+                "source": "https://github.com/buttflattery/yii2-formwizard/tree/master"
+            },
+            "time": "2021-07-31T10:08:21+00:00"
         },
         {
             "name": "cebe/markdown",
@@ -8378,7 +8419,8 @@
         "kartik-v/yii2-mpdf": 20,
         "garmayev/yii2-staff": 20,
         "kartik-v/yii2-export": 20,
-        "kartik-v/yii2-widget-datepicker": 20
+        "kartik-v/yii2-widget-datepicker": 20,
+        "buttflattery/yii2-formwizard": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
@@ -8388,5 +8430,5 @@
         "ext-curl": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }

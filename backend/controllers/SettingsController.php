@@ -19,7 +19,6 @@ class SettingsController extends Controller
 	public function actionUpdate()
 	{
 		$post = Yii::$app->request->post();
-//		var_dump($post); die;
 		$setting = Settings::findOne(["name" => "notify"]);
 		$setting->content = json_encode($post["Settings"]);
 		$setting->save();

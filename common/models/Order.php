@@ -6,8 +6,8 @@ use aki\telegram\Telegram;
 use common\behaviors\NotifyBehavior;
 use common\behaviors\UpdateBehavior;
 use frontend\models\Updates;
-use frontend\modules\admin\models\Settings;
 use garmayev\staff\models\Employee;
+use common\models\Settings;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
 use nhkey\arh\ActiveRecordHistoryBehavior;
@@ -30,6 +30,7 @@ use yii\db\ActiveRecord;
  * @property int $location_id
  * @property int $hold_at
  * @property int $hold_time
+ * @property double $delivery_distance
  *
  * @property int $price
  *
@@ -115,7 +116,7 @@ class Order extends ActiveRecord
 			[["client_id"], "exist", "targetClass" => Client::className(), "targetAttribute" => "id"],
 			[["status"], "default", "value" => self::STATUS_NEW],
 			[['delivery_type'], "default", "value" => self::DELIVERY_COMPANY],
-			[["notify_started_at"], "default", "value" => 0],
+			[["notify_started_at", "delivery_distance"], "default", "value" => 0],
 			[["location_id"], "exist", "targetClass" => Location::class, "targetAttribute" => "id"],
 			[['orderProducts', 'orderProduct'],'safe'],
 		];
@@ -161,6 +162,9 @@ class Order extends ActiveRecord
 		}
 		if (isset($data["Order"]["comment"])) {
 			$this->comment = $data["Order"]["comment"];
+		}
+		if (isset($data["Order"]["delivery_distance"])) {
+			$this->delivery_distance = $data["Order"]["delivery_distance"];
 		}
 		return $parent;
 	}
@@ -380,10 +384,16 @@ class Order extends ActiveRecord
 		} else {
 			$result .= "<b>Адрес доставки</b>: Самовывоз\n";
 		}
+		$delivery_price = 0;
+		if ($this->delivery_distance !== null) {
+			$delivery_price = intval($this->delivery_distance) * Settings::getDeliveryCost();
+			$result .= "<b>Стоимость доставки</b>: {$delivery_price}\n";
+		}
 		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
 		$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
 		$result .= "<b>Комментарий</b>: " . $this->comment . "\n";
-		$result .= "<i>Общая стоимость: {$this->getPrice()}</i>";
+		$price = $this->getPrice() + $delivery_price;
+		$result .= "<i>Общая стоимость: {$price}</i>";
 		return $result;
 	}
 

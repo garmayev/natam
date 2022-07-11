@@ -147,32 +147,36 @@ class TelegramMessage extends ActiveRecord
 
 	public static function send(Employee $employee, Order $order)
 	{
-		if (isset($employee->chat_id)) {
-			$response = \Yii::$app->telegram->sendMessage([
-				'chat_id' => $employee->chat_id,
-				'text' => $order->generateTelegramText(),
-				"parse_mode" => "HTML",
-				'reply_markup' => json_encode([
-					'inline_keyboard' => $order->generateTelegramKeyboard()
-				]),
-			]);
-			if ( $response->ok ) {
-				$message = new TelegramMessage([
-					'order_id' => $order->id,
-					'order_status' => $order->status,
-					'message_id' => $response->result->message_id,
-					'content' => $order->generateTelegramText(),
+		try {
+			if (isset($employee->chat_id)) {
+				$response = \Yii::$app->telegram->sendMessage([
 					'chat_id' => $employee->chat_id,
-					'updated_at' => null,
-					'updated_by' => null,
+					'text' => $order->generateTelegramText(),
+					"parse_mode" => "HTML",
+					'reply_markup' => json_encode([
+						'inline_keyboard' => $order->generateTelegramKeyboard()
+					]),
 				]);
-				if (!$message->save()) {
-					\Yii::error($message->getErrorSummary(true));
+				if ($response->ok) {
+					$message = new TelegramMessage([
+						'order_id' => $order->id,
+						'order_status' => $order->status,
+						'message_id' => $response->result->message_id,
+						'content' => $order->generateTelegramText(),
+						'chat_id' => $employee->chat_id,
+						'updated_at' => null,
+						'updated_by' => null,
+					]);
+					if (!$message->save()) {
+						\Yii::error($message->getErrorSummary(true));
+					}
+				} else {
+					\Yii::error($employee->attributes);
+					\Yii::error($response->result);
 				}
-			} else {
-				\Yii::error($employee->attributes);
-				\Yii::error($response->result);
 			}
+		} catch (\GuzzleHttp\Exception\ClientException $e) {
+			\Yii::error($e);
 		}
 	}
 }

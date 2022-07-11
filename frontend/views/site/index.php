@@ -4,6 +4,7 @@ use common\models\Client;
 use common\models\Order;
 use common\models\Product;
 use common\models\Service;
+use common\models\Settings;
 use common\models\Ticket;
 use kartik\datetime\DateTimePicker;
 use yii\web\View;
@@ -166,9 +167,11 @@ JS)
                                 </div>
                             </div>
                             <div id="map" style="height: 30vh; min-width: 100%; margin-bottom: 35px;"></div>
-                            <div class="form-group" style="display: flex; flex-direction: row;">
+                            <div class="form-group" style="display: flex; flex-direction: row; justify-content: space-between">
                                 <label for="delivery_type" style="font-size: 18px; font-weight: bold; text-transform: uppercase;">Самовывоз</label>
                                 <input type="checkbox" name="Order[delivery_type]" id="delivery_type" style="margin: 0 10px; height: 18px; width: 18px;">
+                                <input type="hidden" name="Order[delivery_distance]">
+                                <span class="delivery_cost" style="color: white; font-size: 18px; font-weight: bold;"></span>
                             </div>
                         </div>
                     </div>
@@ -176,8 +179,11 @@ JS)
                     <div class="swiper-button-prev swiper-button btn blue">Предыдущий шаг</div>
                     <!--                </form>-->
 					<?= Html::endForm() ?>
+                <?php
+                $this->registerJsVar('delivery_cost', Settings::getDeliveryCost());
+                ?>
                     <script type="module">
-                        let myMap, myPlacemark, index = 0;
+                        let myMap, myPlacemark,  multiRoute, target, index = 0, base = [51.835488, 107.683083];
                         import Swiper from 'https://unpkg.com/swiper@8/swiper-bundle.esm.browser.min.js'
 
                         const swiper = new Swiper('.form_order', {
@@ -241,11 +247,25 @@ JS)
                                 draggable: true
                             });
                         }
-                        function getAddress(coords) {
+                        function getAddress(coords)
+                        {
                             myPlacemark.properties.set('iconCaption', 'поиск...');
+                            if ( multiRoute !== undefined ) {
+                                myMap.geoObjects.remove(multiRoute);
+                            }
+                            multiRoute = new ymaps.multiRouter.MultiRoute({
+                                referencePoints: [base, coords],
+                                params: {
+                                    results: 10,
+                                }
+                            }, {
+                                boundsAutoApply: true,
+                            });
                             ymaps.geocode(coords).then(function (res) {
-                                var firstGeoObject = res.geoObjects.get(0);
+                                let firstGeoObject = res.geoObjects.get(0);
                                 let address = firstGeoObject.getAddressLine();
+
+                                target = firstGeoObject.properties.get('metaDataProperty');
 
                                 myPlacemark.properties
                                     .set({
@@ -257,9 +277,50 @@ JS)
                                     });
                                 $('#order-address').val(address);
                                 $('#location-title').val(address);
+                                $('#location-latitude').val(coords[0]);
+                                $('#location-logintude').val(coords[1]);
+                                searchShortest(coords);
                             });
-                            $('#location-latitude').val(coords[0]);
-                            $('#location-logintude').val(coords[1]);
+                        }
+                        function searchShortest(coords)
+                        {
+                            multiRoute.model.events.add('requestsuccess', function() {
+                                let routes = multiRoute.getRoutes();
+                                let shortest = undefined;
+                                routes.each((route) => {
+                                    if ( typeof shortest === "undefined" ) {
+                                        shortest = route;
+                                    } else {
+                                        if (shortest.properties.get("distance").value > route.properties.get("distance").value)
+                                        {
+                                            shortest = route;
+                                        }
+                                    }
+                                })
+                                if ( typeof shortest !== "undefined") {
+                                    multiRoute.setActiveRoute(shortest);
+                                }
+                                myMap.geoObjects.add(multiRoute);
+                                let delivery_price = 0;
+                                if ( target.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName !== "Улан-Удэ" ) {
+                                    console.log(target);
+                                    let meters = parseInt(shortest.properties.get("distance").value);
+                                    $("[name='Order\[delivery_distance\]']").val(meters/1000);
+                                    delivery_price = parseInt(meters / 1000) * delivery_cost;
+                                    console.log(delivery_price);
+                                }
+                                $.ajax({
+                                    url: '/cart/get-cart',
+                                    success: (response) => {
+                                        let price = 0;
+                                        for (const [key, value] in response) {
+                                            price += response[key].price * parseInt(response[key].quantity);
+                                        }
+                                        price += delivery_price;
+                                        $(".form-group .delivery_cost").text(`Общая стоимость заказа с доставкой составит: ${price}`);
+                                    }
+                                })
+                            });
                         }
                         function initMap() {
                             if (myMap === undefined) {

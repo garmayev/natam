@@ -4,6 +4,7 @@ $.fn.maskVal = function () {
 
 if ((window.location.pathname !== `/`)) {
     $("body").removeClass("home");
+    $(".header").css({"max-height": "200px"});
 }
 
 $('.about_slider').slick({

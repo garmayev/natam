@@ -1,6 +1,6 @@
 <?php
 
-use common\modules\admin\models\Settings;
+use common\models\Settings;
 use garmayev\staff\models\Employee;
 use yii\helpers\ArrayHelper;
 use yii\web\View;
@@ -85,7 +85,15 @@ echo Html::endTag("div");
 
 echo Html::endTag("div");
 echo Html::endTag("div");
-
+?>
+<div class="panel panel-warning">
+	<div class="panel-heading">Стоимость доставки</div>
+	<div class="panel-body">
+        <label>Стоимость доставки (километр за пределы города)</label>
+		<input class="form-control" name="Settings[delivery_cost]" type="text" value="<?= Settings::getDeliveryCost() ?>" />
+	</div>
+</div>
+<?php
 echo Html::submitButton(Yii::t("app", "Save"), ["class" => ["btn", "btn-success"]]);
 //echo Html::textInput("Settings[notify][limit][]", $model->getContent()["notify"]["limit"][1])->label("Время дял обработки заказа одного заказа кладовщика");
 //echo Html::textInput("Settings[notify][limit][]", $model->getContent()["notify"]["limit"][2])->label("Время дял обработки заказа одного заказа водителя");
