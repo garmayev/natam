@@ -159,26 +159,26 @@
             }
         }
         let about_slider = $('.about_slider');
-        if (about_slider.length) {
-            about_slider.slick({
-                dots: false,
-                infinite: true,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                responsive: [
-                    {
-                        breakpoint: 1000,
-                        settings: {
-                            slidesToShow: 1,
-                        },
-                    },
-                    {
-                        breakpoint: 630,
-                        settings: {
-                            slidesToShow: 1,
-                        },
-                    },
-                ],
-            });
-        }
+        // if (about_slider.length) {
+        //     about_slider.slick({
+        //         dots: false,
+        //         infinite: true,
+        //         slidesToShow: 1,
+        //         slidesToScroll: 1,
+        //         responsive: [
+        //             {
+        //                 breakpoint: 1000,
+        //                 settings: {
+        //                     slidesToShow: 1,
+        //                 },
+        //             },
+        //             {
+        //                 breakpoint: 630,
+        //                 settings: {
+        //                     slidesToShow: 1,
+        //                 },
+        //             },
+        //         ],
+        //     });
+        // }
     }

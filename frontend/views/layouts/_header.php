@@ -27,7 +27,7 @@ use yii\widgets\Menu;
 						<span class="nav_toggle-item"></span>
 					</div>
 					<div class="logo">
-						<a href="/">
+						<a id="aboutBtn" href="#">
 							<img src="/img/logo.svg" alt="logo" />
 						</a>
 						<p>

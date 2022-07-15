@@ -24,12 +24,12 @@ $(document).ready(function () {
             },
         ],
     });
-    $(".about_slider").slick({
-        dots: false,
-        infinite: true,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-    });
+    // $(".about_slider").slick({
+    //     dots: false,
+    //     infinite: true,
+    //     slidesToShow: 1,
+    //     slidesToScroll: 1,
+    // });
     $(".nav_toggle, .close, .shadow").on("click", function () {
         $(".nav").toggleClass("active");
         $(".shadow").toggleClass("active");
@@ -112,6 +112,7 @@ aboutBtns.forEach((aboutBtn) => {
             setTimeout(() => {
                 mainIndex.classList.remove('active');
                 document.querySelector('.mains').style.height = `${mainAbout.clientHeight}px`;
+                console.log(document.querySelector('.mains').style.height = `${mainAbout.clientHeight}px`)
             }, 500)
         } else {
             mainIndex.classList.add('active');
