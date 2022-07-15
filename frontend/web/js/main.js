@@ -4,36 +4,32 @@ $(document).ready(function () {
     window.onload = function () {
         document.querySelector(".preloader").classList.add("active");
     };
-    if ( $(".news_slider").length ) {
-        $(".news_slider").slick({
-            dots: false,
-            infinite: true,
-            slidesToShow: 3,
-            slidesToScroll: 1,
-            responsive: [
-                {
-                    breakpoint: 1000,
-                    settings: {
-                        slidesToShow: 2,
-                    },
+    $(".news_slider").slick({
+        dots: false,
+        infinite: true,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        responsive: [
+            {
+                breakpoint: 1000,
+                settings: {
+                    slidesToShow: 2,
                 },
-                {
-                    breakpoint: 630,
-                    settings: {
-                        slidesToShow: 1,
-                    },
+            },
+            {
+                breakpoint: 630,
+                settings: {
+                    slidesToShow: 1,
                 },
-            ],
-        });
-    }
-    if ( $(".about_slider").length ) {
-        $(".about_slider").slick({
-            dots: false,
-            infinite: true,
-            slidesToShow: 1,
-            slidesToScroll: 1,
-        });
-    }
+            },
+        ],
+    });
+    $(".about_slider").slick({
+        dots: false,
+        infinite: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+    });
     $(".nav_toggle, .close, .shadow").on("click", function () {
         $(".nav").toggleClass("active");
         $(".shadow").toggleClass("active");
@@ -100,7 +96,29 @@ window.addEventListener("scroll", function () {
         }
 
     }
-    // console.log('gaz ' + value)
+    console.log('gaz ' + value)
 
 });
 
+
+let aboutBtns = document.querySelectorAll('#aboutBtn');
+let mainIndex = document.querySelector('.mainIndex');
+let mainAbout = document.querySelector('.mainAbout');
+
+aboutBtns.forEach((aboutBtn) => {
+    aboutBtn.addEventListener('click', function () {
+        if (mainIndex.classList.contains('active')) {
+            mainAbout.classList.add('active');
+            setTimeout(() => {
+                mainIndex.classList.remove('active');
+                document.querySelector('.mains').style.height = `${mainAbout.clientHeight}px`;
+            }, 500)
+        } else {
+            mainIndex.classList.add('active');
+            mainAbout.classList.remove('active');
+            document.querySelector('.mains').style.height = `${mainIndex.clientHeight}px`;
+
+        }
+
+    })
+})
