@@ -299,6 +299,7 @@ class TelegramController extends \yii\rest\Controller
 
 		Command::run("/all_orders", [$this, "orders"]);
 		Command::run("/order", [$this, "view"]);
+		Command::run("/copy", [$this, "copy"]);
 //		Command::run("/status_store", [$this, "status_store"]);
 	}
 
@@ -377,6 +378,7 @@ class TelegramController extends \yii\rest\Controller
 	{
 		if (isset($args["order_id"])) {
 			$order = Order::findOne($args["order_id"]);
+			\Yii::error($order->generateTelegramText());
 			$telegram->editMessageText([
 				"message_id" => $telegram->input->callback_query->message["message_id"],
 				'chat_id' => $telegram->input->callback_query->message["chat"]["id"],
@@ -386,7 +388,7 @@ class TelegramController extends \yii\rest\Controller
 					"inline_keyboard" => [
 						[
 							["text" => "Повторить заказ", "callback_data" => "/copy order_id={$order->id}"],
-//							["text" => "Изменить заказ", "callback_data" => "/update order_id={$order->id}"],
+						], [
 							["text" => "Отмена", "callback_data" => "/all_orders"],
 						]
 					]
@@ -397,9 +399,11 @@ class TelegramController extends \yii\rest\Controller
 
 	public static function copy($telegram, $args = null)
 	{
+		\Yii::error($args);
 		if (isset($args["order_id"])) {
 			$order = Order::findOne($args["order_id"]);
 			$copy = $order->deepClone();
+			\Yii::error($copy->id);
 			$telegram->editMessageText([
 				"message_id" => $telegram->input->callback_query->message["message_id"],
 				'chat_id' => $telegram->input->callback_query->message["chat"]["id"],

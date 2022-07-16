@@ -337,11 +337,15 @@ class Order extends ActiveRecord
 			$db->createCommand()->insert('order', [
 				"client_id" => $this->client_id,
 				'address' => $this->address,
+				'delivery_date' => strtotime('+2 hour'),
+				'created_at' => time(),
+				'delivery_type' => $this->delivery_type,
+				'delivery_distance' => $this->delivery_distance,
 				'location_id' => $this->location_id,
 				'status' => self::STATUS_NEW,
 			])->execute();
 			$newOrderId = $db->getLastInsertID();
-			foreach ($this->orderProduct as $orderProduct) {
+			foreach ($this->orderProducts as $orderProduct) {
 				$db->createCommand()->insert('order_product', [
 					"product_id" => $orderProduct->product_id,
 					"product_count" => $orderProduct->product_count,
