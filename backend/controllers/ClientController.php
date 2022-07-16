@@ -6,11 +6,34 @@ use common\models\Client;
 use common\models\search\ClientSearch;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
 use yii\helpers\Url;
 use yii\web\Response;
 
 class ClientController extends BaseController
 {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function behaviors()
+	{
+		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['@'],
+					],
+				],
+				'denyCallback' => function () {
+					Url::remember(Url::current());
+					return $this->redirect(['user/security/login']);
+				}
+			],
+		];
+	}
+
 	public function actionIndex() {
 		$searchModel = new ClientSearch();
 		$dataProvider = $searchModel->search($this->request->queryParams);

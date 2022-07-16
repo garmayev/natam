@@ -7,6 +7,7 @@ use common\models\staff\Employee;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\Response;
 
@@ -15,28 +16,27 @@ use yii\web\Response;
  */
 class SiteController extends Controller
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-	    return array_merge(parent::behaviors(), [
-		    'access' => [
-			    'class' => AccessControl::class,
-			    'rules' => [
-				    [
-					    'allow' => true,
-					    'actions' => ['@'],
-				    ]
-			    ],
-			    'denyCallback' => function () {
-				    if ( \Yii::$app->user->isGuest ) {
-					    return $this->redirect(["user/security/login"]);
-				    }
-			    }
-		    ]
-	    ]);
-    }
+	/**
+	 * {@inheritdoc}
+	 */
+	public function behaviors()
+	{
+		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['@'],
+					],
+				],
+				'denyCallback' => function () {
+					Url::remember(Url::current());
+					return $this->redirect(['user/security/login']);
+				}
+			],
+		];
+	}
 
     /**
      * {@inheritdoc}

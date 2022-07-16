@@ -13,11 +13,35 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Worksheet;
 use SebastianBergmann\CodeCoverage\Report\Xml\Totals;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 class AnalyticsController extends BaseController
 {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function behaviors()
+	{
+		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['@'],
+					],
+				],
+				'denyCallback' => function () {
+					Url::remember(Url::current());
+					return $this->redirect(['user/security/login']);
+				}
+			],
+		];
+	}
+
 	public function actionOrders($from_date = null, $to_date = null, $filter = null, $export = null)
 	{
 		$models = Order::find();

@@ -5,10 +5,34 @@ namespace backend\controllers;
 use frontend\models\Vacancy;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\UploadedFile;
 
 class VacancyController extends BaseController
 {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function behaviors()
+	{
+		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['@'],
+					],
+				],
+				'denyCallback' => function () {
+					Url::remember(Url::current());
+					return $this->redirect(['user/security/login']);
+				}
+			],
+		];
+	}
+
 	public function beforeAction($action)
 	{
 		$this->view->title = Yii::t("app", "Vacancy");
