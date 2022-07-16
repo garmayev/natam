@@ -106,5 +106,7 @@ return [
 	'Birthday' => 'Дата рождения',
 	'Family' => 'Фамилия',
 	'Fullname' => 'ФИО',
-	'Staff' => 'Штат'
+	'Staff' => 'Штат',
+	'Order #{id}' => 'Заказ #{id}',
+	'Site control' => 'Управление сайта',
 ];

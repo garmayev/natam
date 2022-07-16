@@ -318,8 +318,8 @@ class TelegramController extends \yii\rest\Controller
 					"keyboard" => [
 						[
 							["text" => "/all_orders"]
-						], [
-							["text" => "/new_order"]
+//						], [
+//							["text" => "/new_order"]
 						]
 					],
 					"resize_keyboard" => true,
@@ -356,7 +356,6 @@ class TelegramController extends \yii\rest\Controller
 				]);
 
 			} else {
-				\Yii::error($telegram->input->callback_query);
 				$telegram->editMessageText([
 					"chat_id" => $chat_id,
 					"message_id" => $telegram->input->callback_query->message['message_id'],
@@ -386,8 +385,29 @@ class TelegramController extends \yii\rest\Controller
 				"reply_markup" => json_encode([
 					"inline_keyboard" => [
 						[
-//							["text" => "Повторить заказ", "callback_data" => "/copy order_id={$order->id}"],
+							["text" => "Повторить заказ", "callback_data" => "/copy order_id={$order->id}"],
 //							["text" => "Изменить заказ", "callback_data" => "/update order_id={$order->id}"],
+							["text" => "Отмена", "callback_data" => "/all_orders"],
+						]
+					]
+				]),
+			]);
+		}
+	}
+
+	public static function copy($telegram, $args = null)
+	{
+		if (isset($args["order_id"])) {
+			$order = Order::findOne($args["order_id"]);
+			$copy = $order->deepClone();
+			$telegram->editMessageText([
+				"message_id" => $telegram->input->callback_query->message["message_id"],
+				'chat_id' => $telegram->input->callback_query->message["chat"]["id"],
+				"text" => "Ваш заказ успешно повторен",
+				"parse_mode" => "html",
+				"reply_markup" => json_encode([
+					"inline_keyboard" => [
+						[
 							["text" => "Отмена", "callback_data" => "/all_orders"],
 						]
 					]

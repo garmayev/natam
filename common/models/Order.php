@@ -14,6 +14,7 @@ use nhkey\arh\ActiveRecordHistoryBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\Url;
 
 /**
  *
@@ -173,8 +174,6 @@ class Order extends ActiveRecord
 	public function afterSave($insert, $changedAttributes)
 	{
 		parent::afterSave($insert, $changedAttributes);
-		// \Yii::error(empty($changedAttributes['boss_chat_id']) && ($this->boss_chat_id === null));
-		// \Yii::error($this->boss_chat_id);
 		if ($this->boss_chat_id === null) {
 			if ( Yii::$app->user->isGuest ) {
 				Yii::$app->user->switchIdentity($this->client->user);
@@ -188,10 +187,6 @@ class Order extends ActiveRecord
 				->all();
 			foreach ($messages as $message) {
 				$message->hide();
-				// \Yii::error(\Yii::$app->telegram->input->callback_query->message['message_id']);
-				// if ($message->id !== \Yii::$app->telegram->input->message->id) {
-				// 	$message->delete();
-				// }
 			}
 			if ( !$insert ) {
 				if ( isset($changedAttributes['status']) && $this->status < Order::STATUS_DELIVERY ) {
@@ -204,8 +199,31 @@ class Order extends ActiveRecord
 			}
 			if (isset($oldUser)) {
 				Yii::$app->user->switchIdentity($oldUser);
-			} else {
-				// Yii::$app->user->logout();
+			}
+			$client = $this->client;
+			if ( isset($client->chat_id) ) {
+				$text = "";
+				switch ($this->status) {
+					case Order::STATUS_NEW:
+						$text = "Ваш заказ #{$this->id} сохранен\nМенеджер свяжется с вами в ближайшее время";
+						break;
+					case Order::STATUS_PREPARE:
+						$text = "Ваш заказ #{$this->id} передан кладовщику для подготовки";
+						break;
+					case Order::STATUS_DELIVERY:
+						$text = "Ваш заказ #{$this->id} в пути";
+						break;
+					case Order::STATUS_COMPLETE:
+						$text = "Ваш заказ #{$this->id} успешно выполнен";
+						break;
+					case Order::STATUS_CANCEL:
+						$text = "Ваш заказ #{$this->id} был отменен";
+				}
+				Yii::$app->telegram->sendMessage([
+					"chat_id" => $client->chat_id,
+					"text" => $text,
+					"parse_mode" => "html",
+				]);
 			}
 		}
 	}
@@ -319,6 +337,7 @@ class Order extends ActiveRecord
 			$db->createCommand()->insert('order', [
 				"client_id" => $this->client_id,
 				'address' => $this->address,
+				'location_id' => $this->location_id,
 				'status' => self::STATUS_NEW,
 			])->execute();
 			$newOrderId = $db->getLastInsertID();
