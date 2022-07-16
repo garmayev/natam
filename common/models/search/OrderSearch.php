@@ -46,6 +46,11 @@ class OrderSearch extends Model
 			]
 		]);
 
+		if ( !\Yii::$app->user->can('employee') ) {
+			$client = Client::findOne(['user_id' => \Yii::$app->user->id]);
+			$query->andFilterWhere(['client_id' => $client->id]);
+		}
+
 		if (!($this->load($params) && $this->validate())) {
 			$query->andFilterWhere([">", "created_at", strtotime("-1 week")]);
 			return $dataProvider;
@@ -66,6 +71,7 @@ class OrderSearch extends Model
 
 //		$query->andFilterWhere(["<=", "created_at", \Yii::$app->formatter->asTimestamp(isset($this->created_start) ? \Yii::$app->formatter->asTimestamp($this->created_start) : 0)]);
 //		$query->andFilterWhere([">=", "created_at", \Yii::$app->formatter->asTimestamp(isset($this->created_finish) ? \Yii::$app->formatter->asTimestamp($this->created_finish) : \Yii::$app->formatter->asTimestamp(date()))]);
+
 		if ($this->client_phone) {
 			$query->andFilterWhere(["like", "phone", $this->phoneNormalize()]);
 		}
@@ -96,7 +102,7 @@ class OrderSearch extends Model
 			$query->andFilterWhere(["<", "delivery_date", \Yii::$app->formatter->asTimestamp($this->delivery_finish)]);
 		}
 
-		\Yii::error($query->createCommand()->getRawSql());
+//		\Yii::error($query->createCommand()->getRawSql());
 
 		return $dataProvider;
 	}

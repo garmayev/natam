@@ -30,6 +30,7 @@ class UpdateBehavior extends \yii\base\Behavior
 		 */
 
 		$owner = $this->owner;
+		\Yii::error($owner->orderProduct);
 		foreach ($owner->orderProduct as $product) {
 			$link = new OrderProduct([
 				"order_id" => $owner->id,

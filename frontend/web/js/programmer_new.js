@@ -71,10 +71,14 @@
                         let count = createElement("input", null, {
                             type: 'text',
                             value: response[index].quantity,
-                            name: "Order[orderProduct][" + counter + "][product_count]",
+                            name: `Order[orderProduct][${counter}][product_count]`,
                             style: "width: 80%",
-                            disabled: 'disabled',
+                            // disabled: 'disabled',
                         });
+                        // let count_hidden = createElement("hidden", response[index].quantity, {
+                        //     name: `Order[orderProduct][${counter}][product_count]`,
+                        //     value: response[index].quantity,
+                        // });
                         let drop = createElement("a", null, {
                             class: "trash",
                             "data-index": response[index].product_id
@@ -82,7 +86,10 @@
                         $(drop).append(createElement("img", null, {src: "/img/trash.png", style: "width: 36px;"}));
                         let select_container = createElement("div", null);
                         select_container.appendChild(count);
+                        // select_container.appendChild(count_hidden);
+                        // console.log(count_hidden);
                         select_container.appendChild(drop);
+                        console.log(select_container);
                         container.find(".form_item:last-child").append(select_container);
                         counter++;
                     }
@@ -154,7 +161,7 @@
     } else {
         if (window.location.hash === "#form") {
             if ( button.length ) {
-                console.log(button);
+                // console.log(button);
 
                 button.trigger("click");
             }
