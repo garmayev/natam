@@ -73,6 +73,7 @@
                             value: response[index].quantity,
                             name: "Order[orderProduct][" + counter + "][product_count]",
                             style: "width: 80%",
+                            disabled: 'disabled',
                         });
                         let drop = createElement("a", null, {
                             class: "trash",

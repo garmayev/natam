@@ -83,7 +83,7 @@ class Client extends \yii\db\ActiveRecord
 					'password' => $this->phone,
 				]);
 				if ($user->save()) {
-					$this->sendNotify("Your login: $this->phone\nYour password: $this->phone", self::NOTIFY_SMS);
+//					$this->sendNotify("Your login: $this->phone\nYour password: $this->phone", self::NOTIFY_SMS);
 					$auth = Yii::$app->authManager;
 					$role = $auth->getRole('person');
 					$auth->assign($role, $user->id);

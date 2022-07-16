@@ -273,3 +273,7 @@
     border: solid 3px green;
     /*filter: drop-shadow(0 0 1rem green);*/
 }
+
+input:disabled {
+    background-color: rgba(239, 239, 239, 0.7);
+}

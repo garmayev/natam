@@ -337,6 +337,7 @@ if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
                                         url: '/cart/get-cart',
                                         success: (response) => {
                                             let price = 0;
+                                            console.log(response);
                                             for (const [key, value] in response) {
                                                 price += response[key].price * parseInt(response[key].quantity);
                                             }
