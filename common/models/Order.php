@@ -188,15 +188,14 @@ class Order extends ActiveRecord
 			foreach ($messages as $message) {
 				$message->hide();
 			}
-			if ( !$insert ) {
-				if ( isset($changedAttributes['status']) && $this->status < Order::STATUS_DELIVERY ) {
-					$employees = Employee::findAll(['state_id' => $this->status]);
-					foreach ($employees as $employee) TelegramMessage::send($employee, $this);
-				}
-			} else if (is_null($changedAttributes['status'])) {
+			if ( !$insert && isset($changedAttributes['status']) && $changedAttributes['status'] < Order::STATUS_DELIVERY ) {
 				$employees = Employee::findAll(['state_id' => $this->status]);
 				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 			}
+/* 			} else if (is_null($changedAttributes['status'])) {
+				$employees = Employee::findAll(['state_id' => $this->status]);
+				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
+			} */
 			if (isset($oldUser)) {
 				Yii::$app->user->switchIdentity($oldUser);
 			}
@@ -339,10 +338,10 @@ class Order extends ActiveRecord
 				'address' => $this->address,
 				'delivery_date' => strtotime('+2 hour'),
 				'created_at' => time(),
+				'status' => Order::STATUS_NEW,
 				'delivery_type' => $this->delivery_type,
 				'delivery_distance' => $this->delivery_distance,
 				'location_id' => $this->location_id,
-				'status' => self::STATUS_NEW,
 			])->execute();
 			$newOrderId = $db->getLastInsertID();
 			foreach ($this->orderProducts as $orderProduct) {
@@ -357,6 +356,9 @@ class Order extends ActiveRecord
 			Yii::error($e);
 		}
 		$transaction->commit();
+		$newOrder = Order::findOne($newOrderId);
+		$employees = Employee::findAll(['state_id' => $newOrder->status]);
+		foreach ($employees as $employee) TelegramMessage::send($employee, $newOrder);
 		return Order::findOne($newOrderId);
 	}
 

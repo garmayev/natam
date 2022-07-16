@@ -12,6 +12,7 @@ use frontend\models\Telegram;
 use frontend\models\Updates;
 use common\models\User;
 use garmayev\staff\models\Employee;
+use yii\hepers\Url;
 use Yii;
 
 /**
@@ -389,6 +390,8 @@ class TelegramController extends \yii\rest\Controller
 						[
 							["text" => "Повторить заказ", "callback_data" => "/copy order_id={$order->id}"],
 						], [
+							["text" => "Перейти на сайт", "url" => \yii\helpers\Url::base(true)."/admin/order/create"],
+						], [
 							["text" => "Отмена", "callback_data" => "/all_orders"],
 						]
 					]
@@ -403,7 +406,6 @@ class TelegramController extends \yii\rest\Controller
 		if (isset($args["order_id"])) {
 			$order = Order::findOne($args["order_id"]);
 			$copy = $order->deepClone();
-			\Yii::error($copy->id);
 			$telegram->editMessageText([
 				"message_id" => $telegram->input->callback_query->message["message_id"],
 				'chat_id' => $telegram->input->callback_query->message["chat"]["id"],
