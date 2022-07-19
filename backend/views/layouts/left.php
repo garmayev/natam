@@ -52,10 +52,6 @@ if (!Yii::$app->user->can("employee")) {
 			"icon" => "desktop",
 			"items" => [
 				[
-					"label" => Yii::t("app", "Orders"),
-					"url" => Url::to(["/order/index"]),
-					"icon" => "bell",
-				], [
 					"label" => Yii::t("app", "Products"),
 					"url" => Url::to(["/category/index"]),
 					"icon" => "microchip",
@@ -66,25 +62,30 @@ if (!Yii::$app->user->can("employee")) {
 				]
 			],
 		], [
-			"label" => Yii::t("app", "Services"),
-			"url" => Url::to(["/service/index"]),
-			"icon" => "file-code-o"
+			"label" => Yii::t("app", "Orders"),
+			"url" => Url::to(["/order/index"]),
+			"icon" => "bell",
 		], [
-			"label" => Yii::t("app", "News"),
-			"url" => Url::to(["/post/index"]),
-			"icon" => "circle-o",
-		], [
-			"label" => Yii::t("app", "Tickets"),
-			"url" => Url::to(["/ticket/index"]),
-			"icon" => "ticket",
-		], [
-			"label" => Yii::t("app", "Vacancy"),
-			"url" => Url::to(["/vacancy/index"]),
-			"icon" => "user",
-		], [
-			"label" => Yii::t("app", "Users"),
-			"url" => Url::to(["/rbac/assignment"]),
-			"icon" => "user-o"
+			"label" => Yii::t("app", "Site control"),
+			"items" => [
+				[
+					"label" => Yii::t("app", "Services"),
+					"url" => Url::to(["/service/index"]),
+					"icon" => "file-code-o"
+				], [
+					"label" => Yii::t("app", "News"),
+					"url" => Url::to(["/post/index"]),
+					"icon" => "circle-o",
+				], [
+					"label" => Yii::t("app", "Tickets"),
+					"url" => Url::to(["/ticket/index"]),
+					"icon" => "ticket",
+				], [
+					"label" => Yii::t("app", "Vacancy"),
+					"url" => Url::to(["/vacancy/index"]),
+					"icon" => "user",
+				],
+			]
 		], [
 			"label" => Yii::t("app", "Analytic"),
 			"icon" => "bar-chart-o",
@@ -111,12 +112,21 @@ if (!Yii::$app->user->can("employee")) {
 						[
 							"label" => Yii::t("yii2mod.rbac", "Assignments"),
 							"url" => Url::to(["/rbac/assignment/index"])
-						]
+						], [
+							"label" => Yii::t("yii2mod.rbac", "Routes"),
+							"url" => Url::to(["/rbac/route/index"])
+						], [
+							"label" => Yii::t("yii2mod.rbac", "Permissions"),
+							"url" => Url::to(["/rbac/permission/index"])
+						], [
+							"label" => Yii::t("yii2mod.rbac", "Roles"),
+							"url" => Url::to(["/rbac/role/index"])
+						],
 					]
 				], [
-                        "label" => Yii::t("app", "Staff"),
-                    "url" => Url::to(["/staff/index"])
-                ]
+					"label" => Yii::t("app", "Staff"),
+					"url" => Url::to(["/staff/index"])
+				]
 			]
 		]
 	];

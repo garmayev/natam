@@ -13,6 +13,7 @@ return [
 		'telegram' => [
 			'class' => 'aki\telegram\Telegram',
 			'botToken' => '1989845524:AAGaba1o5Koc8PTAKuSM6HKFOfdkjTvG8Sc',
+			'botUsername' => 'Natam_Trade_bot',
 		]
 	],
 	'modules' => [

@@ -36,7 +36,9 @@
         "kartik-v/yii2-widget-datepicker": "dev-master",
         "slavkovrn/yii2-chat": "^1.0",
         "kartik-v/yii2-field-range": "*",
-        "phpoffice/phpspreadsheet": "^1.23"
+        "phpoffice/phpspreadsheet": "^1.23",
+        "buttflattery/yii2-formwizard": "@dev",
+        "2amigos/qrcode-library": "~1.1"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

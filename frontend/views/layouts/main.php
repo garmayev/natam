@@ -14,15 +14,6 @@ use yii\bootstrap4\NavBar;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 
-$menu = [
-    ["label" => Yii::t("app", "About company"), "url" => Url::to("/about")],
-	["label" => Yii::t("app", "Vacancy"), "url" => Url::to("/vacancy/index")],
-	["label" => "Технические газы", "url" => Url::to("/#product")],
-	["label" => "Наши услуги", "url" => Url::to("/service/index")],
-	["label" => "Контакты", "url" => Url::to("/contact")],
-    ["label" => "Каталог", "url" => Url::to("/site/addition")]
-];
-
 AppAsset::register($this);
 $this->beginPage();
 
@@ -39,16 +30,10 @@ $this->beginPage();
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="home">
+<body class="mains">
 <?php
 $this->beginBody();
-$count = count(Yii::$app->cart->getItems());
-if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
-    echo Html::tag("div", $success, ["class" => 'alert']);
-}
-echo $this->render('_header', ["menu" => $menu]);
 echo $content;
-echo $this->render("_footer", ["menu" => $menu]);
 $this->endBody();
 ?>
 <!-- Global site tag (gtag.js) - Google Analytics -->

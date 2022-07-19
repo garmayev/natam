@@ -6,14 +6,15 @@ use aki\telegram\Telegram;
 use common\behaviors\NotifyBehavior;
 use common\behaviors\UpdateBehavior;
 use frontend\models\Updates;
-use frontend\modules\admin\models\Settings;
 use garmayev\staff\models\Employee;
+use common\models\Settings;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
 use nhkey\arh\ActiveRecordHistoryBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use yii\helpers\Url;
 
 /**
  *
@@ -30,6 +31,7 @@ use yii\db\ActiveRecord;
  * @property int $location_id
  * @property int $hold_at
  * @property int $hold_time
+ * @property double $delivery_distance
  *
  * @property int $price
  *
@@ -41,6 +43,7 @@ use yii\db\ActiveRecord;
  * @property Location $location
  * @property int $delivery_type [int(11)]
  * @property TelegramMessage[] $messages
+ * @property int $totalPrice
  */
 class Order extends ActiveRecord
 {
@@ -115,7 +118,7 @@ class Order extends ActiveRecord
 			[["client_id"], "exist", "targetClass" => Client::className(), "targetAttribute" => "id"],
 			[["status"], "default", "value" => self::STATUS_NEW],
 			[['delivery_type'], "default", "value" => self::DELIVERY_COMPANY],
-			[["notify_started_at"], "default", "value" => 0],
+			[["notify_started_at", "delivery_distance"], "default", "value" => 0],
 			[["location_id"], "exist", "targetClass" => Location::class, "targetAttribute" => "id"],
 			[['orderProducts', 'orderProduct'],'safe'],
 		];
@@ -162,14 +165,15 @@ class Order extends ActiveRecord
 		if (isset($data["Order"]["comment"])) {
 			$this->comment = $data["Order"]["comment"];
 		}
+		if (isset($data["Order"]["delivery_distance"])) {
+			$this->delivery_distance = $data["Order"]["delivery_distance"];
+		}
 		return $parent;
 	}
 
 	public function afterSave($insert, $changedAttributes)
 	{
 		parent::afterSave($insert, $changedAttributes);
-		// \Yii::error(empty($changedAttributes['boss_chat_id']) && ($this->boss_chat_id === null));
-		// \Yii::error($this->boss_chat_id);
 		if ($this->boss_chat_id === null) {
 			if ( Yii::$app->user->isGuest ) {
 				Yii::$app->user->switchIdentity($this->client->user);
@@ -183,24 +187,44 @@ class Order extends ActiveRecord
 				->all();
 			foreach ($messages as $message) {
 				$message->hide();
-				// \Yii::error(\Yii::$app->telegram->input->callback_query->message['message_id']);
-				// if ($message->id !== \Yii::$app->telegram->input->message->id) {
-				// 	$message->delete();
-				// }
 			}
 			if ( !$insert ) {
 				if ( isset($changedAttributes['status']) && $this->status < Order::STATUS_DELIVERY ) {
 					$employees = Employee::findAll(['state_id' => $this->status]);
 					foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 				}
-			} else if (is_null($changedAttributes['status'])) {
+			}
+/* 			} else if (is_null($changedAttributes['status'])) {
 				$employees = Employee::findAll(['state_id' => $this->status]);
 				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
-			}
+			} */
 			if (isset($oldUser)) {
 				Yii::$app->user->switchIdentity($oldUser);
-			} else {
-				// Yii::$app->user->logout();
+			}
+			$client = $this->client;
+			if ( isset($client->chat_id) ) {
+				$text = "";
+				switch ($this->status) {
+					case Order::STATUS_NEW:
+						$text = "Ваш заказ #{$this->id} сохранен\nМенеджер свяжется с вами в ближайшее время";
+						break;
+					case Order::STATUS_PREPARE:
+						$text = "Ваш заказ #{$this->id} передан кладовщику для подготовки";
+						break;
+					case Order::STATUS_DELIVERY:
+						$text = "Ваш заказ #{$this->id} в пути";
+						break;
+					case Order::STATUS_COMPLETE:
+						$text = "Ваш заказ #{$this->id} успешно выполнен";
+						break;
+					case Order::STATUS_CANCEL:
+						$text = "Ваш заказ #{$this->id} был отменен";
+				}
+				Yii::$app->telegram->sendMessage([
+					"chat_id" => $client->chat_id,
+					"text" => $text,
+					"parse_mode" => "html",
+				]);
 			}
 		}
 	}
@@ -264,6 +288,14 @@ class Order extends ActiveRecord
 		return $price;
 	}
 
+	public function getTotalPrice()
+	{
+		if ( isset($this->delivery_distance) )
+		return $this->price + (intval($this->delivery_distance) * Settings::getDeliveryCost());
+
+		return $this->price;
+	}
+
 	public function getCount($product_id)
 	{
 		$query = Yii::$app->db->createCommand("SELECT `product_count` FROM `order_product` WHERE order_id={$this->id} AND product_id={$product_id}")->queryOne();
@@ -306,10 +338,15 @@ class Order extends ActiveRecord
 			$db->createCommand()->insert('order', [
 				"client_id" => $this->client_id,
 				'address' => $this->address,
-				'status' => self::STATUS_NEW,
+				'delivery_date' => strtotime('+2 hour'),
+				'created_at' => time(),
+				'status' => 0,
+				'delivery_type' => $this->delivery_type,
+				'delivery_distance' => $this->delivery_distance,
+				'location_id' => $this->location_id,
 			])->execute();
 			$newOrderId = $db->getLastInsertID();
-			foreach ($this->orderProduct as $orderProduct) {
+			foreach ($this->orderProducts as $orderProduct) {
 				$db->createCommand()->insert('order_product', [
 					"product_id" => $orderProduct->product_id,
 					"product_count" => $orderProduct->product_count,
@@ -321,6 +358,11 @@ class Order extends ActiveRecord
 			Yii::error($e);
 		}
 		$transaction->commit();
+		$newOrder = Order::findOne($newOrderId);
+		$newOrder->satus = Order::STATUS_NEW;
+		$newOrder->save();
+//		$employees = Employee::findAll(['state_id' => $newOrder->status]);
+//		foreach ($employees as $employee) TelegramMessage::send($employee, $newOrder);
 		return Order::findOne($newOrderId);
 	}
 
@@ -380,10 +422,17 @@ class Order extends ActiveRecord
 		} else {
 			$result .= "<b>Адрес доставки</b>: Самовывоз\n";
 		}
+		$result .= "<b>Статус</b>: ".$this->getStatus()."\n";
+		$delivery_price = 0;
+		if ($this->delivery_distance !== null) {
+			$delivery_price = intval($this->delivery_distance) * Settings::getDeliveryCost();
+			$result .= "<b>Стоимость доставки</b>: {$delivery_price}\n";
+		}
 		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
 		$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
 		$result .= "<b>Комментарий</b>: " . $this->comment . "\n";
-		$result .= "<i>Общая стоимость: {$this->getPrice()}</i>";
+		$price = $this->getPrice() + $delivery_price;
+		$result .= "<i>Общая стоимость: {$price}</i>";
 		return $result;
 	}
 

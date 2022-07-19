@@ -6,31 +6,30 @@ use common\models\Client;
 use common\models\Ticket;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
 
 class TicketController extends BaseController
 {
+	/**
+	 * {@inheritdoc}
+	 */
 	public function behaviors()
 	{
-		return array_merge(parent::behaviors(), [
+		return [
 			'access' => [
-				'class' => AccessControl::class,
+				'class' => AccessControl::className(),
 				'rules' => [
 					[
-						'allow' => function () {
-							return \Yii::$app->user->can("person");
-						},
-					]
+						'allow' => true,
+						'roles' => ['@'],
+					],
 				],
 				'denyCallback' => function () {
-					if ( \Yii::$app->user->isGuest ) {
-						return $this->redirect(["user/login"]);
-					} else {
-						\Yii::$app->session->setFlash("error", \Yii::t("app", "You don`t have any permission to access this section!"));
-						return $this->redirect(["/"]);
-					}
+					Url::remember(Url::current());
+					return $this->redirect(['user/security/login']);
 				}
-			]
-		]);
+			],
+		];
 	}
 
 	public function beforeAction($action)

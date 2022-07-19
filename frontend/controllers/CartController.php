@@ -58,6 +58,7 @@ class CartController extends \yii\web\Controller
 		foreach ($this->cart->getItems() as $item) {
 			$result[] = [
 				"product_id" => $item->getProduct()->id,
+				"price" => $item->getProduct()->price,
 				"quantity" => $item->getQuantity(),
 			];
 		}

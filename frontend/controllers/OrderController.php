@@ -18,6 +18,8 @@ class OrderController extends \yii\web\Controller
 		$this->enableCsrfValidation = false;
 		$order = new Order();
 		$post = Yii::$app->request->post();
+		// Yii::error(json_encode($post));
+
 		if (Yii::$app->request->isPost) {
 			if ( isset($post["OrderProduct"]) ) {
 				$order->orderProduct = $_POST["OrderProduct"];

@@ -6,10 +6,34 @@ use common\models\Category;
 use common\models\Product;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\UploadedFile;
 
 class CategoryController extends BaseController
 {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function behaviors()
+	{
+		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['@'],
+					],
+				],
+				'denyCallback' => function () {
+					Url::remember(Url::current());
+					return $this->redirect(['user/security/login']);
+				}
+			],
+		];
+	}
+
 	public function actionIndex()
 	{
 		return $this->render('index', [

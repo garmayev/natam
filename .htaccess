@@ -6,6 +6,7 @@
 <IfModule mod_rewrite.c>
     # если /admin, то в backend
     RewriteCond %{REQUEST_URI} ^/(admin)
+    RewriteRule ^admin/images/(.*)$ backend/web/images/$1 [L]
     RewriteRule ^admin/assets/(.*)$ backend/web/assets/$1 [L]
     RewriteRule ^admin/css/(.*)$ backend/web/css/$1 [L]
     RewriteRule ^admin/js/(.*)$ backend/web/js/$1 [L]

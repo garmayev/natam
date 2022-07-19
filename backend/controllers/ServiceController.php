@@ -5,10 +5,34 @@ namespace backend\controllers;
 use common\models\Service;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\UploadedFile;
 
 class ServiceController extends BaseController
 {
+	/**
+	 * {@inheritdoc}
+	 */
+	public function behaviors()
+	{
+		return [
+			'access' => [
+				'class' => AccessControl::className(),
+				'rules' => [
+					[
+						'allow' => true,
+						'roles' => ['@'],
+					],
+				],
+				'denyCallback' => function () {
+					Url::remember(Url::current());
+					return $this->redirect(['user/security/login']);
+				}
+			],
+		];
+	}
+
 	public function actionIndex()
 	{
 		$this->view->title = \Yii::t("app", "Services");

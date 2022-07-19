@@ -4,6 +4,7 @@ $.fn.maskVal = function () {
 
 if ((window.location.pathname !== `/`)) {
     $("body").removeClass("home");
+    $(".header").css({"max-height": "200px"});
 }
 
 $('.about_slider').slick({
@@ -95,8 +96,11 @@ function rebuild() {
                     let count = createElement("input", null, {
                         type: 'text',
                         value: response[index].quantity,
-                        name: "Order[product][count][]",
+                        // name: "Order[product][count][]",
                         style: "width: 80%",
+                    });
+                    let count_hidden = createElement("hidden", response[index].quantity, {
+                        name: "Order[orderProduct]["+counter+"][product_count]"
                     });
                     let drop = createElement("a", null, {
                         class: "trash",
@@ -105,6 +109,7 @@ function rebuild() {
                     $(drop).append(createElement("img", null, {src: "/img/trash.png", style: "width: 36px;"}));
                     let select_container = createElement("div", null);
                     select_container.appendChild(count);
+                    select_container.appendChild(count_hidden);
                     select_container.appendChild(drop);
                     container.find(".form_item:last-child").append(select_container);
                 }
