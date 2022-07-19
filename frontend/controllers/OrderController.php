@@ -13,6 +13,12 @@ class OrderController extends \yii\web\Controller
 {
 	use SaveRelationsTrait;
 
+	public function beforeAction($action)
+	{
+		Yii::$app->request->enableCsrfValidation = false;
+		return parent::beforeAction($action);
+	}
+
 	public function actionCreate()
 	{
 		$this->enableCsrfValidation = false;

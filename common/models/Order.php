@@ -193,11 +193,10 @@ class Order extends ActiveRecord
 					$employees = Employee::findAll(['state_id' => $this->status]);
 					foreach ($employees as $employee) TelegramMessage::send($employee, $this);
 				}
-			}
-/* 			} else if (is_null($changedAttributes['status'])) {
+			} else if (is_null($changedAttributes['status'])) {
 				$employees = Employee::findAll(['state_id' => $this->status]);
 				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
-			} */
+			}
 			if (isset($oldUser)) {
 				Yii::$app->user->switchIdentity($oldUser);
 			}
