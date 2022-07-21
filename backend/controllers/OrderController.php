@@ -74,10 +74,9 @@ class OrderController extends BaseController
 			Yii::$app->session->remove("ticket_id");
 		}
 		if (Yii::$app->request->isPost) {
-			$order->orderProduct = $_POST["OrderProduct"];
-			$data = array_merge_recursive($post, ["Order" => ["orderProduct" => $_POST["OrderProduct"]]]);
+			$order->save(false);
 			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
-			if ($order->load($data) && $order->save()) {
+			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 				return $this->redirect(["order/view", "id" => $order->id]);
 			} else {

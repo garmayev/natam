@@ -88,4 +88,9 @@ class User extends \dektrium\user\models\User
 			return null;
 		}
 	}
+
+	public function isClient()
+	{
+		return Client::findOne(["user_id" => $this->id]) !== null;
+	}
 }

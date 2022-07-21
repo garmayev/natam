@@ -75,7 +75,6 @@ return [
 		    'class' => 'yii\i18n\Formatter',
 		    'dateFormat' => 'd MMMM Y',
 		    'locale' => 'ru-RU',
-//		    'timeZone' => 'Asia/Irkutsk',
 	    ],
     ],
 	'modules' => [

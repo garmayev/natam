@@ -49,15 +49,6 @@ class DefaultController extends BaseController
 	public function actionIndex()
 	{
 		$cars = $this->cars();
-		if ( !\Yii::$app->user->can('employee') ) {
-			$client = Client::findOne(["user_id" => \Yii::$app->user->id]);
-			if (empty($client->chat_id)) {
-				$qrCode = (new QrCode("https://t.me/" . \Yii::$app->telegram->botUsername . "?start={$client->phone}"))
-					->setSize(300)
-					->setMargin(10);
-				$qrCode->writeFile(\Yii::getAlias('@webroot') . "/images/qr/{$client->phone}.png");
-			}
-		}
 		return $this->render('index', [
 			"cars" => $cars
 		]);

@@ -4,6 +4,7 @@ namespace common\models;
 
 use garmayev\staff\models\Employee;
 use garmayev\staff\models\State;
+use GuzzleHttp\Exception\ClientException;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
@@ -112,17 +113,18 @@ class Ticket extends \yii\db\ActiveRecord
 		}
 		$text .= "<b>Дата создания</b>: ".Yii::$app->formatter->asDatetime($this->created_at);
 		preg_match('/http[s]*:\/\//m', $this->comment, $matches);
-		Yii::error(count($matches));
 		if ( count($matches) === 0 ) {
-			$bot_id = Yii::$app->params["telegram"]["bot_id"];
 			$employees = Employee::find()->where(['state_id' => 0])->orWhere(['state_id' => 1])->all();
 			foreach ($employees as $employee) {
-				Yii::error($employee->attributes);
-				Yii::$app->telegram->sendMessage([
-					'chat_id' => $employee->chat_id,
-					'text' => $text,
-					"parse_mode" => "HTML",
-				]);
+				try {
+					Yii::$app->telegram->sendMessage([
+						'chat_id' => $employee->chat_id,
+						'text' => $text,
+						"parse_mode" => "HTML",
+					]);
+				} catch (ClientException $e) {
+					Yii::error($e);
+				}
 			}
 		}
 	}

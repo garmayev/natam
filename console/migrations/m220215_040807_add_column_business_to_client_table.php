@@ -12,10 +12,6 @@ class m220215_040807_add_column_business_to_client_table extends Migration
      */
     public function safeUp()
     {
-	    $this->addColumn("{{%client}}", "inn", $this->string());
-	    $this->addColumn("{{%client}}", "bik", $this->string());
-	    $this->addColumn("{{%client}}", "kpp", $this->string());
-	    $this->addColumn("{{%client}}", "ogrn", $this->string());
 	    $this->addColumn("{{%client}}", "address", $this->string());
 	    $this->addColumn("{{%client}}", "location_id", $this->integer());
 		$this->createIndex(
@@ -41,11 +37,7 @@ class m220215_040807_add_column_business_to_client_table extends Migration
     {
 		$this->dropIndex("idx-client-location_id", "{{%client}}");
 		$this->dropForeignKey("fk-client-location_id", "{{%client}}");
-		$this->dropColumn("{{%client}}", "inn");
-	    $this->dropColumn("{{%client}}", "bik");
-	    $this->dropColumn("{{%client}}", "kpp");
-	    $this->dropColumn("{{%client}}", "ogrn");
-	    $this->dropColumn("{{%client}}", "adress");
+	    $this->dropColumn("{{%client}}", "address");
     }
 
     /*

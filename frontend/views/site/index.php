@@ -403,13 +403,16 @@ if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
 
                             $("div.swiper-button-next").on('click', (e) => {
                                 index++;
-                                if (index === 3) {
-                                    let checked = checkForm($(`[data-index=${index--}]`));
-                                    console.log(checked);
-                                    if (checked) {
-                                        $(".form_order").submit();
-                                        console.log("Submit form");
+                                if ($('.form_item > .form_select').length) {
+                                    if (index === 3) {
+                                        let checked = checkForm($(`[data-index=${index--}]`));
+                                        if (checked) {
+                                            $(".form_order").submit();
+                                            console.log("Submit form");
+                                        }
                                     }
+                                } else {
+                                    window.location.hash = '#product';
                                 }
                             })
                             $("#delivery_type").on('change', (e) => {

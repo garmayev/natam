@@ -8,6 +8,7 @@ use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
+use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 
 class ClientController extends BaseController
@@ -52,7 +53,7 @@ class ClientController extends BaseController
 			if ( $model->load(Yii::$app->request->post()) && $model->save() ) {
 				return ["ok" => true];
 			}
-			Yii::error($model->getErrorSummary(true));
+//			Yii::error($model->getErrorSummary(true));
 			return ["ok" => false, "errors" => $model->getErrorSummary(true)];
 		}
 		if ( Yii::$app->request->isPost ) {
@@ -87,6 +88,16 @@ class ClientController extends BaseController
 	public function actionView($id)
 	{
 		$model = Client::findOne($id);
+		if ( !Yii::$app->user->can('employee') ) {
+			$responder = Client::findOne(["user_id" => Yii::$app->user->id]);
+			if ( $responder->organization->boss_id === $responder->id || $model->id === $responder->id ) {
+				return $this->render("view", [
+					"model" => $model
+				]);
+			} else {
+				throw new ForbiddenHttpException(Yii::t('app', 'Sorry, You don`t have permission to this command'));
+			}
+		}
 		return $this->render("view", [
 			"model" => $model
 		]);
