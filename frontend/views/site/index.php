@@ -47,13 +47,13 @@ $('.main_inner > .blue').on('click', (e) => {
 JS
 );
 $count = count(Yii::$app->cart->getItems());
-if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
+if (!empty($success = Yii::$app->session->getFlash("success"))) {
 	echo \yii\bootstrap4\Html::tag("div", $success, ["class" => 'alert']);
 }
 ?>
 <div class="mainIndex active">
     <div class="home">
-        <?= $this->render('/layouts/_header', ["menu" => $menu]); ?>
+		<?= $this->render('/layouts/_header', ["menu" => $menu]); ?>
         <main id="mainIndex">
             <section class="form" id="form">
                 <div class="container-fluid">
@@ -185,13 +185,15 @@ if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
                                         <input type="hidden" name="Order[location][longitude]" id="location-logintude">
                                     </div>
                                 </div>
-                                <div id="map" style="height: 50vh; min-width: 100%; margin-bottom: 10px;"></div>
+                                <div id="map" style="height: 60vh; min-width: 100%; margin-bottom: 10px;"></div>
                                 <div class="form-group"
                                      style="display: flex; flex-direction: row; justify-content: space-between">
-                                    <label for="delivery_type"
-                                           style="font-size: 18px; font-weight: bold; text-transform: uppercase;">Самовывоз</label>
-                                    <input type="checkbox" name="Order[delivery_type]" id="delivery_type"
-                                           style="margin: 0 10px; height: 18px; width: 18px;">
+                                    <div style="display: flex; flex-direction: row-reverse">
+                                        <label for="delivery_type"
+                                               style="font-size: 18px; font-weight: bold; text-transform: uppercase;">Самовывоз</label>
+                                        <input type="checkbox" name="Order[delivery_type]" id="delivery_type"
+                                               style="margin: 0 10px; height: 18px; width: 18px;">
+                                    </div>
                                     <input type="hidden" name="Order[delivery_distance]">
                                     <span class="delivery_cost"
                                           style="color: white; font-size: 18px; font-weight: bold;"></span>
@@ -539,13 +541,13 @@ if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
                 </div>
             </section>
         </main>
-        <?= $this->render('/layouts/_footer', ['menu' => $menu]) ?>
+		<?= $this->render('/layouts/_footer', ['menu' => $menu]) ?>
     </div>
 </div>
 <div class="mainAbout">
     <div class="home">
-        <?= $this->render('/layouts/_header', ['menu' => $menu]) ?>
-        <?= $this->render('about') ?>
-        <?= $this->render('/layouts/_footer', ['menu' => $menu]) ?>
+		<?= $this->render('/layouts/_header', ['menu' => $menu]) ?>
+		<?= $this->render('about') ?>
+		<?= $this->render('/layouts/_footer', ['menu' => $menu]) ?>
     </div>
 </div>
