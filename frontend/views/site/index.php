@@ -128,7 +128,7 @@ if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
                                 </div>
                             </div>
                             <div class="form_content step swiper-slide swiper-no-swiping" data-index="3">
-                                <div class="date-address" style="display: flex; flex-direction: column;">
+                                <div class="date-address">
                                     <div class="form_item">
 										<?=
 										DateTimePicker::widget([
@@ -185,7 +185,7 @@ if ( !empty($success = Yii::$app->session->getFlash("success")) ) {
                                         <input type="hidden" name="Order[location][longitude]" id="location-logintude">
                                     </div>
                                 </div>
-                                <div id="map" style="height: 30vh; min-width: 100%; margin-bottom: 35px;"></div>
+                                <div id="map" style="height: 50vh; min-width: 100%; margin-bottom: 10px;"></div>
                                 <div class="form-group"
                                      style="display: flex; flex-direction: row; justify-content: space-between">
                                     <label for="delivery_type"
