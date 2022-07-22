@@ -277,3 +277,7 @@
 input:disabled {
     background-color: rgba(239, 239, 239, 0.7);
 }
+
+.product_inner .product_img img {
+    max-width: 260px;
+}

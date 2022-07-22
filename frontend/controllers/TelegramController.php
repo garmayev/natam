@@ -54,8 +54,10 @@ class TelegramController extends \yii\rest\Controller
 		// Yii::error($data);
 		if ( isset($data["callback_query"]) ) {
 			$user = $this->findUser($data["callback_query"]["from"]["id"]);
-		} else {
+		} elseif( isset($data["message"]) ) {
 			$user = $this->findUser($data["message"]["from"]["id"]);
+		} else {
+			return false;
 		}
 		if ( empty($user) ) {
 			$this->asJson([
@@ -66,6 +68,7 @@ class TelegramController extends \yii\rest\Controller
 				"input_data" => $data,
 				"message" => 'user is not logged',
 			]);
+			return false;
 		}
 		Yii::$app->user->switchIdentity($user, 0);
 		$this->enableCsrfValidation = false;
