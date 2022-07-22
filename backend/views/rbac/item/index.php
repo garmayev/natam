@@ -15,7 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->render('/layouts/_sidebar');
 ?>
 <div class="item-index">
-    <h1><?php echo Html::encode($this->title); ?></h1>
     <p>
         <?php echo Html::a(Yii::t('yii2mod.rbac', 'Create ' . $labels['Item']), ['create'], ['class' => 'btn btn-success']); ?>
     </p>
@@ -24,11 +23,16 @@ $this->render('/layouts/_sidebar');
     <?php echo GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'summary' => '',
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
             [
                 'attribute' => 'name',
                 'label' => Yii::t('yii2mod.rbac', 'Name'),
+                'format' => 'html',
+                'value' => function ($model)
+                {
+                    return Html::a($model->name, ['role/view', 'id' => $model->name]);
+                }
             ],
             [
                 'attribute' => 'ruleName',

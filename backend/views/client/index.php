@@ -33,7 +33,7 @@ echo GridView::widget([
 				if ( !empty($model->email) ) {
 					return $model->email;
 				}
-				return Html::tag("i", "(Не указан)");
+				return Html::tag("span", Yii::t('yii', '(not set)'), ['class' => 'not-set']);
 			}
 		], [
 			"attribute" => "company",
@@ -41,10 +41,10 @@ echo GridView::widget([
 				/**
 				 * @var $model Client
 				 */
-				if ( !empty($model->company) ) {
-					return $model->company;
+				if ( !empty($model->company_id) ) {
+					return Html::a($model->organization->title, ['company/view', 'id' => $model->company_id]);
 				}
-				return Html::tag("i", "(Не указан)");
+				return Html::tag("span", Yii::t('yii', '(not set)'), ['class' => 'not-set']);
 			}
 		], [
 			"attribute" => "chat_id",
@@ -57,19 +57,6 @@ echo GridView::widget([
 					return Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-ok"]]);
 				}
 				return Html::a(Html::tag("i", "", ["class" => ["glyphicon", "glyphicon-question-sign"]]), ["client/invite", "id" => $model->id]);
-			}
-		], [
-			"attribute" => "notify",
-			"label" => "Notify",
-			"content" => function ($model) {
-				/**
-				 * @var $model Client
-				 */
-//				$form = ActiveForm::begin(["action" => ["/client/update", "id" => $model->id]]);
-//				$result = Html::beginForm(["/client/update", "id" => $model->id], 'post', ["class" => 'client-notify-ajax']);
-				$result = Html::activeDropDownList($model, 'notify', $model->getNotifyList(), ["class" => "form-control client-notify-ajax", "data-key" => $model->id, "id" => "client-notify-{$model->id}"]);
-//				$result .= Html::endForm();
-				return $result;
 			}
 		], [
 			'class' => \yii\grid\ActionColumn::class,

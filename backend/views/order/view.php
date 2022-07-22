@@ -43,15 +43,17 @@ $totalCost = 0;
 				<?php
 			}
 			?>
-            <p>Текущий статус: <?= $model->getStatus(($model->status === null) ? 0 : $model->status) ?></p>
+            <p>Текущий статус: <?= $model->getStatusName() ?></p>
             <p>Дата доставки: <?= Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i") ?></p>
 			<?php
 			$delivery_price = intval($model->delivery_distance) * Settings::getDeliveryCost();
 			if ($model->delivery_distance) {
 				echo Html::tag("p", "Стоимость доставки: " . Yii::$app->formatter->asCurrency($delivery_price));
 			}
+            if ( isset($model->comment) && $model->comment !== "" ) {
+                echo Html::tag("div", Html::tag("p", Yii::t("app", 'Comment').": ".$model->comment));
+            }
 			?>
-            <div><p>Комментарий: </p><?= $model->comment ?></div>
         </div>
     </div>
 
@@ -70,14 +72,14 @@ $totalCost = 0;
                 </thead>
                 <tbody>
 				<?php
-				foreach ($model->products as $product) {
-					$cost = $product->price * $model->getCount($product->id);
+				foreach ($model->orderProducts as $orderProduct) {
+					$cost = $orderProduct->product_count * $orderProduct->product->price;
 					$totalCost += $cost;
 					echo Html::beginTag("tr");
-					echo Html::tag("td", $product->title);
-					echo Html::tag("td", $product->value);
-					echo Html::tag("td", $product->price);
-					echo Html::tag("td", $model->getCount($product->id));
+					echo Html::tag("td", $orderProduct->product->title);
+					echo Html::tag("td", $orderProduct->product->value);
+					echo Html::tag("td", $orderProduct->product->price);
+					echo Html::tag("td", $orderProduct->product_count);
 					echo Html::tag("td", $cost);
 					echo Html::endTag("tr");
 				}

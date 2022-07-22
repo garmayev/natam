@@ -14,8 +14,6 @@ $this->render('/layouts/_sidebar');
 ?>
 <div class="role-index">
 
-    <h1><?php echo Html::encode($this->title); ?></h1>
-
     <p>
         <?php echo Html::a(Yii::t('yii2mod.rbac', 'Create Rule'), ['create'], ['class' => 'btn btn-success']); ?>
     </p>
@@ -25,6 +23,7 @@ $this->render('/layouts/_sidebar');
     <?php echo GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'summary' => '',
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
             [

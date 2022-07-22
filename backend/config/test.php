@@ -1,15 +1,11 @@
 <?php
 return [
     'id' => 'app-backend-tests',
+    'basePath' => dirname(__DIR__),
     'components' => [
-        'assetManager' => [
-            'basePath' => __DIR__ . '/../web/assets',
-        ],
-        'urlManager' => [
-            'showScriptName' => true,
-        ],
-        'request' => [
-            'cookieValidationKey' => 'test',
+        'user' => [
+            'class' => 'yii\web\User',
+            'identityClass' => 'common\models\User',
         ],
     ],
 ];

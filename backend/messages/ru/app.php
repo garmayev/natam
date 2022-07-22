@@ -109,4 +109,14 @@ return [
 	'Staff' => 'Штат',
 	'Order #{id}' => 'Заказ #{id}',
 	'Site control' => 'Управление сайта',
+	'Companies' => 'Компании',
+	'Create Company' => 'Добавить компанию',
+	'Bik' => 'БИК',
+	'Kpp' => 'КПП',
+	'Ogrn' => 'ОГРН',
+	"Order Complete" => "Заказ выполнен",
+	"Order Prepared" => "Подготовлен для отправки",
+	"Order Delivered" => "В процессе доставки",
+	"Order Cancelled" => "Отменен",
+	"Join coworker" => "Добавить сотрудника"
 ];

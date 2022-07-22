@@ -55,7 +55,11 @@ class TelegramController extends \yii\rest\Controller
 		if ( isset($data["callback_query"]) ) {
 			$user = $this->findUser($data["callback_query"]["from"]["id"]);
 		} elseif( isset($data["message"]) ) {
-			$user = $this->findUser($data["message"]["from"]["id"]);
+			if (preg_match('/(\/start)/', $data['message']['text'])) {
+				return parent::beforeAction($action);
+			} else {
+				$user = $this->findUser($data["message"]["from"]["id"]);
+			}
 		} else {
 			return false;
 		}
@@ -309,27 +313,29 @@ class TelegramController extends \yii\rest\Controller
 
 	public static function start($telegram, $args = null)
 	{
-		\Yii::error(\Yii::$app->user->isGuest);
-		if ( isset($telegram->input->message) ) {
-			if (\Yii::$app->user->isGuest) {
-				$client = Client::findOne(["phone" => array_keys($args)[0]]);
-				$client->chat_id = $telegram->input->message->chat->id;
-				$client->save();
+//		\Yii::error($args);
+		if ( isset($args) ) {
+			if ( isset($telegram->input->message) ) {
+				if (\Yii::$app->user->isGuest) {
+					$client = Client::findOne(["phone" => array_keys($args)[0]]);
+					$client->chat_id = $telegram->input->message->chat->id;
+					$client->save();
+				}
+				$telegram->sendMessage([
+					'chat_id' => $telegram->input->message->chat->id,
+					"text" => "Welcome!",
+					"reply_markup" => json_encode([
+						"keyboard" => [
+							[
+								["text" => "/all_orders"]
+	//						], [
+//									["text" => "/new_order"]
+							]
+						],
+						"resize_keyboard" => true,
+					])
+				]);
 			}
-			$telegram->sendMessage([
-				'chat_id' => $telegram->input->message->chat->id,
-				"text" => "Welcome!",
-				"reply_markup" => json_encode([
-					"keyboard" => [
-						[
-							["text" => "/all_orders"]
-//						], [
-//							["text" => "/new_order"]
-						]
-					],
-					"resize_keyboard" => true,
-				])
-			]);
 		}
 	}
 

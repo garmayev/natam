@@ -34,9 +34,9 @@ if (Yii::$app->user->can('employee')) {
 			if (is_null($model->client)) {
 				$model->client = new Client();
 			}
-			echo $form->field($model->client, "name");
-			echo $form->field($model->client, "phone");
-			echo $form->field($model->client, "email");
+			echo $form->field($model, "client")->textInput(['name' => 'Order[client][name]'])->label(Yii::t('app', 'Customer`s name'));
+			echo $form->field($model, "client")->textInput(['name' => 'Order[client][phone]'])->label(Yii::t('app', 'Customer`s phone'));
+			echo $form->field($model, "client")->textInput(['name' => 'Order[client][email]'])->label(Yii::t('app', 'Customer`s email'));
 			?>
         </div>
     </div>
@@ -56,7 +56,7 @@ foreach ($allProducts as $product) {
 }
 
 $selector = Html::dropDownList(
-	"Order[orderProducts][{$index}][product_id]",
+	"Order[products][{$index}][product_id]",
 	null,
 	$list,
 	[
@@ -272,13 +272,13 @@ $this->registerCss("
 			$ops = ($model->orderProducts) ? $model->orderProducts : [new OrderProduct()];
 			foreach ($ops as $index => $orderProduct) {
 				echo Html::beginTag("div", ["class" => "item"]);
-				echo Html::activeHiddenInput($orderProduct, "[{$index}]order_id", ["value" => $model->id]);
+				echo Html::activeHiddenInput($orderProduct, "[{$index}]order_id", ["value" => $model->id, "name" => "Order[products][{$index}][order_id]"]);
 				echo $form->field($orderProduct, "[{$index}]product_id")->dropDownList($list, [
 					"class" => ["form-control"],
-					"style" => "width: 20%",
+                    "name" => "Order[products][{$index}][product_id]",
 					"prompt" => "Выберите товар"
 				])->label(false);
-				echo $form->field($orderProduct, "[{$index}]product_count")->textInput(["placeholder" => "Введите количество"])->label(false);
+				echo $form->field($orderProduct, "[{$index}]product_count")->textInput(["placeholder" => "Введите количество", "name" => "Order[products][{$index}][product_count]"])->label(false);
 				echo Html::endTag("div");
 			}
 			echo Html::endTag("div");

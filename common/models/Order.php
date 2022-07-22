@@ -2,19 +2,11 @@
 
 namespace common\models;
 
-use aki\telegram\Telegram;
-use common\behaviors\NotifyBehavior;
-use common\behaviors\UpdateBehavior;
-use frontend\models\Updates;
-use garmayev\staff\models\Employee;
-use common\models\Settings;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
-use nhkey\arh\ActiveRecordHistoryBehavior;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
-use yii\helpers\Url;
 
 /**
  *
@@ -32,472 +24,281 @@ use yii\helpers\Url;
  * @property int $hold_at
  * @property int $hold_time
  * @property double $delivery_distance
- *
- * @property int $price
+ * @property int $delivery_type [int(11)]
+ * @property int $totalPrice
  *
  * @property Client $client
  * @property Product[] $products
  * @property OrderProduct[] $orderProducts
- * @property Updates[] $updates
- * @property-write mixed $count
  * @property Location $location
- * @property int $delivery_type [int(11)]
  * @property TelegramMessage[] $messages
- * @property int $totalPrice
+ * @property-read Company $company
+ * @property-read mixed $statusName
+ * @property-read Order[] $mostExpensive
  */
 class Order extends ActiveRecord
 {
-//	use SaveRelationsTrait;
-
-	public $name;
-	public $locationTitle;
-	public $orderProduct;
+	use SaveRelationsTrait;
 
 	const STATUS_NEW = 1;
-	const STATUS_PREPARE = 2;
+	const STATUS_PREPARED = 2;
 	const STATUS_DELIVERY = 3;
 	const STATUS_COMPLETE = 4;
 	const STATUS_CANCEL = 5;
 	const STATUS_HOLD = 6;
 
 	const DELIVERY_SELF = 0;
-	const DELIVERY_COMPANY = 1;
+	const DELIVERY_STORE = 1;
 
-	const SCENARIO_DELIVERY_SELF = 'delivery_self';
+	const STORE_RESERVED = 1;
+	const STORE_SOLD = 2;
+	const STORE_CANCELLED = 3;
 
-	public static function tableName()
-	{
-		return "{{%order}}";
-	}
+	const EVENT_TELEGRAM_INSERT = 'event_insert';
+	const EVENT_TELEGRAM_UPDATE = 'event_update';
+
+	const SCENARIO_TELEGRAM = 'telegram';
+
+	public $_status;
 
 	public function behaviors()
 	{
 		return [
 			'timestamp' => [
-				'class' => TimestampBehavior::className(),
+				'class' => TimestampBehavior::class,
 				'attributes' => [
 					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
-				],
-			],
-			'relations' => [
-				'class' => SaveRelationsBehavior::class,
-				'relations' => [
-					'location',
-					'client',
-				],
-			],
-			'rel' => [
-				'class' => UpdateBehavior::className(),
-			],
-			'history' => [
-				'class' => ActiveRecordHistoryBehavior::class,
-				'ignoreFields' => [
-					'address', 'location_id', 'client_id', 'delivery_type', 'notify_started_at', 'comment', 'orderProducts'
+					ActiveRecord::EVENT_BEFORE_UPDATE => null,
 				]
 			],
-//			'notify' => [
-//				'class' => NotifyBehavior::class,
-//				'attribute' => 'status',
-//			]
+			'saveRelation' => [
+				'class' => SaveRelationsBehavior::class,
+				'relations' => [
+					'client',
+					'location',
+					'products',
+				]
+			]
 		];
 	}
 
-	public function scenarios()
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function tableName()
 	{
-		$scenarios = parent::scenarios();
-		$scenarios[self::SCENARIO_DEFAULT] = ['!address', 'orderProduct', 'status', 'delivery_type', 'notify_started_at'];
-		$scenarios[self::SCENARIO_DELIVERY_SELF] = ['address', 'orderProduct', 'status', 'delivery_type', 'notify_started_at'];
-		return $scenarios;
+		return 'order';
 	}
 
+	public function transactions()
+	{
+		return [
+			self::SCENARIO_DEFAULT => self::OP_INSERT | self::OP_UPDATE
+		];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function rules()
 	{
 		return [
-			[["address", "comment"], "string"],
-			[["client_id"], "integer"],
-			[["client_id"], "exist", "targetClass" => Client::className(), "targetAttribute" => "id"],
-			[["status"], "default", "value" => self::STATUS_NEW],
-			[['delivery_type'], "default", "value" => self::DELIVERY_COMPANY],
-			[["notify_started_at", "delivery_distance"], "default", "value" => 0],
-			[["location_id"], "exist", "targetClass" => Location::class, "targetAttribute" => "id"],
-			[['orderProducts', 'orderProduct'],'safe'],
+			[['client_id', 'delivery_date'], 'required'],
+			[['client_id', 'location_id', 'delivery_type', 'created_at'], 'integer'],
+			[['comment'], 'string'],
+			[['client_id'], 'exist', 'skipOnError' => false, 'targetClass' => Client::className(), 'targetAttribute' => ['client_id' => 'id']],
+			[['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::className(), 'targetAttribute' => ['location_id' => 'id']],
+			[['status'], 'default', 'value' => self::STATUS_NEW],
+			[['delivery_date'], 'filter', 'filter' => function ($value) {
+				return Yii::$app->formatter->asTimestamp($value);
+			}],
+			[['delivery_type'], 'default', 'value' => self::DELIVERY_STORE],
+			[['client', 'location', 'products'], 'safe']
 		];
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function attributeLabels()
 	{
 		return [
-			"address" => Yii::t("app", "Address"),
-			"comment" => Yii::t("app", "Comment"),
-			"status" => Yii::t("app", "Status"),
-			"created_at" => Yii::t("app", "Created At"),
-			"delivery_date" => Yii::t("app", "Delivery Date"),
-			"price" => Yii::t("app", "Price"),
+			'id' => Yii::t('app', 'ID'),
+			'client_id' => Yii::t('app', 'Client ID'),
+			'location_id' => Yii::t('app', 'Location ID'),
+			'delivery_at' => Yii::t('app', 'Delivery Date'),
+			'status' => Yii::t('app', 'Status'),
+			'statusName' => Yii::t('app', 'Status'),
+			'price' => Yii::t('app', 'Price'),
+			'comment' => Yii::t('app', 'Comment'),
+			'created_at' => Yii::t('app', 'Created At'),
+			'delivery_date' => Yii::t('app', 'Delivery Date'),
 		];
 	}
 
-	public function load($data, $formName = null)
-	{
-		$parent = parent::load($data, $formName);
-
-		if ( isset($data["Client"]["phone"]) ) {
-			$client = Client::findByPhone($data["Client"]["phone"]);
-			if (!isset($client)) {
-				$client = new Client($data["Client"]);
-				$client->save();
-			}
-			$this->client_id = $client->id;
-		}
-
-		if ( !empty($data["Order"]["location"]["title"]) ) {
-			$location = Location::findOne(['title' => $data['Order']['location']['title']]);
-			if (!isset($location)) {
-				$location = new Location($data["Order"]['location']);
-				$location->save();
-			}
-			$this->location_id = $location->id;
-			$this->delivery_type = self::DELIVERY_COMPANY;
-		} else {
-			$this->scenario = self::SCENARIO_DELIVERY_SELF;
-			$this->location_id = null;
-			$this->delivery_type = self::DELIVERY_SELF;
-		}
-		if (isset($data["Order"]["comment"])) {
-			$this->comment = $data["Order"]["comment"];
-		}
-		if (isset($data["Order"]["delivery_distance"])) {
-			$this->delivery_distance = $data["Order"]["delivery_distance"];
-		}
-		return $parent;
-	}
-
-	public function afterSave($insert, $changedAttributes)
-	{
-		parent::afterSave($insert, $changedAttributes);
-		if ($this->boss_chat_id === null) {
-			if ( Yii::$app->user->isGuest ) {
-				Yii::$app->user->switchIdentity($this->client->user);
-			} else {
-				$oldUser = Yii::$app->user->identity;
-			}
-
-			$messages = TelegramMessage::find()
-				->where(['order_id' => $this->id])
-				->andWhere(['status' => TelegramMessage::STATUS_OPENED])
-				->all();
-			foreach ($messages as $message) {
-				$message->hide();
-			}
-			if ( !$insert ) {
-				if ( isset($changedAttributes['status']) && $this->status < Order::STATUS_DELIVERY ) {
-					$employees = Employee::findAll(['state_id' => $this->status]);
-					foreach ($employees as $employee) TelegramMessage::send($employee, $this);
-				}
-			} else if (is_null($changedAttributes['status'])) {
-				$employees = Employee::findAll(['state_id' => $this->status]);
-				foreach ($employees as $employee) TelegramMessage::send($employee, $this);
-			}
-			if (isset($oldUser)) {
-				Yii::$app->user->switchIdentity($oldUser);
-			}
-			$client = $this->client;
-			if ( isset($client->chat_id) ) {
-				$text = "";
-				switch ($this->status) {
-					case Order::STATUS_NEW:
-						$text = "Ваш заказ #{$this->id} сохранен\nМенеджер свяжется с вами в ближайшее время";
-						break;
-					case Order::STATUS_PREPARE:
-						$text = "Ваш заказ #{$this->id} передан кладовщику для подготовки";
-						break;
-					case Order::STATUS_DELIVERY:
-						$text = "Ваш заказ #{$this->id} в пути";
-						break;
-					case Order::STATUS_COMPLETE:
-						$text = "Ваш заказ #{$this->id} успешно выполнен";
-						break;
-					case Order::STATUS_CANCEL:
-						$text = "Ваш заказ #{$this->id} был отменен";
-				}
-				Yii::$app->telegram->sendMessage([
-					"chat_id" => $client->chat_id,
-					"text" => $text,
-					"parse_mode" => "html",
-				]);
-			}
-		}
-	}
-
-	public function beforeDelete()
-	{
-		return parent::beforeDelete(); // TODO: Change the autogenerated stub
-	}
-/*
-	public function getStatus($status = null)
-	{
-		$statuses = [
-			self::STATUS_NEW => "Новый заказ",
-			self::STATUS_PREPARE => "Подготовлен для отправки",
-			self::STATUS_DELIVERY => "В процессе доставки",
-			self::STATUS_COMPLETE => "Выполнен",
-			self::STATUS_CANCEL => "Отменен",
-			self::STATUS_HOLD => "Отложен",
-		];
-		if (is_null($status)) {
-			return $statuses;
-		} else {
-			return $statuses[$status];
-		}
-		return parent::beforeDelete();
-	}
-*/
-	public function getStatus()
-	{
-		return self::getStatusList()[$this->status];
-	}
-
-	public static function getStatusList()
+	public function fields()
 	{
 		return [
-			self::STATUS_NEW => "Новый заказ",
-			self::STATUS_PREPARE => "Подготовлен для отправки",
-			self::STATUS_DELIVERY => "В процессе доставки",
-			self::STATUS_COMPLETE => "Выполнен",
-			self::STATUS_CANCEL => "Отменен",
-			self::STATUS_HOLD => "Отложен",
+			'id',
+			'status',
+			'client' => function () {
+				return $this->client;
+			},
+			'location' => function () {
+				return $this->location;
+			},
+			'statusName' => function () {
+				return $this->statusName;
+			},
+			'created_at' => function () {
+				return Yii::$app->formatter->asDatetime($this->created_at);
+			},
+			'delivery_type' => function () {
+				return ($this->delivery_type) ? Yii::t('app', 'Delivery') : Yii::t('app', 'Self delivery');
+			},
+			'delivery_at' => function () {
+				return Yii::$app->formatter->asDatetime($this->delivery_date);
+			},
+			'store' => function () {
+				if (isset($this->store_id)) {
+					return $this->store;
+				}
+				return "";
+			},
+			'comment' => function () {
+				return $this->comment;
+			}
 		];
+//		}
+//		return parent::fields();
 	}
 
-	public function getClient()
+	/**
+	 * Model Attributes
+	 */
+
+	/**
+	 * @return Company
+	 */
+	public function getCompany()
 	{
-		return $this->hasOne(Client::className(), ["id" => "client_id"]);
+		return $this->client->organization;
 	}
 
-	public function getProducts()
+	/**
+	 * Gets query for [[Location]].
+	 *
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getLocation()
 	{
-		return $this->hasMany(Product::className(), ["id" => "product_id"])->via('orderProducts');
+		return $this->hasOne(Location::className(), ['id' => 'location_id']);
+	}
+
+	/**
+	 * Set Location for Order model
+	 *
+	 * @param $data
+	 * @return void
+	 */
+	public function setLocation($data)
+	{
+		$location = Location::findOrCreate($data);
+		$this->location_id = $location->id;
+	}
+
+	/**
+	 * Gets query for [[ProductOrders]].
+	 *
+	 * @return \yii\db\ActiveQuery
+	 */
+	public function getOrderProducts()
+	{
+		return $this->hasMany(OrderProduct::className(), ['order_id' => 'id']);
 	}
 
 	public function getPrice()
 	{
 		$price = 0;
-		foreach ($this->products as $product) {
-			$price += $this->getCount($product->id) * $product->price;
+		foreach ($this->orderProducts as $orderProduct)
+		{
+			$price += $orderProduct->product->price * $orderProduct->product_count;
 		}
 		return $price;
 	}
 
-	public function getTotalPrice()
+	/**
+	 * Gets query for [[Products]].
+	 *
+	 * @return \yii\db\ActiveQuery
+	 * @throws \yii\base\InvalidConfigException
+	 */
+	public function getProducts()
 	{
-		if ( isset($this->delivery_distance) )
-		return $this->price + (intval($this->delivery_distance) * Settings::getDeliveryCost());
-
-		return $this->price;
+		return $this->hasMany(Product::className(), ['id' => 'product_id'])->viaTable('order_product', ['order_id' => 'id']);
 	}
 
-	public function getCount($product_id)
+	public function setProducts($data)
 	{
-		$query = Yii::$app->db->createCommand("SELECT `product_count` FROM `order_product` WHERE order_id={$this->id} AND product_id={$product_id}")->queryOne();
-		if ( $query ) {
-			return $query["product_count"];
+		foreach ( $this->orderProducts as $orderProduct ) $orderProduct->delete();
+		foreach ( $data as $item )
+		{
+			$product = Product::findOne($item['product_id']);
+			$this->link('products', $product, ['product_count' => $item['product_count']]);
 		}
 	}
 
-	public function setCount($product_id)
+	public function getClient()
 	{
-		$item = Yii::$app->cart->getItem($product_id);
-		$query = Yii::$app->db->createCommand("UPDATE `order_product` SET `product_count` = {$item->getQuantity()} WHERE `order_id` = {$this->id} AND `product_id` = {$product_id};")->execute();
-		return true;
+		return $this->hasOne(Client::class, ['id' => 'client_id']);
 	}
 
-	public function getOrderProducts()
+	public function setClient($data)
 	{
-		return $this->hasMany(OrderProduct::className(), ["order_id" => "id"]);
+		$client = Client::findOrCreate($data);
+		$this->client_id = $client->id;
 	}
 
-	public function getUpdates()
+	public function getTotalPrice()
 	{
-		return $this->hasMany(Updates::className(), ["order_id" => "id"])->orderBy(["created_at" => SORT_ASC]);
+		$sum = 0;
+		foreach ($this->productOrders as $productOrder) {
+			$sum += $productOrder->product->price * $productOrder->product_count;
+		}
+		return $sum;
 	}
 
-	public function getLocation()
+	public function getStatusName()
 	{
-		return $this->hasOne(Location::class, ["id" => "location_id"]);
+		return Order::getStatusList()[$this->status];
+	}
+
+	public static function getStatusList()
+	{
+		return [
+			self::STATUS_NEW => Yii::t('app', 'New Order'),
+			self::STATUS_PREPARED => Yii::t('app', 'Order Prepared'),
+			self::STATUS_DELIVERY => Yii::t('app', 'Order Delivered'),
+			self::STATUS_COMPLETE => Yii::t('app', 'Order Complete'),
+			self::STATUS_CANCEL => Yii::t('app', 'Order Cancelled'),
+		];
+	}
+
+	public function getCount()
+	{
+
 	}
 
 	/**
-	 * @return Order|null
-	 * @throws \yii\db\Exception
+	 * @return \yii\db\ActiveQuery
 	 */
-	public function deepClone()
-	{
-		$db = Yii::$app->db;
-		$transaction = $db->beginTransaction();
-		try {
-			$db->createCommand()->insert('order', [
-				"client_id" => $this->client_id,
-				'address' => $this->address,
-				'delivery_date' => strtotime('+2 hour'),
-				'created_at' => time(),
-				'status' => 0,
-				'delivery_type' => $this->delivery_type,
-				'delivery_distance' => $this->delivery_distance,
-				'location_id' => $this->location_id,
-			])->execute();
-			$newOrderId = $db->getLastInsertID();
-			foreach ($this->orderProducts as $orderProduct) {
-				$db->createCommand()->insert('order_product', [
-					"product_id" => $orderProduct->product_id,
-					"product_count" => $orderProduct->product_count,
-					"order_id" => $newOrderId,
-				])->execute();
-			}
-		} catch (\Exception $e) {
-			$transaction->rollBack();
-			Yii::error($e);
-		}
-		$transaction->commit();
-		$newOrder = Order::findOne($newOrderId);
-		$newOrder->satus = Order::STATUS_NEW;
-		$newOrder->save();
-//		$employees = Employee::findAll(['state_id' => $newOrder->status]);
-//		foreach ($employees as $employee) TelegramMessage::send($employee, $newOrder);
-		return Order::findOne($newOrderId);
-	}
-
-	public function search($params)
-	{
-	}
-
-	public function checkAlerts()
-	{
-		$settings = (Settings::findOne(["name" => "notify"]))->getContent()["notify"];
-		$modified_time = (isset($this->updated_at)) ? $this->updated_at : $this->created_at;
-		$now = time();
-		for ($i = 0; $i < count($settings["alert"]) - 1; $i++) {
-			$current = $settings["alert"][$i];
-			$next = $settings["alert"][$i + 1];
-			if ((($now - $modified_time) > $current["time"]) && (($now - $modified_time) < $next["time"])) {
-				return $current["chat_id"];
-			}
-		}
-		if ($now - $modified_time > $settings["alert"][count($settings)]["time"]) {
-			return $settings["alert"][count($settings)];
-		} else {
-			return null;
-		}
-	}
-
-	public function checkEmployee()
-	{
-		$settings = (Settings::findOne(["name" => "notify"]))->getContent()["notify"];
-		$updates = Updates::find()->where(["order_id" => $this->id])->orderBy(["created_at" => SORT_ASC])->one();
-		if (isset($updates)) {
-			if (time() - $updates->created_at > $settings["limit"][$this->status - 1]) {
-				$employee = Employee::find()->where(["state_id" => $this->status])->orderBy(["last_message_at" => SORT_ASC])->one();
-				if ($this->notify_started_at !== $employee->id) {
-					return $employee;
-				}
-			}
-			return null;
-		} else {
-			return Employee::find()->where(["state_id" => $this->status])->orderBy(["last_message_at" => SORT_ASC])->one();
-		}
-	}
-
-	public function generateTelegramText()
-	{
-		$result = "<b>Заказ #{$this->id}</b>\n\n";
-		foreach ($this->products as $product) {
-			$result .= "<strong>$product->title</strong> ($product->value) {$this->getCount($product->id)} * {$product->price}\n";
-		}
-		$result .= "\n";
-		if ($this->delivery_type !== self::DELIVERY_SELF) {
-			if ($this->location) {
-				$result .= "<b>Адрес доставки</b>: <a href='https://2gis.ru/routeSearch/rsType/car/from/107.683039,51.835453/to/{$this->location->longitude},{$this->location->latitude}/go'>{$this->location->title}</a>\n";
-			} else {
-				$result .= "<b>Адрес доставки</b>: {$this->address}\n";
-			}
-		} else {
-			$result .= "<b>Адрес доставки</b>: Самовывоз\n";
-		}
-		$result .= "<b>Статус</b>: ".$this->getStatus()."\n";
-		$delivery_price = 0;
-		if ($this->delivery_distance !== null) {
-			$delivery_price = intval($this->delivery_distance) * Settings::getDeliveryCost();
-			$result .= "<b>Стоимость доставки</b>: {$delivery_price}\n";
-		}
-		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
-		$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
-		$result .= "<b>Комментарий</b>: " . $this->comment . "\n";
-		$price = $this->getPrice() + $delivery_price;
-		$result .= "<i>Общая стоимость: {$price}</i>";
-		return $result;
-	}
-
-	public function generateTelegramKeyboard()
-	{
-		$keyboard = [];
-		switch ($this->status) {
-			case self::STATUS_NEW:
-				$keyboard[] = [
-					[
-						"text" => "Передать заказ кладовщику",
-						"callback_data" => "/manager id={$this->id}"
-					],
-				];
-				$keyboard[] = [
-					 [
-						"text" => "Отложить",
-						"callback_data" => "/order_hold id={$this->id}"
-					]
-				];
-				break;
-			case self::STATUS_PREPARE:
-				if ( $this->delivery_type == self::DELIVERY_COMPANY ) {
-					$employees = Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->all();
-					foreach ($employees as $employee) {
-						$keyboard[] = [
-							[
-								"text" => "{$employee->family} {$employee->name}",
-								"callback_data" => "/store id={$this->id}&driver_id={$employee->id}",
-							]
-						];
-					}
-				} else {
-					$keyboard[] = [
-						[
-							"text" => "Выполнено",
-							"callback_data" => "/store id={$this->id}",
-						]
-					];
-				}
-				break;
-			case self::STATUS_DELIVERY:
-				$keyboard[] = [
-					[
-						"text" => "Выполнено",
-						"callback_data" => "/driver id={$this->id}"
-					]
-				];
-				break;
-		}
-		return $keyboard;
-	}
-
-	public function hold($time) {
-		$this->hold_at = time();
-		$this->hold_time = $time;
-		$this->save();
-	}
-
-	public function getHistory()
-	{
-		return $this->hasMany(ActiveRecordHistoryBehavior::class, ["field_id" => "id"]);
-	}
-
 	public function getMessages()
 	{
 		return $this->hasMany(TelegramMessage::class, ['order_id' => 'id']);
+	}
+
+	public function getMostExpensive($limit)
+	{
+//		$query = Order::find("*, ")
 	}
 }

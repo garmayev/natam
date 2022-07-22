@@ -40,7 +40,7 @@
             let select_container = createElement("div", null, {class: 'form_select'});
             let select_element = createElement("select", null, {
                 value: options.product_id,
-                "name": "Order[orderProduct][" + counter + "][product_id]"
+                "name": "Order[products][" + counter + "][product_id]"
             });
             for (const index in products) {
                 // console.log(index == parseInt(options.product_id));
@@ -71,12 +71,12 @@
                         let count = createElement("input", null, {
                             type: 'text',
                             value: response[index].quantity,
-                            name: `Order[orderProduct][${counter}][product_count]`,
+                            name: `Order[products][${counter}][product_count]`,
                             style: "width: 80%",
                             // disabled: 'disabled',
                         });
                         // let count_hidden = createElement("hidden", response[index].quantity, {
-                        //     name: `Order[orderProduct][${counter}][product_count]`,
+                        //     name: `Order[products][${counter}][product_count]`,
                         //     value: response[index].quantity,
                         // });
                         let drop = createElement("a", null, {

@@ -11,6 +11,7 @@ use Yii;
 use yii\data\ActiveDataProvider;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
+use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 
 class OrderController extends BaseController
@@ -67,17 +68,16 @@ class OrderController extends BaseController
 		if (Yii::$app->session->get("isConvert")) {
 			$order->client_id = Yii::$app->session->get("client_id");
 			$client = Client::findOne(["id" => $order->client_id]);
-			$order->status = Order::STATUS_PREPARE;
+			$order->status = Order::STATUS_PREPARED;
 			(Ticket::findOne(Yii::$app->session->get("ticket_id")))->delete();
 			Yii::$app->session->remove("isConvert");
 			Yii::$app->session->remove("client_id");
 			Yii::$app->session->remove("ticket_id");
 		}
 		if (Yii::$app->request->isPost) {
-			$order->orderProduct = $_POST["OrderProduct"];
-			$data = array_merge_recursive($post, ["Order" => ["orderProduct" => $_POST["OrderProduct"]]]);
+			$order->save(false);
 			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
-			if ($order->load($data) && $order->save()) {
+			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 				return $this->redirect(["order/view", "id" => $order->id]);
 			} else {
@@ -120,12 +120,14 @@ class OrderController extends BaseController
 	public function actionDelete($id)
 	{
 		$model = Order::findOne($id);
-		if ($model->delete()) {
-			Yii::$app->session->setFlash("success", Yii::t("app", "Order #{n} is successfully deleted!", ["n" => $id]));
-		} else {
-			Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order #{n} is not deleted!", ["n" => $id]));
+		if (Yii::$app->user->can('employee') && Yii::$app->user->can('OrderOwner')) {
+			if ($model->delete()) {
+				Yii::$app->session->setFlash("success", Yii::t("app", "Order #{n} is successfully deleted!", ["n" => $id]));
+			} else {
+				Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order #{n} is not deleted!", ["n" => $id]));
+			}
+			return $this->redirect("/admin/order/index");
 		}
-		return $this->redirect("/admin/order/index");
 	}
 
 	public function actionUpdateComment($comment, $id)

@@ -1,7 +1,12 @@
 {
     "name": "yiisoft/yii2-app-advanced",
     "description": "Yii 2 Advanced Project Template",
-    "keywords": ["yii2", "framework", "advanced", "project template"],
+    "keywords": [
+        "yii2",
+        "framework",
+        "advanced",
+        "project template"
+    ],
     "homepage": "http://www.yiiframework.com/",
     "type": "project",
     "license": "BSD-3-Clause",
@@ -23,7 +28,7 @@
         "dmstr/yii2-adminlte-asset": "^2.1",
         "la-haute-societe/yii2-save-relations-behavior": "^1.7",
         "ext-json": "*",
-	    "garmayev/yii2-staff": "dev-master",
+        "garmayev/yii2-staff": "dev-master",
         "devanych/yii2-cart": "*",
         "ext-curl": "*",
         "kartik-v/yii2-widget-datetimepicker": "*",
@@ -38,7 +43,9 @@
         "kartik-v/yii2-field-range": "*",
         "phpoffice/phpspreadsheet": "^1.23",
         "buttflattery/yii2-formwizard": "@dev",
-        "2amigos/qrcode-library": "~1.1"
+        "2amigos/qrcode-library": "~1.1",
+        "codeception/module-yii2": "^1.0.0",
+        "monolog/monolog": "^2.7"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",
@@ -61,7 +68,8 @@
         {
             "type": "composer",
             "url": "https://asset-packagist.org"
-        }, {
+        },
+        {
             "type": "vcs",
             "url": "https://github.com/garmayev/yii2-staff"
         }

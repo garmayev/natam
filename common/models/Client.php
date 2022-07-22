@@ -20,14 +20,12 @@ use Yii;
  * @property-read Order[] $orders
  * @property User $user
  *
- * @property string $inn [varchar(255)]
- * @property string $bik [varchar(255)]
- * @property string $kpp [varchar(255)]
- * @property string $ogrn [varchar(255)]
  * @property string $address [varchar(255)]
  * @property int $location_id [int(11)]
- * @property int $type [int(11)]
  * @property int $notify [int(11)]
+ * @property int $company_id [int(11)]
+ * @property Company $organization
+ * @property string $mail
  */
 class Client extends \yii\db\ActiveRecord
 {
@@ -35,6 +33,7 @@ class Client extends \yii\db\ActiveRecord
 	const NOTIFY_SMS = 1;
 	const NOTIFY_EMAIL = 2;
 	const NOTIFY_TELEGRAM = 3;
+	private $mail;
 
 	public function behaviors()
 	{
@@ -62,6 +61,7 @@ class Client extends \yii\db\ActiveRecord
 			[["chat_id", "user_id", "notify"], "integer"],
 			[["email"], "email"],
 			[["user_id"], "exist", "targetClass" => User::class, "targetAttribute" => "id"],
+			[["company_id"], "exist", "targetClass" => Company::class, "targetAttribute" => "id"],
 			[["notify"], "default", "value" => self::NOTIFY_NONE],
 			[['user'], 'safe']
 		];
@@ -83,7 +83,6 @@ class Client extends \yii\db\ActiveRecord
 					'password' => $this->phone,
 				]);
 				if ($user->save()) {
-//					$this->sendNotify("Your login: $this->phone\nYour password: $this->phone", self::NOTIFY_SMS);
 					$auth = Yii::$app->authManager;
 					$role = $auth->getRole('person');
 					$auth->assign($role, $user->id);
@@ -97,40 +96,6 @@ class Client extends \yii\db\ActiveRecord
 			}
 		}
 		return $valid;
-	}
-
-	public function sendNotify($message, $notify_type)
-	{
-		if (isset($notify_type)) {
-			$notify = $notify_type;
-		} else {
-			$notify = $this->notify;
-		}
-		switch ($notify) {
-			case self::NOTIFY_SMS:
-				$httpClient = new \yii\httpclient\Client();
-				$response = $httpClient->createRequest()
-					->setUrl("https://sms.ru/sms/send?api_id=F1F520FA-F7CA-4EC7-44C6-71B9D7B07372")
-					->setData([
-						"to" => "$this->phone",
-						"msg" => $message,
-						"json" => 1,
-					])
-					->send();
-				if (!$response->isOk) {
-					Yii::error($response->getContent());
-				}
-				return $response->isOk;
-			case self::NOTIFY_EMAIL:
-				break;
-			case self::NOTIFY_TELEGRAM:
-				$response = Telegram::sendMessage([
-					"chat_id" => $this->chat_id,
-					"text" => $message,
-				]);
-				return $response->isOk;
-		}
-		return true;
 	}
 
 	public function beforeValidate()
@@ -149,9 +114,16 @@ class Client extends \yii\db\ActiveRecord
 		];
 	}
 
-	public function setPhone()
+	public function getEmail()
 	{
-		$this->phone = preg_replace("/[\(\)\ \+\-]*/", "", $this->phone, -1);
+		if ( isset($this->email) ) {
+			return $this->email;
+		} else {
+			if (isset($this->user->profile->public_email)) {
+				return $this->user->profile->public_email;
+			}
+		}
+		return $this->user->email;
 	}
 
 	public function getFullName()
@@ -159,9 +131,25 @@ class Client extends \yii\db\ActiveRecord
 		return $this->name;
 	}
 
+	public function getOrders()
+	{
+		return $this->hasMany(Order::className(), ["client_id" => "id"])->orderBy(['id' => SORT_DESC]);
+	}
+
+	public function getUser()
+	{
+		return $this->hasOne(User::className(), ["id" => "user_id"]);
+	}
+
+	public function getOrganization()
+	{
+		return $this->hasOne(Company::class, ['id' => 'company_id']);
+	}
+
 	public static function findByPhone($mixed)
 	{
-		return Client::findOne(["phone" => preg_replace("/[\(\)\ \+]*/", "", $mixed, -1)]);
+		$regex = '/[\(\)\ \+]*/';
+		return Client::findOne(["phone" => preg_replace($regex, "", $mixed, -1)]);
 	}
 
 	public static function findByChatId($mixed)
@@ -178,31 +166,22 @@ class Client extends \yii\db\ActiveRecord
 		return $client;
 	}
 
-	public function invite()
+	public static function findOrCreate($mixed)
 	{
-
-	}
-
-	public function getOrders()
-	{
-		return $this->hasMany(Order::className(), ["client_id" => "id"]);
-	}
-
-	public function getUser()
-	{
-		return $this->hasOne(User::className(), ["id" => "user_id"]);
-	}
-
-	public function getNotifyList()
-	{
-		$list = [
-			Client::NOTIFY_NONE => "Не отправлять уведомления",
-			Client::NOTIFY_SMS => "Уведомлять по SMS",
-			Client::NOTIFY_EMAIL => "Уведомлять по E-mail",
-		];
-		if ($this->chat_id) {
-			$list[Client::NOTIFY_TELEGRAM] = "Уведомлять в Telegram";
+		$regex = '/[\(\)\ \+\-]*/';
+		if ( strlen($mixed["phone"]) > 4 ) {
+			$model = self::findOne(["phone" => preg_replace($regex, '', $mixed["phone"])]);
+		} else {
+			$model = self::findOne(['id' => preg_replace($regex, '', $mixed["phone"])]);
 		}
-		return $list;
+		if (!$model) {
+			$model = new Client();
+			if ($model->load(["Client" => $mixed]) && $model->save()) {
+				return $model;
+			} else {
+				Yii::error($model->getErrorSummary(true));
+			}
+		}
+		return $model;
 	}
 }
