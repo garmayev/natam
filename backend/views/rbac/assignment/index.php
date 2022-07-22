@@ -1,5 +1,6 @@
 <?php
 
+use common\models\User;
 use yii\grid\GridView;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -21,11 +22,14 @@ $this->render('/layouts/_sidebar');
 	<?php echo GridView::widget([
 		'dataProvider' => $dataProvider,
 		'filterModel' => $searchModel,
+		'summary' => '',
 		'columns' => [
-			'username',
 			[
-				'class' => 'yii\grid\ActionColumn',
-				'template' => '{view}',
+				'attribute' => 'username',
+				'format' => 'html',
+				'value' => function (User $model) {
+					return Html::a($model->name, ['view', 'id' => $model->id]);
+				}
 			],
 		],
 	]); ?>

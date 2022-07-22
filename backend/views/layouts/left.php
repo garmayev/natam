@@ -249,7 +249,11 @@ $menu = [
 						"label" => Yii::t("yii2mod.rbac", "Roles"),
 						"url" => Url::to(["/rbac/role/index"]),
 						"active" => Yii::$app->controller->id == "role"
-					],
+					], [
+                            "label" => Yii::t('yii2mod.rbac', 'Rules'),
+                        "url" => Url::to(["/rbac/rule/index"]),
+                        "active" => Yii::$app->controller->id == "rule",
+                    ]
 				]
 			], [
 				"label" => Yii::t("app", "Staff"),

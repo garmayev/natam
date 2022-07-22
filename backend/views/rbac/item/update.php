@@ -14,7 +14,6 @@ $this->params['breadcrumbs'][] = Yii::t('yii2mod.rbac', 'Update');
 $this->render('/layouts/_sidebar');
 ?>
 <div class="auth-item-update">
-    <h1><?php echo Html::encode($this->title); ?></h1>
     <?php echo $this->render('_form', [
         'model' => $model,
     ]); ?>

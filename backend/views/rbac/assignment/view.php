@@ -1,5 +1,7 @@
 <?php
 
+use common\models\Client;
+use common\models\staff\Employee;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii2mod\rbac\RbacAsset;
@@ -10,7 +12,15 @@ RbacAsset::register($this);
 /* @var $model \yii2mod\rbac\models\AssignmentModel */
 /* @var $usernameField string */
 
-$userName = $model->user->{$usernameField};
+if ( !empty($model->user->profile->name) ) {
+	$userName = $model->user->profile->name;
+} elseif ( $client = Client::findOne(['user_id' => $model->userId]) ) {
+    $userName = $client->name;
+} elseif ( $employee = Employee::findOne(['user_id' => $model->userId]) ) {
+	$userName = $employee->getFullname();
+} else {
+    $userName = $model->user->username;
+}
 $this->title = Yii::t('yii2mod.rbac', 'Assignment : {0}', $userName);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('yii2mod.rbac', 'Assignments'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $userName;

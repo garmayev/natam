@@ -145,8 +145,8 @@ $(() => {
         response = JSON.parse(response);
         for (const index in response) {
             let item = response[index];
-            // console.log(item);
             if (item.order.status < 4) {
+                console.log(item);
                 if (orderCollection[item.id] === undefined) {
                     if (item.location) {
                         orderCollection[item.id] = {
@@ -354,6 +354,7 @@ $(() => {
         setInterval(() => {
             ajax("/admin/order/get-list").then(response => {
                 orderCluster.add(generatePoints(response));
+
             });
         }, 1000);
         orderCluster.add(orderPoints);

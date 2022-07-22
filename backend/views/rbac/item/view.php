@@ -17,7 +17,6 @@ $this->params['breadcrumbs'][] = $model->name;
 $this->render('/layouts/_sidebar');
 ?>
 <div class="auth-item-view">
-    <h1><?php echo Html::encode($this->title); ?></h1>
     <p>
         <?php echo Html::a(Yii::t('yii2mod.rbac', 'Update'), ['update', 'id' => $model->name], ['class' => 'btn btn-primary']); ?>
         <?php echo Html::a(Yii::t('yii2mod.rbac', 'Delete'), ['delete', 'id' => $model->name], [

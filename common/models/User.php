@@ -4,6 +4,7 @@ namespace common\models;
 
 use garmayev\staff\models\Employee;
 use Yii;
+use yii\helpers\Html;
 
 /**
  * @property string $Host [char(60)]
@@ -57,6 +58,7 @@ use Yii;
  *
  * @property Client $client
  * @property Employee $employee
+ * @property-read string $name
  */
 
 class User extends \dektrium\user\models\User
@@ -92,5 +94,19 @@ class User extends \dektrium\user\models\User
 	public function isClient()
 	{
 		return Client::findOne(["user_id" => $this->id]) !== null;
+	}
+
+	public function getName()
+	{
+		if ( !empty($this->profile->name) ) {
+			return $this->profile->name;
+		}
+		if ( $this->isClient() ) {
+			return $this->client->name;
+		}
+		if ( $this->employee ) {
+			return $this->employee->getFullname();
+		}
+		return $this->username;
 	}
 }

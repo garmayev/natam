@@ -140,13 +140,14 @@ class Order extends ActiveRecord
 	{
 		return [
 			'id',
+			'status',
 			'client' => function () {
 				return $this->client;
 			},
 			'location' => function () {
 				return $this->location;
 			},
-			'status' => function () {
+			'statusName' => function () {
 				return $this->statusName;
 			},
 			'created_at' => function () {
