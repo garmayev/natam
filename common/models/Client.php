@@ -114,7 +114,7 @@ class Client extends \yii\db\ActiveRecord
 		];
 	}
 
-	public function getEmail()
+	public function getMail()
 	{
 		if ( isset($this->email) ) {
 			return $this->email;

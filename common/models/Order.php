@@ -177,6 +177,7 @@ class Order extends ActiveRecord
 	public function afterSave( $insert, $changedAttributes )
 	{
 //		\Yii::error($changedAttributes);
+		parent::afterSave($insert, $changedAttributes);
 		if ( !$insert ) {
 			
 			$messages = TelegramMessage::find()->where(['order_id' => $this->id])->andWhere(['order_status' => $this->status - 1])->andWhere(['status' => TelegramMessage::STATUS_OPENED])->all();
@@ -184,11 +185,14 @@ class Order extends ActiveRecord
 			foreach ($messages as $message) {
 				$message->hide();
 			}
-			if ($this->status !== Order::STATUS_DELIVERY) {
-				$employees = Employee::find()->where(['state_id' => $this->status])->all();
-				foreach ($employees as $employee) {
-//					\Yii::error($employee->attributes);
-					TelegramMessage::send($employee, $this);
+			if ( count($this->orderProducts) ) {
+				if ($this->status !== Order::STATUS_DELIVERY) {
+					$employees = Employee::find()->where(['state_id' => $this->status])->all();
+					Yii::error(count($this->orderProducts));
+					foreach ($employees as $employee) {
+						\Yii::error($employee->attributes);
+						TelegramMessage::send($employee, $this);
+					}
 				}
 			}
 		}
@@ -348,7 +352,9 @@ class Order extends ActiveRecord
 	$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
 	$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
 	$result .= "<b>Комментарий</b>: " . $this->comment . "\n";
-	$price = $this->price + $delivery_price;
+	Yii::error($this->getPrice());
+	Yii::error($delivery_price);
+	$price = $this->getPrice() + $delivery_price;
 	$result .= "<i>Общая стоимость: {$price}</i>";
 	return $result;
     }
