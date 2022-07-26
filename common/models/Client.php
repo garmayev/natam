@@ -123,7 +123,10 @@ class Client extends \yii\db\ActiveRecord
 				return $this->user->profile->public_email;
 			}
 		}
-		return $this->user->email;
+		if ($this->user) {
+			return $this->user->email;
+		}
+		return null;
 	}
 
 	public function getFullName()

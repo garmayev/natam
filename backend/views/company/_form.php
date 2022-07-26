@@ -71,7 +71,7 @@ JS, View::POS_LOAD);
             echo Html::beginTag("tr");
             echo Html::tag("td", Html::a($worker->name, ["client/view", 'id' => $worker->id]));
             echo Html::tag("td", Html::a($worker->phone, "tel:+$worker->phone"));
-            echo Html::tag("td", $worker->mail);
+            echo Html::tag("td", $worker->email);
             echo Html::endTag("tr");
         }
         ?>
