@@ -39,7 +39,7 @@ echo Html::endForm();
 foreach ($models as $model) {
 	if ( $model->messages ) {
         $address = isset($model->location) ? $model->location->title : $model->address;
-	echo Html::a(Html::tag('h4', Yii::t('app', 'Order #{id}', ['id' => $model->id]).' ('.Html::tag('i', $address).') '.Html::tag('em', "({$model->getStatus($model->status)})", ['class' => 'small'])), ['order/view', 'id' => $model->id]);
+	echo Html::a(Html::tag('h4', Yii::t('app', 'Order #{id}', ['id' => $model->id]).' ('.Html::tag('i', $address).') '.Html::tag('em', "({$model->getStatusName()})", ['class' => 'small'])), ['order/view', 'id' => $model->id]);
 	echo Html::beginTag('div', ['class' => 'row']);
 	$class = 'panel_default';
     switch ($model->status) {

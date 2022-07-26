@@ -99,8 +99,8 @@ class OrderController extends BaseController
 		$post = Yii::$app->request->post();
 		if (Yii::$app->request->isPost) {
 
-			$order->orderProduct = $_POST["OrderProduct"];
-			$data = array_merge_recursive($post, ["Order" => ["orderProduct" => $_POST["OrderProduct"]]]);
+			// $order->orderProduct = $_POST["OrderProduct"];
+			// $data = array_merge_recursive($post, ["Order" => ["orderProduct" => $_POST["OrderProduct"]]]);
 			$order->delivery_date = Yii::$app->formatter->asTimestamp(Yii::$app->request->post()["Order"]["delivery_date"]);
 			// $order->loadRelations($data);
 			if ($order->load($post) && $order->save()) {
@@ -120,7 +120,7 @@ class OrderController extends BaseController
 	public function actionDelete($id)
 	{
 		$model = Order::findOne($id);
-		if (Yii::$app->user->can('employee') && Yii::$app->user->can('OrderOwner')) {
+		if (Yii::$app->user->can('employee')) {
 			if ($model->delete()) {
 				Yii::$app->session->setFlash("success", Yii::t("app", "Order #{n} is successfully deleted!", ["n" => $id]));
 			} else {

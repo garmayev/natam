@@ -33,11 +33,11 @@ class OrderController extends \yii\web\Controller
 			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->cart->clear();
 				Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
-				return ["ok" => true];
+//				return ["ok" => true];
 			} else {
 				Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order was not created!"));
 				Yii::error($order->getErrorSummary(true));
-				return ["ok" => false, "description" => $order->getErrorSummary(true)];
+//				return ["ok" => false, "description" => $order->getErrorSummary(true)];
 			}
 		}
 		return $this->redirect("/");

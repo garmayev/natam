@@ -58,7 +58,7 @@ class NotifyController extends \yii\console\Controller
 				$this->stdout("\tТребуется отправка сообщения начальнику\n");
 				$response = Telegram::sendMessage([
 					"chat_id" => $this->settings["alert"][$model->status - 1]["chat_id"],
-					"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatus($model->status)} никто не обработал"
+					"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatusName()} никто не обработал"
 				]);
 				if ($response->isOk) {
 					\Yii::$app->user->switchIdentity(User::findOne(1));

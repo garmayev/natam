@@ -11,7 +11,7 @@ use frontend\models\Staff;
 use frontend\models\Telegram;
 use frontend\models\Updates;
 use common\models\User;
-use garmayev\staff\models\Employee;
+use common\models\staff\Employee;
 use yii\hepers\Url;
 use Yii;
 
@@ -316,10 +316,13 @@ class TelegramController extends \yii\rest\Controller
 //		\Yii::error($args);
 		if ( isset($args) ) {
 			if ( isset($telegram->input->message) ) {
+				\Yii::error($telegram->input->message->chat->id);
 				if (\Yii::$app->user->isGuest) {
 					$client = Client::findOne(["phone" => array_keys($args)[0]]);
-					$client->chat_id = $telegram->input->message->chat->id;
-					$client->save();
+					if ($client) {
+						$client->chat_id = $telegram->input->message->chat->id;
+						$client->save();
+					}
 				}
 				$telegram->sendMessage([
 					'chat_id' => $telegram->input->message->chat->id,
@@ -455,7 +458,7 @@ class TelegramController extends \yii\rest\Controller
 		if ( self::checkPermission($telegram, "employee") ) {
 			if ( isset($args) ) {
 				$order = Order::findOne($args["id"]);
-				$order->status = Order::STATUS_PREPARE;
+				$order->status = Order::STATUS_PREPARED;
 				$order->boss_chat_id = null;
 				if ( !$order->save() ) {
 					Yii::error($order->getErrorSummary(true));
@@ -475,8 +478,7 @@ class TelegramController extends \yii\rest\Controller
 		if ( self::checkPermission($telegram, "employee") ) {
 			if ( isset($args) ) {
 				$order = Order::findOne($args["id"]);
-
-				if ( isset($order->delivery_type) && $order->delivery_type === Order::DELIVERY_COMPANY ) {
+				if ( isset($order->delivery_type) && $order->delivery_type === Order::DELIVERY_STORE ) {
 					$employee = Employee::findOne($args["driver_id"]);
 					$order->status = Order::STATUS_DELIVERY;
 					$order->boss_chat_id = null;
@@ -491,6 +493,8 @@ class TelegramController extends \yii\rest\Controller
 					$order->status = Order::STATUS_COMPLETE;
 					\Yii::error( $order->save() );
 				}
+			} else {
+				\Yii::error("Unknown order");
 			}
 		} else {
 			$text = Yii::t("telegram", "You don`t have permissions for this action");

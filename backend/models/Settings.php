@@ -34,4 +34,9 @@ class Settings extends \yii\db\ActiveRecord
 	{
 		$this->content = json_encode($content);
 	}
+
+	public function getDeliveryCost()
+	{
+		\Yii::error($this->content);
+	}
 }

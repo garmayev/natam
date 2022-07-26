@@ -7,6 +7,7 @@ use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
+use common\models\staff\Employee;
 
 /**
  *
@@ -173,6 +174,26 @@ class Order extends ActiveRecord
 //		return parent::fields();
 	}
 
+	public function afterSave( $insert, $changedAttributes )
+	{
+//		\Yii::error($changedAttributes);
+		if ( !$insert ) {
+			
+			$messages = TelegramMessage::find()->where(['order_id' => $this->id])->andWhere(['order_status' => $this->status - 1])->andWhere(['status' => TelegramMessage::STATUS_OPENED])->all();
+//			Yii::error();
+			foreach ($messages as $message) {
+				$message->hide();
+			}
+			if ($this->status !== Order::STATUS_DELIVERY) {
+				$employees = Employee::find()->where(['state_id' => $this->status])->all();
+				foreach ($employees as $employee) {
+//					\Yii::error($employee->attributes);
+					TelegramMessage::send($employee, $this);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Model Attributes
 	 */
@@ -301,4 +322,84 @@ class Order extends ActiveRecord
 	{
 //		$query = Order::find("*, ")
 	}
+
+    public function generateTelegramText()
+    {
+	$result = "<b>Заказ #{$this->id}</b>\n\n";
+	foreach ($this->products as $product) {
+	    $result .= "<strong>$product->title</strong> ($product->value) {$this->getCount($product->id)} * {$product->price}\n";
+	}
+	$result .= "\n";
+	if ($this->delivery_type !== self::DELIVERY_SELF) {
+	    if ($this->location) {
+		$result .= "<b>Адрес доставки</b>: <a href='https://2gis.ru/routeSearch/rsType/car/from/107.683039,51.835453/to/{$this->location->longitude},{$this->location->latitude}/go'>{$this->location->title}</a>\n";
+	    } else {
+		$result .= "<b>Адрес доставки</b>: {$this->address}\n";
+	    }
+	} else {
+	    $result .= "<b>Адрес доставки</b>: Самовывоз\n";
+	}
+	$result .= "<b>Статус</b>: ".$this->getStatusName()."\n";
+	$delivery_price = 0;
+	if ($this->delivery_distance !== null) {
+	    $delivery_price = intval($this->delivery_distance) * Settings::getDeliveryCost();
+	    $result .= "<b>Стоимость доставки</b>: {$delivery_price}\n";
+	}
+	$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
+	$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
+	$result .= "<b>Комментарий</b>: " . $this->comment . "\n";
+	$price = $this->price + $delivery_price;
+	$result .= "<i>Общая стоимость: {$price}</i>";
+	return $result;
+    }
+
+    public function generateTelegramKeyboard()
+    {
+	$keyboard = [];
+	switch ($this->status) {
+	    case self::STATUS_NEW:
+		$keyboard[] = [
+		    [
+			"text" => "Передать заказ кладовщику",
+			"callback_data" => "/manager id={$this->id}"
+		    ],
+		];
+		$keyboard[] = [
+		    [
+			"text" => "Отложить",
+			"callback_data" => "/order_hold id={$this->id}"
+		    ]
+		];
+		break;
+	    case self::STATUS_PREPARED:
+		if ( $this->delivery_type == self::DELIVERY_STORE ) {
+		    $employees = \garmayev\staff\models\Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->all();
+		    foreach ($employees as $employee) {
+			$keyboard[] = [
+			    [
+				"text" => "{$employee->family} {$employee->name}",
+				"callback_data" => "/store id={$this->id}&driver_id={$employee->id}",
+			    ]
+			];
+		    }
+		} else {
+		    $keyboard[] = [
+			[
+			    "text" => "Выполнено",
+			    "callback_data" => "/store id={$this->id}",
+			]
+		    ];
+		}
+		break;
+	    case self::STATUS_DELIVERY:
+		$keyboard[] = [
+		    [
+			"text" => "Выполнено",
+			"callback_data" => "/driver id={$this->id}"
+		    ]
+		];
+		break;
+	}
+	return $keyboard;
+    }
 }

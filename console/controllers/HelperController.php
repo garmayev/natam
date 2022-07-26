@@ -56,4 +56,10 @@ class HelperController extends \yii\console\Controller
 		}
 
 	}
+	public function actionTest() 
+	{
+		$id = 627;
+		$model = \common\models\Order::findOne($id);
+		$this->stdout($model->generateTelegramText());
+	}
 }
