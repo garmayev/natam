@@ -21,7 +21,7 @@ class Order extends \common\models\Order
 		return [
 			'numberDate' => \Yii::$app->formatter->asDate($this->created_at, "php:d-m-Y"),
 			'numberOrder' => $this->id,
-			'INN' => $this->client->organization->bik,
+			'INN' => isset($this->client->company_id) ? $this->client->organization->bik : null,
 			'customer' => $this->client->name,
 			'email' => $this->client->mail,
 			'phone' => "+{$this->client->phone}",
