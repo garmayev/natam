@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Order;
+use common\models\Order;
 use yii\web\View;
 use yii\helpers\Html;
 
@@ -32,6 +32,7 @@ $totalCost = 0;
 	<div class="panel-body">
 		<p>Адрес доставки: <?= $model->address ?></p>
 		<p>Текущий статус: <?= $model->getStatus(($model->status === null) ? 0 : $model->status) ?></p>
+        <p>Дата доставки: <?= Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i") ?></p>
 		<div><p>Комментарий: </p><?= $model->comment ?></div>
 	</div>
 </div>

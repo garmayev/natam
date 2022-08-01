@@ -1,6 +1,6 @@
 <?php
 
-use frontend\models\Product;
+use common\models\Product;
 use yii\web\View;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
@@ -18,7 +18,8 @@ echo $form->field($model, "description")->textarea(["rows" => 4, "placeholder" =
 echo $form->field($model, "price")->textInput(["placeholder" => $model->getAttributeLabel("price")])->label(false);
 echo $form->field($model, "value")->textInput(["placeholder" => $model->getAttributeLabel("value")])->label(false);
 echo $form->field($model, "isset")->dropDownList([\Yii::t("natam", "Isset"), \Yii::t("natam", "Empty")])->label(false);
-echo $form->field($model, "visible")->checkbox();
+echo $form->field($model, "category_id")->dropDownList(\yii\helpers\ArrayHelper::map(\common\models\Category::find()->all(), "id", "title"))->label(false);
+//echo $form->field($model, "visible")->checkbox();
 echo $form->field($model, "file")->fileInput();
 
 echo Html::submitButton(Yii::t("app", "Save"), ["class" => ["btn", "btn-success"]]);

@@ -2,266 +2,189 @@
 
 namespace console\controllers;
 
+use common\models\Order;
+use common\models\User;
+use common\models\TelegramMessage;
 use console\models\Alert;
-use frontend\models\Order;
-use frontend\models\OrderProduct;
 use frontend\models\Telegram;
 use frontend\models\Updates;
 use frontend\modules\admin\models\Settings;
 use garmayev\staff\models\Employee;
+use PhpOffice\PhpSpreadsheet\Calculation\DateTime;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Console;
 use yii\httpclient\Client;
 
 class NotifyController extends \yii\console\Controller
 {
+	private $settings;
 	public function init()
 	{
 		$settings = Settings::findOne(["name" => "notify"]);
 		\Yii::$app->params["notify"] = $settings->getContent()["notify"];
+		$this->settings = $settings->getContent()["notify"];
 		parent::init();
 	}
 
 	public function actionIndex()
 	{
-		$now = time();
-		echo "Выбор всех открытых заказов\n";
-		$orders = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
-		echo "Открытых заказов: " . count($orders) . "\n";
-		foreach ($orders as $order) {
-			$update = Updates::find()->where(["order_id" => $order->id])->orderBy(["created_at" => SORT_ASC, "order_status" => SORT_ASC])->one();
-			if (isset($update)) {
-				echo "Заказ #{$order->id} был кому-то отправлен ранее\n";
-				if (($now - $update->created_at) > \Yii::$app->params["notify"]["limit"][$order->status]) {
-					echo "Сотрудник не ответил вовремя\n";
-					echo $this->lockMessage($order->id);
+		$models = Order::find()->where(["<", "status", Order::STATUS_DELIVERY])->all();
+
+		if (!$this->checkHours()) {
+			$this->stdout("Все работники отдыхают\n");
+			// return false;
+		}
+		foreach ($models as $model) {
+			/* if ( $this->isNeedNextMessage($model) ) {
+				$this->stdout("\tТребуется отправка сообщения сотруднику\n");
+				$employee = $this->findNextEmployee($model);
+				if ( $employee ) {
+					//if (isset($employee->family)) {
+					//	$this->stdout("\tДля уведомления был выбран сотрудник {$employee->family} {$employee->name}\n");
+					//} else {
+					//	$this->stdout("\tДля уведомления был выбран сотрудник {$employee->id}\n");
+					//}
+					//$this->sendMessage($employee, $model);
+					//$employee->last_message_at = time();
+					//$employee->save();
+				} else {
+					$this->stdout("\tНе найден подходящий сотрудник для уведомления\n");
+				}
+			} else {
+				$this->stdout("\tОтправка уведомления не требуется");
+			} */
+			if ( $this->isNeedAlert($model) ) {
+				$this->stdout("Заказ #{$model->id}\n", Console::BOLD);
+				$this->stdout("\tТребуется отправка сообщения начальнику\n");
+				$response = Telegram::sendMessage([
+					"chat_id" => $this->settings["alert"][$model->status - 1]["chat_id"],
+					"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatusName()} никто не обработал"
+				]);
+				if ($response->isOk) {
+					\Yii::$app->user->switchIdentity(User::findOne(1));
+					$model->boss_chat_id = $this->settings["alert"][$model->status - 1]["chat_id"];
+					$model->save(false);
 				}
 			}
-			echo $this->next($order->id);
 		}
-		return 0;
 	}
 
 	/**
-	 * Отправка сообщения коллеге
-	 *
-	 * @param $order_id
-	 * @param bool|false $new
+	 * @param $model
+	 * @return Employee|null
+	 */
+	protected function findNextEmployee($model)
+	{
+		$usedEmployees = [];
+		$updates = Updates::find()->where(["order_id" => $model->id])->andWhere(["order_status" => $model->status])->all();
+		if (count($updates) > 1) {
+			foreach ($updates as $update) {
+				$usedEmployees[] = $update->employee->id;
+			}
+		}
+		return Employee::find()
+			->where(["not in", "id", $usedEmployees])
+			->andWhere(["state_id" => $model->status])
+			->orderBy(["last_message_at" => SORT_ASC])
+			->all();
+	}
+
+	/**
+	 * @param Order $model
 	 * @return int
 	 */
-	private function next($order_id, $new = false)
+	protected function isNeedNextMessage($model)
 	{
-		echo "\tПеренаправление сообщения о заказе #{$order_id} другому сотруднику\n";
-		$order = Order::findOne($order_id);
-		if (empty($order)) {
-			return "\tОтправка сообщения не удалась: Неизвестный номер заказа #$order_id\n";
-		}
-		$staffs = Employee::find()->where(["state_id" => $order->status])->orderBy(["last_message_at" => SORT_ASC])->all();
-		foreach ($staffs as $item) {
-			if (isset($item->chat_id)) {
-				$staff = $item;
-				echo "\tЗаказ будет передан сотруднику {$staff->family}\n";
-				break;
-			}
-//			print_r($item);
-//			next($staffs);
-		}
-		if (empty($staff)) {
-			return "\tОтправка сообщения не удалась: Нет требуемых кадров на этапе '{$order->getStatus($order->status)}'\n";
-		} else if (is_null($staff->chat_id)) {
-			return "\tСотрудник '{$staff->user->username}' не установил соединения с Telegram-каналом\n";
-		}
-		if (($order->notify_started_at !== $staff->id)) {
-			echo "\t\tОтправка сообщения другому сотруднику\n";
-			$text = $this->generateHeader($order);
-			$text .= $this->generateClientInfo($order);
-			$text .= $this->generateProductList($order);
-			$keyboard = json_encode($this->generateKeyboard($order));
-			$response = Telegram::sendMessage(["chat_id" => $staff->chat_id, "text" => $text, "reply_markup" => $keyboard, "parse_mode" => "markdown"]);
-			if ($response->isOk) {
-				echo "\t\tОтправка сообщения прошла успешно\n";
-				$staff->last_message_at = time();
-				$staff->save();
-				$this->order_update($order, $staff, $response);
-				// return 0;
+		$update = Updates::find()->where(["order_id" => $model->id])->andWhere(["order_status" => $model->status])->orderBy(["created_at" => SORT_DESC])->one();
+		if ( $update ) {
+			if ( !is_null($model->hold_at) ){
+				if (time() > ($hold = $model->hold_at + $model->hold_time)) {
+					return 1;
+				}
+				$this->stdout("\tЗаказ был отложен менеджером! Осталось ".($hold-time())." секунд\n");
+				return 0;
 			} else {
-				echo "\t\tПри отправке соощения произошли ошибки!\nСмотрите файл console/runtime/logs/app.log\n";
-				\Yii::error($response->getData());
-				\Yii::error($staff->chat_id);
-				\Yii::error($text);
-				// return 1;
+				if (time() < $update->created_at + $this->settings["limit"][$model->status - 1] ) {
+					return 0;
+				} else {
+					return 1;
+				}
 			}
+		}
+		return 2;
+	}
+
+	/**
+	 * @param Order $model
+	 * @return bool
+	 */
+	protected function isNeedAlert($model)
+	{
+		$timeout = ( time() - ($model->created_at + $this->settings["alert"][$model->status - 1]["time"]) > 0 );
+		if ( $timeout ) {
+			echo "\t\tTime is out\n";
 		} else {
-			echo "\t\tОтправка сообщения Начальству\n";
-			return $this->alert($order_id);
+			// echo "\t\tTime is not out\n";
+			return false;
 		}
-	}
-
-	/**
-	 * Отправка уведомления о нерадивости сотрудников начальству
-	 *
-	 * @param $order_id
-	 * @return int
-	 */
-	private function alert($order_id)
-	{
-		$this->lockMessage($order_id);
-		$order = Order::findOne($order_id);
-		$time = (!is_null($order->updated_at)) ? $order->updated_at : $order->created_at;
-		$boss = Alert::findChat(time() - $time);
-		if (is_null($boss)) {
-			return 0;
-		}
-		$response = Telegram::sendMessage(["chat_id" => $boss["chat_id"], "text" => "Заказ #{$order->id} никто не обработал со стадии {$order->getStatus($order->status)}"]);
-		if ($response->isOk) {
-			echo "\t\tОтправка сообщения начальству прошла успешно\n";
-			$order->boss_chat_id = $boss["chat_id"];
-			$order->save();
-			return 0;
+		$result = ($timeout && empty($model->boss_chat_id));
+		if (!empty($model->boss_chat_id)) {
+			echo "\t\tMessage already sended\n";
 		} else {
-			echo "\t\tОтправка сообщения не удалась!\nСмотрите файл console/runtime/logs/app.log\n";
-			\Yii::error($response->getData());
-			\Yii::error($boss["chat_id"]);
-			\Yii::error("Заказ #{$order->id} никто не обработал со стадии {$order->getStatus($order->status)}");
-			return 1;
+			echo "\t\tMessage is not sended\n";
 		}
+		return ( $timeout && empty($model->boss_chat_id) );
 	}
 
-	/**
-	 * Создание обновления в БД
-	 *
-	 * @param Order $order
-	 * @param Employee $staff
-	 * @param $response
-	 *
-	 * @return void
-	 */
-	private function order_update(Order $order, Employee $staff, $response)
+	protected function checkHours()
 	{
-		$body = $response->getData();
-		if (is_null($order->notify_started_at)) {
-			$order->notify_started_at = $staff->user_id;
-			$order->save();
-		}
-		$update = new Updates([
-			"order_id" => $order->id,
-			"order_status" => $order->status,
-			"staff_id" => $staff->id,
-			"created_at" => time(),
-			"message_id" => $body["result"]["message_id"],
-			"message_timestamp" => $body["result"]["date"],
-		]);
-		$update->save();
-	}
-
-	/**
-	 * Блокировка старых сообщений
-	 *
-	 * @param $order_id
-	 * @return int
-	 */
-	private function lockMessage($order_id)
-	{
-		$order = Order::findOne($order_id);
-		if (empty($order)) {
-			return "\tБлокировка не удалась: Неизвестный номер заказа #$order_id\n";
-		}
-		$staff = Employee::find()->where(["state_id" => $order->status])->orderBy(["last_message_at" => SORT_DESC])->one();
-		if (empty($staff)) {
-			$this->alert($order_id);
-			return "\tБлокировка не удалась: Нет требуемых кадров\n";
-		} else if (is_null($staff->chat_id)) {
-			return "\tСотрудник '{$staff->user->username}' не установил соединения с Telegram-каналом\n";
-		}
-		$update = Updates::find()->where(["order_id" => $order->id])->andWhere(["staff_id" => $staff->id])->orderBy(["created_at" => SORT_DESC])->one();
-		if (isset($update)) {
-			$response = Telegram::editMessage(["chat_id" => $staff->chat_id, "text" => "Заказ #{$order->id} был переадресован вашему коллеге или начальству", "message_id" => $update->message_id]);
-			if ($response->isOk) {
-				$update->updated_at = time();
-				$update->save();
-				return "Блокировка прошла успешно\n";
+		$hour = intval(\Yii::$app->formatter->asDatetime(time(), "H"));
+		$weekDay = date('w', time());
+		if ( ($weekDay != 0)) {
+			if ( $weekDay != 6 ) {
+				if ($hour > 8 && $hour < 17) return true;
 			} else {
-				\Yii::error($response->getData());
-				return "При блокировке произошли ошибки\nСмотрите файл console/runtime/logs/app.log\n";
+				if ( $hour > 8 && $hour < 13 ) return true;
 			}
 		}
+		return false;
 	}
 
 	/**
-	 * Подготовка заголовка для текстового сообщения в Telegram
-	 *
-	 * @param Order $order
-	 * @return string
+	 * @param $employee
+	 * @param Order $model
+	 * @return bool
 	 */
-	private function generateHeader($order)
+	protected function sendMessage($employees, $model)
 	{
-		$text = "";
-		switch ($order->status) {
-			// Новый заказ (заказ отправляется менеджерам)
-			case 0:
-				$text .= "Новый заказ #{$order->id}\n\n";
-				break;
-			// Подготовлен для отправки (заказ отправляется кладовщикам)
-			case 1:
-				$text .= "Заказ #{$order->id} одобрен\n\n";
-				break;
-			// В процессе доставки (заказ отправляется водителям)
-			case 2:
-				$text .= "Заказ #{$order->id} ожидаеь доставки\n\n";
-				break;
+		foreach ($employees as $employee) {
+/*			$response = Telegram::sendMessage(["chat_id" => $employee->chat_id, "text" => $model->generateTelegramText(), "parse_mode" => "HTML", "reply_markup" => json_encode(["inline_keyboard" => $model->generateTelegramKeyboard()])]);
+			if ( !$response->isOk ) {
+				echo "\t\tChat ID: {$employee->chat_id}\n\t\tText: {$model->generateTelegramText()}";
+				return false;
+			}
+			$data = $response->getData();
+			$update = new Updates([
+				"order_id" => $model->id,
+				"order_status" => $model->status,
+				"employee_id" => $employee->id,
+				"message_id" => $data["result"]["message_id"],
+				"message_timestamp" => $data["result"]["date"],
+			]);
+			$update->save(); */
+			
 		}
-		return $text;
+		return true;
 	}
 
-	private function generateClientInfo($order)
+	public function auth()
 	{
-		/**
-		 * @var $order Order
-		 */
-		$text = "Информация о клиенте\n";
-		if (isset($order->client->name)) {
-			$text .= "\tФИО: {$order->client->name}\n";
-		}
-		if (isset($order->client->phone)) {
-			$text .= "Контактный номер: {$order->client->phone}\n\n";
-		}
-		return $text;
+
 	}
 
-	/**
-	 * Подготовка списка продуктов в заказе для текстового сообщения в Telegram
-	 *
-	 * @param Order $order
-	 * @return string
-	 */
-	private function generateProductList($order)
+	public function actionHide()
 	{
-		/**
-		 * @var OrderProduct $order_product
-		 */
-		$text = "Список заказанных продуктов: \n";
-		$total_price = 0;
-		foreach ($order->orderProduct as $order_product) {
-			$product = $order_product->product;
-			$text .= "\t{$product->title}\n" .
-				"\t\tОбъем: {$product->value}\n" .
-				"\t\tКоличество: {$order_product->product_count}\n" .
-				"\t\tЦена: {$product->price}\n\n";
-			$total_price += $order_product->product_count * $product->price;
-		}
-		$text .= "Общая стоимость заказа: {$total_price}";
-		return $text;
-	}
-
-	/**
-	 * Подготовка кнопок для текстового сообщения в Telegram
-	 *
-	 * @param $order
-	 * @return array
-	 */
-	private function generateKeyboard($order)
-	{
-		return ["inline_keyboard" => [[
-			["text" => "Выполнено", "callback_data" => "/order_complete id={$order->id}"],
-			["text" => "Отложить", "callback_data" => "/order_hold id={$order->id}"]
-		]]];
+		$messages = TelegramMessage::find()->where(['status' => TelegramMessage::STATUS_OPENED])->all();
+		foreach ($messages as $message) $message->hide();
 	}
 }

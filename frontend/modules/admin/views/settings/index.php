@@ -1,6 +1,6 @@
 <?php
 
-use frontend\modules\admin\models\Settings;
+use common\modules\admin\models\Settings;
 use garmayev\staff\models\Employee;
 use yii\helpers\ArrayHelper;
 use yii\web\View;

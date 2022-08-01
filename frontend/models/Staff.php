@@ -2,6 +2,8 @@
 
 namespace frontend\models;
 
+use common\models\User;
+
 /**
  *
  * @property int $id [int(11)]

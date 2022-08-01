@@ -2,8 +2,8 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Client;
-use frontend\models\Ticket;
+use common\models\Client;
+use common\models\Ticket;
 
 class TicketController extends \yii\web\Controller
 {
@@ -15,7 +15,7 @@ class TicketController extends \yii\web\Controller
 		{
 			$phone = preg_replace("/[\(\)\ \+]*/", "", $post["Client"]["phone"], -1);
 			$client = Client::find()->where(["phone" => $phone])->one();
-			\Yii::error($client);
+//			\Yii::error($client);
 			if ( empty($client) )
 			{
 				$client = new Client();
@@ -26,7 +26,14 @@ class TicketController extends \yii\web\Controller
 				}
 			}
 			$ticket->client_id = $client->id;
-			$ticket->service_id = $post["Ticket"]["service_id"];
+			if (isset($post["Ticket"]["comment"])) {
+				$ticket->comment = $post["Ticket"]["comment"];
+			}
+			if (isset($post["Ticket"]["service_id"])) {
+				$ticket->service_id = $post["Ticket"]["service_id"];
+			} else {
+				$ticket->service_id = 0;
+			}
 			if ( $ticket->save() )
 			{
 				\Yii::$app->session->setFlash("success", \Yii::t("app", "Your ticket is successfully created! Manager was calling you"));

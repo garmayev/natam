@@ -23,9 +23,13 @@ $menu = [
 				"icon" => "bell",
 			], [
 				"label" => Yii::t("app", "Products"),
-				"url" => Url::to(["/admin/product/index"]),
+				"url" => Url::to(["/admin/category/index"]),
 				"icon" => "microchip",
-			],
+			], [
+				"label" => Yii::t("app", "Clients"),
+				"url" => Url::to(["/admin/client/index"]),
+				"icon" => "user-circle-o",
+			]
 		],
 	], [
 		"label" => Yii::t("app", "Services"),

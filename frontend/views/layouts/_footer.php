@@ -80,39 +80,21 @@ use yii\widgets\Menu;
     </div>
 </footer>
 <div style="text-align: center; padding: 5px 0; background: #054670; color: #fff;">
-    <span class="copyright">Created by <a href="http://amgexpert.com/">AMGCompany</a></span>
+    <span class="copyright">Created by <a href="http://amgcompany.ru/">AMG Company</a></span>
 </div>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript" >
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-<div id="modal">
-    <div class="modal_shadow">&nbsp;</div>
-    <div class="container-fluid">
-        <div class="form_inner">
-            <img class="journal" src="/img/journal.png" alt="journal">
-            <form class="form_block form_submit active">
-                <label>
-                    Наш менеджер свяжется с вами в ближайшее время
-                </label>
-                <div class="form_content">
-                    <div class="form_item">
-                        <input type="text" placeholder="Ваше ФИО">
-                        <input type="text" placeholder="+ 7 ( ____ ) - ___ - __ - __">
-                    </div>
-                    <div class="form_item">
-                        <div class="form_btn">
-                            <div class="form_policy">
-                                <input type="checkbox" id="form_policy">
-                                <label for="form_policy">
-                                    Даю согласие на обработку
-                                    персональных данных
-                                </label>
-                            </div>
-                            <button type="submit" class="btn blue">
-                                отправить
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+    ym(87339199, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true,
+        ecommerce:"dataLayer"
+    });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/87339199" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->

@@ -88,3 +88,9 @@ a.desc:after {
 .nav > li > form > button.logout:focus {
     outline: none;
 }
+
+.tab-content {
+    background: white;
+    padding: 20px;
+    margin: 0 1px;
+}

@@ -2,9 +2,10 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Product;
+use common\models\Product;
 use yii\data\ActiveDataProvider;
 use yii\web\Controller;
+use yii\web\Response;
 
 class ProductController extends Controller
 {
@@ -16,5 +17,12 @@ class ProductController extends Controller
 				"query" => Product::find()
 			])
 		]);
+	}
+
+	public function actionGetProduct($id)
+	{
+		$model = Product::findOne($id);
+		\Yii::$app->response->format = Response::FORMAT_JSON;
+		return $model;
 	}
 }

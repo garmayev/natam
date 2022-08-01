@@ -8,6 +8,15 @@ use yii\helpers\Url;
 use yii\widgets\Menu;
 
 ?>
+<div class="preloader">
+    <div class="preloader-dots">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+</div>
 <div class="shadow"></div>
 <header class="header">
 	<div class="container">
@@ -18,7 +27,7 @@ use yii\widgets\Menu;
 						<span class="nav_toggle-item"></span>
 					</div>
 					<div class="logo">
-						<a href="/">
+						<a id="aboutBtn" href="#">
 							<img src="/img/logo.svg" alt="logo" />
 						</a>
 						<p>
@@ -41,7 +50,7 @@ use yii\widgets\Menu;
 					<p class="main_text">
 						с доставкой и самовывозом по всей России
 					</p>
-                    <?= Html::a("ОФОРМИТЬ ЗАКАЗ", Url::to("#"), ["class" => ["btn", "blue"], "style" => "padding: 15px 25px;"]) ?>
+                    <?= Html::a("ОФОРМИТЬ ЗАКАЗ", Url::to("/#product"), ["class" => ["btn", "blue"], "style" => "padding: 15px 25px;"]) ?>
 				</div>
                 <div class="main_content">
                     <div class="main_content_inner">
@@ -52,7 +61,7 @@ use yii\widgets\Menu;
                             с доставкой и самовывозом по всей России
                         </p>
                     </div>
-                    <a href="#" class="btn blue" style="padding: 15px 20px">ОФОРМИТЬ ЗАКАЗ</a>
+                    <a href="/#product" class="btn blue" style="padding: 15px 20px">ОФОРМИТЬ ЗАКАЗ</a>
                     <p class="header_price">
                         <img src="/img/price.svg" alt="icon">
                         выгодные цены <br>
@@ -60,20 +69,6 @@ use yii\widgets\Menu;
                     </p>
                 </div>
 			</div>
-            <?php
-                $this->registerJs("$('.header_inner .blue').on('click', (e) => {
-		    if ( window.location.href === window.location.hostname ) {
-	            e.preventDefault();
-        	        $('html, body').animate({
-                	    scrollTop: $('#form').offset().top
-	                });
-        	        $('.form_tab > button:last-child').trigger('click');
-		    } else {
-			window.location.href = '/#product';
-		    }
-		})
-		");
-            ?>
 			<div class="header_info" data-aos="fade-left">
 				<a href="tel:+73012204056" class="phone">
 					+7 3012 20 40 56
