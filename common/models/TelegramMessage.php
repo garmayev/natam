@@ -4,6 +4,7 @@ namespace common\models;
 
 use common\models\staff\Employee;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\RequestException;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -147,7 +148,7 @@ class TelegramMessage extends ActiveRecord
 
 	public static function send(Employee $employee, Order $order)
 	{
-//		try {
+		try {
 			if (isset($employee->chat_id)) {
 				$response = \Yii::$app->telegram->sendMessage([
 					'chat_id' => $employee->chat_id,
@@ -177,8 +178,10 @@ class TelegramMessage extends ActiveRecord
 			} else {
 				\Yii::error($employee->attributes);
 			}
-//		} catch (\GuzzleHttp\Exception\ClientException $e) {
-//			\Yii::error($e);
-//		}
+		} catch (\GuzzleHttp\Exception\ClientException $e) {
+			\Yii::error($e);
+        } catch (RequestException $e) {
+            \Yii::error($e);
+		}
 	}
 }

@@ -54,6 +54,11 @@ class DefaultController extends BaseController
 		]);
 	}
 
+    public function actionMap()
+    {
+        return $this->render('map');
+    }
+
 	public function cars()
 	{
 		$units = [];

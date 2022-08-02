@@ -137,7 +137,24 @@ class Order extends ActiveRecord
 		];
 	}
 
-	public function fields()
+    /**
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function load($data, $formName = null)
+    {
+        $scope = isset($formName) ? $formName : $this->formName();
+        if ( isset($data[$scope]["delivery_type"]) ) {
+            if ( $data[$scope]["delivery_type"] === "on" ) {
+                $data[$scope]["delivery_type"] = Order::DELIVERY_SELF;
+            } else {
+                $data[$scope]["delivery_type"] = Order::DELIVERY_STORE;
+            }
+        }
+        Yii::error($data);
+        return parent::load($data, $formName);
+    }
+
+    public function fields()
 	{
 		return [
 			'id',
@@ -176,22 +193,21 @@ class Order extends ActiveRecord
 
 	public function afterSave($insert, $changedAttributes)
 	{
-//		\Yii::error($changedAttributes);
 		parent::afterSave($insert, $changedAttributes);
+        Yii::error($changedAttributes);
 		if (!$insert) {
-
-			$messages = TelegramMessage::find()->where(['order_id' => $this->id])->andWhere(['order_status' => $this->status - 1])->andWhere(['status' => TelegramMessage::STATUS_OPENED])->all();
+//			$messages = TelegramMessage::find()->where(['order_id' => $this->id])->andWhere(['order_status' => $this->status - 1])->andWhere(['status' => TelegramMessage::STATUS_OPENED])->all();
 //			Yii::error();
-			foreach ($messages as $message) {
-				$message->hide();
-			}
+//			foreach ($messages as $message) {
+//				$message->hide();
+//			}
 			if (count($this->orderProducts)) {
 				if ($this->status !== Order::STATUS_DELIVERY) {
 					$employees = Employee::find()->where(['state_id' => $this->status])->all();
 //					Yii::error(count($this->orderProducts));
 					foreach ($employees as $employee) {
 //						\Yii::error($employee->attributes);
-						TelegramMessage::send($employee, $this);
+//						TelegramMessage::send($employee, $this);
 					}
 				}
 			}

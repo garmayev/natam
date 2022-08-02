@@ -26,7 +26,7 @@ if (Yii::$app->user->can("employee")) {
 	$this->registerJsFile("/admin/js/tracker.js", ["depends" => \yii\web\JqueryAsset::class]);
 	?>
     <div class="admin-default-index">
-        <div id="map" style="height: 800px" class="col-md-12 col-xs-12 col-lg-12"></div>
+        <div id="map" class="col-md-12 col-xs-12 col-lg-12"></div>
     </div>
 	<?php
 } elseif (Yii::$app->user->can('person')) {

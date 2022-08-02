@@ -185,7 +185,7 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
                                         <input type="hidden" name="Order[location][longitude]" id="location-logintude">
                                     </div>
                                 </div>
-                                <div id="map" style="height: 60vh; min-width: 100%; margin-bottom: 10px;"></div>
+                                <div id="map" style=""></div>
                                 <div class="form-group"
                                      style="display: flex; flex-direction: row; justify-content: space-between">
                                     <div style="display: flex; flex-direction: row-reverse">

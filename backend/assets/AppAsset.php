@@ -15,7 +15,7 @@ class AppAsset extends AssetBundle
         'css/site.css',
     ];
     public $js = [
-		'//cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js',
+//		'//cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

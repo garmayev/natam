@@ -53,7 +53,7 @@ class OrderSearch extends Model
 
 	public function search($params)
 	{
-		$query = Order::find()->innerJoinWith('client')->innerJoinWith('location');
+		$query = Order::find()->innerJoinWith('client');
 
 		$dataProvider = new ActiveDataProvider([
 			"query" => $query,
@@ -99,8 +99,12 @@ class OrderSearch extends Model
 		$query
 			->andFilterWhere(['order.id' => $this->id])
 			->andFilterWhere(["like", "client.name", $this->client_name])
-			->andFilterWhere(["like", "location.title", $this->location_title])
 			->andFilterWhere(["like", "order.comment", $this->comment]);
+
+        if (!empty($this->location_title)) {
+            $query->innerJoinWith('location');
+            $query->andFilterWhere(["like", "location.title", $this->location_title]);
+        }
 
 		if ($this->client_phone) {
 			$query->andFilterWhere(["like", "client.phone", $this->phoneNormalize()]);

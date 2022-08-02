@@ -14,4 +14,4 @@ $this->title = 'Панель управления';
 var_dump($cars);
 $this->registerJsVar('units', $cars, View::POS_READY);
 
-echo \yii\helpers\Html::tag("div", "<div id='mapPlaceHolder' style='height: 600px;'></div>", ["id" => "mapDiv"]);
+echo \yii\helpers\Html::tag("div", "<div id='mapPlaceHolder'></div>", ["id" => "mapDiv"]);

@@ -62,7 +62,9 @@
 }
 
 .home #map {
-    height: calc(500px - (62px + 32px));
+    height: 60vh;
+    min-width: 100%;
+    margin-bottom: 10px;
     padding-bottom: 10px;
 }
 
@@ -76,12 +78,15 @@
     }
 
     .home #map {
-        height: calc(500px - (180px + 32px));
+        height: 60vh;
     }
 }
 @media (max-width: 820px){
+    .home #map {
+        height: 50vh;
+    }
     .home .header_info .header_price {
-	display: none;
+	    display: none;
     }
     .header_inner .header_navigation {
     }
