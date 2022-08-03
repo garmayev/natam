@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use common\models\Location;
+use common\models\Order;
 use Yii;
 use yii\filters\AccessControl;
 use yii\helpers\Url;
@@ -62,11 +63,10 @@ class LocationController extends \yii\web\Controller
         return $result;
     }
 
-    public function actionOrders($id)
+    public function actionOrders()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $model = Location::findOne($id);
-        return $model->orders;
+        return Order::find()->where(['id' => Yii::$app->request->post()['id']])->all();
     }
 
 	public function actionView($id)

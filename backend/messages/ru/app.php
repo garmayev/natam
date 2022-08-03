@@ -118,5 +118,6 @@ return [
 	"Order Prepared" => "Подготовлен для отправки",
 	"Order Delivered" => "В процессе доставки",
 	"Order Cancelled" => "Отменен",
-	"Join coworker" => "Добавить сотрудника"
+	"Join coworker" => "Добавить сотрудника",
+    'Loading...' => 'Идет загрузка...'
 ];

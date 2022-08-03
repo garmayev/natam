@@ -11,31 +11,42 @@ use yii\web\View;
  * @var $orders Order[]
  */
 
-$orders = Order::find()->all();
 $points = [];
-$icons = [
-    Order::STATUS_NEW => "islands#blueCircleDotIconWithCaption",
-    Order::STATUS_PREPARED => "islands#greenCircleDotIconWithCaptio",
-    Order::STATUS_DELIVERY => "islands#yellowCircleDotIconWithCaptio",
-    Order::STATUS_COMPLETE => "islands#blackCircleDotIconWithCaption",
-    Order::STATUS_CANCEL => "islands#redCircleDotIconWithCaption",
-];
+function orders()
+{
+    $icons = [
+        Order::STATUS_NEW => "islands#blueCircleDotIconWithCaption",
+        Order::STATUS_PREPARED => "islands#greenCircleDotIconWithCaptio",
+        Order::STATUS_DELIVERY => "islands#yellowCircleDotIconWithCaptio",
+        Order::STATUS_COMPLETE => "islands#blackCircleDotIconWithCaption",
+        Order::STATUS_CANCEL => "islands#redCircleDotIconWithCaption",
+    ];
 
-//foreach (Location::find()->all() as $key => $location) {
-//    if ($location) {
-//        $points[] = [
-//            "type" => "Feature",
-//            "id" => $location->id,
-//            "geometry" => [
-//                "type" => "Point",
-//                "coordinates" => [$location->latitude, $location->longitude],
-//            ],
-//            "options" => [
-//                "preset" => $icons[1],
-//            ]
-//        ];
-//    }
-//}
+    $used = $points = [];
+    foreach (Order::find()->all() as $key => $order) {
+        if ($order->location) {
+            $points[] = [
+                "type" => "Feature",
+                "id" => $order->location->id,
+                "geometry" => [
+                    "type" => "Point",
+                    "coordinates" => [$order->location->latitude, $order->location->longitude],
+                ],
+                "options" => [
+                    "id" => $order->id,
+                    "status" => $order->status,
+                    "preset" => $icons[$order->status],
+                ],
+                "properties" => [
+                    "balloonContent" => Yii::t("app", "Loading..."),
+                    "clusterCaption" => Yii::t("app", "Order #{id}", ['id' => $order->id])
+                ]
+            ];
+            $used[] = $order->location->title;
+        }
+    }
+    return $points;
+}
 //Yii::error($points);
 
 $options = [
@@ -61,20 +72,19 @@ $options = [
             ], [
                 "index" => Order::STATUS_COMPLETE,
                 "title" => Order::getStatusList()[Order::STATUS_COMPLETE],
-                "selected" => false
+                "selected" => true
             ], [
                 "index" => Order::STATUS_CANCEL,
                 "title" => Order::getStatusList()[Order::STATUS_CANCEL],
-                "selected" => false
+                "selected" => true
             ],
         ],
         "label" => Yii::t("app", "Status"),
     ],
     "container" => '#map',
-    "field" => null,
     "points" => [
         "type" => "FeatureCollection",
-        "features" => $points
+        "features" => orders()
     ],
 ];
 $this->registerJsVar("options", $options);

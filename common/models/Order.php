@@ -41,6 +41,8 @@ class Order extends ActiveRecord
 {
 	use SaveRelationsTrait;
 
+    public $deliveryPrice;
+
 	const STATUS_NEW = 1;
 	const STATUS_PREPARED = 2;
 	const STATUS_DELIVERY = 3;
@@ -185,10 +187,24 @@ class Order extends ActiveRecord
 			},
 			'comment' => function () {
 				return $this->comment;
-			}
+			},
+            'price' => function () {
+                return $this->getPrice();
+            },
+            'deliveryPrice' => function () {
+                return $this->deliveryPrice;
+            },
+            'products' => function () {
+                $data = [];
+                foreach ($this->orderProducts as $orderProduct) {
+                    $data[] = [
+                        "product" => $orderProduct->product,
+                        "count" => $orderProduct->product_count,
+                    ];
+                }
+                return $data;
+            }
 		];
-//		}
-//		return parent::fields();
 	}
 
 	public function afterSave($insert, $changedAttributes)
@@ -338,6 +354,14 @@ class Order extends ActiveRecord
 	{
 		return $this->hasMany(TelegramMessage::class, ['order_id' => 'id']);
 	}
+
+    public function getDeliveryPrice()
+    {
+        if ( $this->delivery_distance ) {
+            return $this->delivery_distance * Settings::getDeliveryCost();
+        }
+        return 0;
+    }
 
 	public function getMostExpensive($limit)
 	{
