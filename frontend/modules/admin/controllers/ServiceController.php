@@ -2,7 +2,7 @@
 
 namespace frontend\modules\admin\controllers;
 
-use frontend\models\Service;
+use common\models\Service;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\web\UploadedFile;

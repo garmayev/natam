@@ -1,7 +1,8 @@
-namespace: backend\tests
+namespace: common\tests
 actor_suffix: Tester
 paths:
     tests: tests
+    log: tests/_output
     output: tests/_output
     data: tests/_data
     support: tests/_support
@@ -12,4 +13,10 @@ settings:
 modules:
     config:
         Yii2:
+            part: [orm, email]
             configFile: 'config/codeception-local.php'
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+        - Codeception\Extension\Logger
+

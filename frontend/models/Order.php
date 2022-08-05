@@ -99,7 +99,7 @@ class Order extends ActiveRecord
 	{
 		$link = "https://telegram.me/natam_trade_bot?start={$this->client->phone}";
 		$text = "Подпишитесь на нашего бота, перейдя по ссылке: $link";
-		Sms::send($text, $this->client->phone);
+		// Sms::send($text, $this->client->phone);
 	}
 
 	public function getStatus($status = null)

@@ -1,7 +1,7 @@
 <?php
 
-use frontend\models\Client;
-use frontend\models\Ticket;
+use common\models\Client;
+use common\models\Ticket;
 use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;

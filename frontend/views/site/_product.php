@@ -1,30 +1,51 @@
 <?php
 /**
- * @var $model Product
+ * @var $model Category
  */
 
-use frontend\models\Product;
+use common\models\Category;
+use common\models\Product;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 ?>
 <div class="product_backface">
     <?= Html::tag("span", Html::img("/img/info.svg", ["alt" => "info"]), ["class" => "product_more"]) ?>
-    <?= Html::tag("p", $model->description) ?>
+    <?= Html::tag("p", $model->content) ?>
 </div>
+<?php
+$products = $model->products;
+$any = false;
+$items = [];
+foreach ( $products as $product ) {
+    $items[$product->id] = "{$product->title} ({$product->value})";
+    if ( $product->isset == 0 ) {
+        $any = true;
+    }
+}
+?>
 <div class="product_frontface">
 	<?= Html::tag("span", Html::img("/img/info.svg", ["alt" => "info"]), ["class" => "product_more"]) ?>
     <?= Html::tag("div", Html::img($model->thumbs, ["alt" => $model->title]), ["class" => "product_img"]) ?>
     <?= Html::tag("p", $model->title, ["class" => "product_item_title"]) ?>
-    <?= Html::tag("p", "Объем/Масса: $model->value", ["class" => "product_text"]) ?>
-    <?= Html::tag("p", "$model->price".Html::tag("span", "руб."), ["class" => "product_price"]) ?>
+    <?php
+        if ( $any ) {
+	        if ( count($items) > 1 ) {
+		        echo Html::dropDownList("Cart[product_id]", 0, $items, ["style" => "width: 92%; padding: 5px; margin: 10px 0;", "class" => "cart_product_id"]);
+	        } else {
+		        echo Html::dropDownList("Cart[product_id]", 0, $items, ["style" => "width: 92%; padding: 5px; margin: 10px 0;", "class" => "cart_product_id", "disabled" => "disabled"]);
+	        }
+            echo Html::tag("p", "{$model->products[0]->price}".Html::tag("span", " руб."), ["class" => "product_price"]);
+        } else {
+            echo Html::tag("span", \Yii::t("natam", "Empty"), ["class" => "product_info_empty"]);
+        }
+    ?>
     <div class="product_order">
         <div class="product_count">
-            <button class="minus">-</button>
-            <input type="text" value="1"/>
-            <button class="plus">+</button>
+            <button class="minus" <?= (!$any) ? "disabled=disabled" : "" ?>>-</button>
+            <input type="text" value="1" name="Cart[product_count]" class="cart_product_count" <?= (!$any) ? "disabled=disabled" : "" ?>/>
+            <button class="plus" <?= (!$any) ? "disabled=disabled" : "" ?>>+</button>
         </div>
-        <?= Html::a("Заказать", "#", ["class" => ["btn", ($model->isset == 0) ? "blue" : "disabled"]]) ?>
-<!--        <a href="#" class="btn blue">заказать</a>-->
+        <?= Html::a("Заказать", "#", ["class" => ["btn", ($any) ? "blue" : "disabled"]]) ?>
     </div>
-    <?= ($model->isset == 0) ? Html::tag("span", \Yii::t("natam", "Isset"), ["class" => "product_info"]) : Html::tag("span", \Yii::t("natam", "Empty"), ["class" => "product_info_empty"]) ?>
 </div>

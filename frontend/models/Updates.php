@@ -2,7 +2,10 @@
 
 namespace frontend\models;
 
+use common\models\Order;
 use garmayev\staff\models\Employee;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 
 /**
@@ -22,6 +25,8 @@ use yii\db\ActiveRecord;
  * @property Employee $employee
  * @property Order $order
  * @property Employee $chef
+ * @property int $created_by [int(11)]
+ * @property int $updated_by [int(11)]
  */
 class Updates extends ActiveRecord
 {
@@ -32,11 +37,16 @@ class Updates extends ActiveRecord
 	{
 		return [
 			'timestamp' => [
-				'class' => 'yii\behaviors\TimestampBehavior',
+				'class' => TimestampBehavior::class,
 				'attributes' => [
 					ActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
 					ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
 				],
+			],
+			'blameable' => [
+				'class' => BlameableBehavior::class,
+				'createdByAttribute' => 'created_by',
+				'updatedByAttribute' => 'updated_by',
 			]
 		];
 	}

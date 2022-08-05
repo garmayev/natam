@@ -12,7 +12,7 @@ class m211103_012845_alter_staff_id_column extends Migration
      */
     public function safeUp()
     {
-	    $this->renameColumn("{{%updates}}", "staff_id", "employee_id");
+//	    $this->renameColumn("{{%updates}}", "staff_id", "employee_id");
     }
 
     /**
@@ -20,7 +20,7 @@ class m211103_012845_alter_staff_id_column extends Migration
      */
     public function safeDown()
     {
-	    $this->renameColumn("updates", "employee_id", "staff_id");
+//	    $this->renameColumn("updates", "employee_id", "staff_id");
     }
 
     /*

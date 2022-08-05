@@ -2,9 +2,9 @@
 
 namespace console\controllers;
 
+use common\models\Order;
 use console\helper\Helper;
-use frontend\models\Order;
-use frontend\models\OrderProduct;
+use common\models\OrderProduct;
 use frontend\models\Telegram;
 use frontend\models\Updates;
 use frontend\modules\admin\models\Settings;

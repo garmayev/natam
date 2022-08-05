@@ -1,45 +1,40 @@
 $(document).ready(function () {
+
     AOS.init();
-    $(".news_slider").slick({
-        dots: false,
-        infinite: true,
-        slidesToShow: 3,
-        slidesToScroll: 1,
-        responsive: [
-            {
-                breakpoint: 1000,
-                settings: {
-                    slidesToShow: 2,
+    window.onload = function () {
+        document.querySelector(".preloader").classList.add("active");
+    };
+    if ($(".news_slider").length) {
+        $(".news_slider").slick({
+            dots: false,
+            infinite: true,
+            slidesToShow: 3,
+            slidesToScroll: 1,
+            responsive: [
+                {
+                    breakpoint: 1000,
+                    settings: {
+                        slidesToShow: 2,
+                    },
                 },
-            },
-            {
-                breakpoint: 630,
-                settings: {
-                    slidesToShow: 1,
+                {
+                    breakpoint: 630,
+                    settings: {
+                        slidesToShow: 1,
+                    },
                 },
-            },
-        ],
-    });
-    $(".about_slider").slick({
-        dots: false,
-        infinite: true,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        responsive: [
-            {
-                breakpoint: 1000,
-                settings: {
-                    slidesToShow: 1,
-                },
-            },
-            {
-                breakpoint: 630,
-                settings: {
-                    slidesToShow: 1,
-                },
-            },
-        ],
-    });
+            ],
+        });
+    }
+    if ($(".about_slider").length) {
+        console.log($('.about_slider'))
+        $(".about_slider").slick({
+            dots: false,
+            infinite: true,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+        });
+    }
     $(".nav_toggle, .close, .shadow").on("click", function () {
         $(".nav").toggleClass("active");
         $(".shadow").toggleClass("active");
@@ -51,7 +46,7 @@ $(document).ready(function () {
     $(".form_tab button").on("click", function () {
         $(".form_tab button").removeClass("active");
         $(this).addClass("active");
-        if ($(".form_tab button:last-child()").hasClass("active")) {
+        if ($(".form_tab button:last-child").hasClass("active")) {
             $(".form_block").removeClass("active");
             $(".form_order").addClass("active");
         } else {
@@ -61,9 +56,9 @@ $(document).ready(function () {
     });
 
     let num;
-    $(".plus").on("click", function () {
+    $(".plus").on("click", function (e) {
         num = parseInt($(this).prev().val());
-        console.log(num);
+        console.log($(e));
         $(this)
             .prev()
             .val(num + 1);
@@ -77,3 +72,34 @@ $(document).ready(function () {
         }
     });
 });
+
+let drill = document.querySelector('.journal')
+
+window.addEventListener("scroll", function () {
+    let value = -window.scrollY;
+
+    if (drill != undefined) {
+        if (value > -1020) {
+            drill.style.top = 0 + value * -0.03 + "%";
+
+        }
+    }
+
+
+});
+
+let gaz = document.querySelector('.gaz')
+
+window.addEventListener("scroll", function () {
+    let value = -window.scrollY;
+
+
+    if (value > -4200) {
+        if (value < -3550) {
+            gaz.style.top = -210 + value * -0.05 + "%";
+
+        }
+
+    }
+});
+

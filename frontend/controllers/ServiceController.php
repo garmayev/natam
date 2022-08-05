@@ -2,7 +2,7 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Service;
+use common\models\Service;
 use yii\data\ActiveDataProvider;
 
 class ServiceController extends \yii\web\Controller

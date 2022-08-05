@@ -2,9 +2,9 @@
 
 namespace frontend\modules\admin\controllers;
 
-use frontend\models\Sms;
-use frontend\models\Staff;
-use frontend\models\User;
+use common\models\Sms;
+use common\models\Staff;
+use common\models\User;
 use yii\data\ActiveDataProvider;
 
 class UserController extends BaseController

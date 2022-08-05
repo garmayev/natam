@@ -15,5 +15,5 @@ $config = yii\helpers\ArrayHelper::merge(
     require __DIR__ . '/../config/main-local.php'
 );
 $application = new yii\web\Application($config);
-date_default_timezone_set($application->timeZone);
+//date_default_timezone_set($application->timeZone);
 $application->run();

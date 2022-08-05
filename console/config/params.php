@@ -1,7 +1,5 @@
 <?php
 
-use frontend\models\Order;
-
 return [
     'adminEmail' => 'admin@example.com',
 	'telegram' => [

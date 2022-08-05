@@ -26,9 +26,8 @@ class Telegram extends \yii\base\Model
 			->setUrl("https://api.telegram.org/bot".\Yii::$app->params["telegram"]["bot_id"]."/sendMessage")
 			->setData($args)
 			->send();
-		if ($response->isOk) {
-			$data = $response->getData();
-			if ( !$data["ok"] ) \Yii::error($data);
+		if ( !$response->isOk ) {
+			\Yii::error($response->getData());
 		}
 		return $response;
 	}
@@ -41,9 +40,9 @@ class Telegram extends \yii\base\Model
 			->setUrl("https://api.telegram.org/bot".\Yii::$app->params["telegram"]["bot_id"]."/editMessageText")
 			->setData($args)
 			->send();
-		if ($response->isOk) {
-			$data = $response->getData();
-			if ( !$data["ok"] ) \Yii::error($data);
+		if ( !$response->isOk ) {
+			\Yii::error($args);
+			\Yii::error($response->getData());
 		}
 		return $response;
 	}

@@ -1,6 +1,7 @@
 <?php
 
-use frontend\models\Ticket;
+use common\models\Service;
+use common\models\Ticket;
 use yii\data\ActiveDataProvider;
 use yii\web\View;
 use yii\helpers\Html;
@@ -34,7 +35,7 @@ echo \yii\grid\GridView::widget([
 			"label" => Yii::t("app", "Services"),
 			"content" => function ($data) {
 				if ( !empty($data->service_id) ) {
-					$service = \frontend\models\Service::findOne($data->service_id);
+					$service = Service::findOne($data->service_id);
 					return $service->title;
 				} else {
 					return "Общие вопросы";

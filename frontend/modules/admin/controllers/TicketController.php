@@ -2,7 +2,7 @@
 
 namespace frontend\modules\admin\controllers;
 
-use frontend\models\Ticket;
+use common\models\Ticket;
 use yii\data\ActiveDataProvider;
 
 class TicketController extends BaseController

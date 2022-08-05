@@ -12,7 +12,7 @@ class m211103_013328_add_type_column_to_updatees_table extends Migration
      */
     public function safeUp()
     {
-		$this->addColumn("{{%updates}}", "type", $this->string(255));
+//		$this->addColumn("{{%updates}}", "type", $this->string(255));
     }
 
     /**
@@ -20,6 +20,6 @@ class m211103_013328_add_type_column_to_updatees_table extends Migration
      */
     public function safeDown()
     {
-		$this->dropColumn("{{%updates}}", "type");
+//		$this->dropColumn("{{%updates}}", "type");
     }
 }

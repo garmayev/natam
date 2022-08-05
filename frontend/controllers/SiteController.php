@@ -2,12 +2,14 @@
 
 namespace frontend\controllers;
 
-use frontend\models\Post;
-use frontend\models\Product;
-use frontend\models\Service;
+use common\models\Category;
+use common\models\Post;
+use common\models\Product;
+use common\models\Service;
 use kartik\mpdf\Pdf;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 
 /**
@@ -35,6 +37,15 @@ class SiteController extends Controller
     public function actionIndex()
     {
         return $this->render('index', [
+			"categoryProvider" => new ActiveDataProvider([
+				"query" => Category::find()
+					->select(['category.*', 'COUNT(p.id) AS product_count'])
+					->leftJoin('product p', "category.id = p.category_id AND p.isset <> 1")
+					->where(['category.main' => 1])
+					->groupBy(["category.id"])
+					->orderBy(["product_count" => SORT_DESC, "id" => SORT_DESC])
+//					->orderBy(["id" => SORT_DESC])
+			]),
         	"postProvider" => new ActiveDataProvider([
         		"query" => Post::find()
 	        ]),
@@ -84,4 +95,15 @@ class SiteController extends Controller
 	    return $pdf->render();
 
     }
+
+	public function actionAddition()
+	{
+		$categories = Category::find()->where(['main' => 0])->all();
+		$productProvider = new ActiveDataProvider([
+			'query' => Product::find()->where(['category_id' => ArrayHelper::map($categories, 'id', 'id')]),
+		]);
+		return $this->render('addition', [
+			'productProvider' => $productProvider
+		]);
+	}
 }

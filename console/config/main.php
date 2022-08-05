@@ -14,6 +14,7 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'console\controllers',
+	'timezone' => 'Asia/Irkutsk',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -45,18 +46,34 @@ return [
 		    'password' => 'rhbcnbyfgfrekjdf',
 		    'charset' => 'utf8',
 	    ],
+	    'authManager' => [
+		    'class' => 'yii\rbac\DbManager',
+		    'defaultRoles' => ['person'],
+	    ],
+	    'user' => [
+		    'class' => 'yii\web\User',
+		    'identityClass' => 'app\models\User',
+		    'enableSession' => false,
+		    //'enableAutoLogin' => true,
+	    ],
+	    'session' => [ // for use session in console application
+		    'class' => 'yii\web\Session'
+	    ],
     ],
 	'modules' => [
 		'user' => [
 			'class' => 'dektrium\user\Module',
 			'modelMap' => [
 				'User' => [
-					'class' => \dektrium\user\models\User::className(),
+					'class' => \common\models\User::className(),
 					'on '.\dektrium\user\models\User::AFTER_REGISTER => function ($e) {
 						Yii::error($e);
 					}
 				]
 			]
+		],
+		'rbac' => [
+			'class' => yii2mod\rbac\ConsoleModule::class,
 		],
 	],
     'params' => $params,

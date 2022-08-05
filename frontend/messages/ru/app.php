@@ -24,6 +24,8 @@ return [
 	"Order content" => "Содержимое заказа",
 	"Customer`s name" => "ФИО заказчика",
 	"Customer`s phone" => "Телефон заказчика",
+	"Customer`s email" => "E-mail заказчика",
+	"Customer`s company" => "Организация заказчика",
 
 	'You have {n} new orders' => 'У вас {n} новых заказов',
 	'Append Product' => 'Добавить',
@@ -74,6 +76,19 @@ return [
 	'Staff`s Phone' => 'Номер телефона сотрудника',
 	'Failed! Order was not created!' => 'Ошибка! Заказ не сохранен!',
 	'Failed! Client info is not saved!' => 'Ошибка! Информация о клиенте не сохранена!',
+	'Client info is saved' => 'Информация о клиенте успешно сохранена',
 	'Order was created! Manager was calling you' => 'Заказ сохранен! Менеджер свяжется с вами в ближайшее время!',
 	'Profile' => 'Профиль',
+	'Clients' => 'Клиенты',
+	'Content' => 'Содержимое',
+	'Thumbs' => 'Изображение',
+	'Image' => 'Изображение',
+
+	'Delivery Date' => 'Дата доставки',
+	'Created At' => 'Дата создания',
+
+	'Create Client' => 'Создать нового клиента',
+	'Update Client' => 'Обновить информацию клиента',
+	'Sorry, You don`t have permission to this command' => 'Простите, у Вас нет разрешений для этой команды',
+	'Order #{n} is updated again' => 'Заказ #{n} был изменен',
 ];

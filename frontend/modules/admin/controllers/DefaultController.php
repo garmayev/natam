@@ -2,7 +2,7 @@
 
 namespace frontend\modules\admin\controllers;
 
-use frontend\models\Order;
+use common\models\Order;
 
 /**
  * Default controller for the `admin` module
@@ -15,8 +15,6 @@ class DefaultController extends BaseController
      */
     public function actionIndex()
     {
-        return $this->render('index', [
-			'order' => Order::findOne(56)
-        ]);
+        return $this->render('index');
     }
 }
