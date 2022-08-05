@@ -9,25 +9,7 @@ use yii\helpers\Html;
  * @var $this View
  * @var $model Service
  */
-$this->registerCss("
-.about_info::before { display: none; } 
-.about_title { margin: 30px 0; }
-.about_description {
-    font-family: 'Roboto';
-    font-size: 16px;
-}
-.about_description .text {
-    font-family: 'Roboto';
-    font-size: 16px;
-    margin: 10px 0;
-}
-.about_description ul {
-    list-style-type: disc;
-}
-.about_description ul li {
-    list-style-type: disc;
-}
-");
+
 ?>
     <section class="about">
         <div class="container">
