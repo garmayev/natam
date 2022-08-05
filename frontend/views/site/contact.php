@@ -7,9 +7,10 @@ use yii\helpers\Html;
 /**
  * @var $this View
  */
+$this->registerJsFile('/js/about.js');
 
 $this->registerJsFile("//maps.api.2gis.ru/2.0/loader.js?pkg=full", ["depends" => \yii\web\JqueryAsset::class]);
-echo Html::tag("div", "", ["id" => "map", "style" => "height: 500px; width: 100%;"]);
+echo Html::tag("div", "", ["id" => "map", "style" => "height: 500px; width: 100%;", "class" => "about"]);
 $this->registerJs("
     let map;
 

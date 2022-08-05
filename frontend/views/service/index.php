@@ -10,8 +10,10 @@ use yii\widgets\ListView;
  * @var $this View
  * @var $serviceProvider ActiveDataProvider
  */
+$this->registerJsFile('/js/about.js');
+
 ?>
-<section class="about" style="padding-top: 20px">
+<section class="about">
     <div class="container-fluid">
         <div class="services_inner">
 			<?php

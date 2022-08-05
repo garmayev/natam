@@ -11,7 +11,9 @@ use yii\widgets\ListView;
  * @var $vacancyProvider ActiveDataProvider
  */
 
-echo Html::beginTag("section", ["class" => "about", "style" => "padding-top: 25px; min-height: 60vh;"]);
+$this->registerJsFile("/js/about.js");
+
+echo Html::beginTag("section", ["class" => "about"]);
 echo Html::beginTag("div", ["class" => "container"]);
 
 echo ListView::widget([
