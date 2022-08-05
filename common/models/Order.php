@@ -27,6 +27,7 @@ use common\models\staff\Employee;
  * @property double $delivery_distance
  * @property int $delivery_type [int(11)]
  * @property int $totalPrice
+ * @property int $delivery_city
  *
  * @property Client $client
  * @property Product[] $products
@@ -107,8 +108,9 @@ class Order extends ActiveRecord
 	{
 		return [
 			[['client_id', 'delivery_date'], 'required'],
-			[['client_id', 'location_id', 'delivery_type', 'created_at'], 'integer'],
+			[['client_id', 'location_id', 'delivery_type', 'created_at', 'delivery_city'], 'integer'],
 			[['comment'], 'string'],
+            [['delivery_distance'], 'double'],
 			[['client_id'], 'exist', 'skipOnError' => false, 'targetClass' => Client::className(), 'targetAttribute' => ['client_id' => 'id']],
 			[['location_id'], 'exist', 'skipOnError' => true, 'targetClass' => Location::className(), 'targetAttribute' => ['location_id' => 'id']],
 			[['status'], 'default', 'value' => self::STATUS_NEW],
@@ -136,6 +138,7 @@ class Order extends ActiveRecord
 			'comment' => Yii::t('app', 'Comment'),
 			'created_at' => Yii::t('app', 'Created At'),
 			'delivery_date' => Yii::t('app', 'Delivery Date'),
+            'delivery_city' => Yii::t('app', 'Delivery City'),
 		];
 	}
 
@@ -357,7 +360,7 @@ class Order extends ActiveRecord
 
     public function getDeliveryPrice()
     {
-        if ( $this->delivery_distance ) {
+        if ( !$this->delivery_city ) {
             return $this->delivery_distance * Settings::getDeliveryCost();
         }
         return 0;
@@ -386,15 +389,15 @@ class Order extends ActiveRecord
 		}
 		$result .= "<b>Статус</b>: " . $this->getStatusName() . "\n";
 		$delivery_price = 0;
-		if ($this->delivery_distance !== null) {
+		if ($this->delivery_city !== 1) {
 			$delivery_price = intval($this->delivery_distance) * Settings::getDeliveryCost();
 			$result .= "<b>Стоимость доставки</b>: {$delivery_price}\n";
 		}
 		$result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
 		$result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
 		$result .= "<b>Комментарий</b>: " . $this->comment . "\n";
-		Yii::error($this->getPrice());
-		Yii::error($delivery_price);
+//		Yii::error($this->getPrice());
+//		Yii::error($delivery_price);
 		$price = $this->getPrice() + $delivery_price;
 		$result .= "<i>Общая стоимость: {$price}</i>";
 		return $result;

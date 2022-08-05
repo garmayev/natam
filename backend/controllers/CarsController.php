@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\models\SPIK;
 use DateTime;
 use yii\web\Response;
 
@@ -16,6 +17,15 @@ class CarsController extends \yii\rest\Controller
 		"SUBSCRIBE" => "spic/OnlineDataService/rest/Subscribe",
 		"ONLINE_DATA" => "spic/OnlineDataService/rest/GetOnlineData",
 		"ONLINE_DATA_WITH_SENSOR" => "spic/OnlineDataWithSensorsService/rest/GetOnlineData",
+        "STATISTIC" => [
+            "START" => "spic/StatisticsController/rest/StartStatisticsSession",
+            "STOP" => "spic/StatisticsController/rest/CancelStatisticsSession",
+            "CURRENT_CHUNK" => "spic/StatisticsController/rest/GetCurrentChunkInfo",
+            "NEXT_CHUNK" => "spic/StatisticsController/rest/BuildNextChunk",
+            "BUILD" => "spic/StatisticsController/rest/StartBuild",
+            "ADD_REQUEST" => "spic/trackPeriodsMileage/rest/AddStatisticsRequest",
+            "GET" => "spic/trackPeriodsMileage/rest/GetStatistics"
+        ]
 	];
 
 	public function beforeAction($action)
@@ -72,7 +82,6 @@ class CarsController extends \yii\rest\Controller
 
 	public function actionUnits($token)
 	{
-//		\Yii::$app->response->format = Response::FORMAT_JSON;
 		return $this->send([
 			"Offset" => 0,
 			"Count" => 25
@@ -81,7 +90,6 @@ class CarsController extends \yii\rest\Controller
 
 	public function actionSubscribe($token, $ids)
 	{
-//		\Yii::$app->response->format = Response::FORMAT_JSON;
 		return $this->send([
 			"UnitIds" => json_decode($ids),
 		], $this->actions["SUBSCRIBE"], $token);
@@ -89,9 +97,16 @@ class CarsController extends \yii\rest\Controller
 
 	public function actionOnline($token, $subscribe)
 	{
-//		\Yii::$app->response->format = Response::FORMAT_JSON;
 		return $this->send([
 			"Id" => $subscribe
 		], $this->actions["ONLINE_DATA"], $token);
 	}
+
+    public function actionSpik()
+    {
+		\Yii::$app->response->format = Response::FORMAT_JSON;
+        $spik = new SPIK();
+        $fuel = $spik->fuelStatistic();
+        return $fuel;
+    }
 }

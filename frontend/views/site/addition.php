@@ -15,6 +15,7 @@ $this->title = 'Дополнительно';
 $this->registerCssFile('/css/style.css');
 $this->registerCssFile('/css/programmer.css');
 //var_dump(count($productProvider->getModels()));
+
 ?>
 <main>
 <section class="product">

@@ -47,7 +47,7 @@ $totalCost = 0;
             <p>Дата доставки: <?= Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i") ?></p>
 			<?php
 			$delivery_price = intval($model->delivery_distance) * Settings::getDeliveryCost();
-			if ($model->delivery_distance) {
+			if ($model->delivery_city) {
 				echo Html::tag("p", "Стоимость доставки: " . Yii::$app->formatter->asCurrency($delivery_price));
 			}
             if ( isset($model->comment) && $model->comment !== "" ) {
