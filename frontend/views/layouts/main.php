@@ -17,6 +17,14 @@ use yii\widgets\Pjax;
 AppAsset::register($this);
 $this->beginPage();
 
+$menu = [
+    ["label" => Yii::t("app", "About company"), "url" => Url::to("/site/about")],
+    ["label" => Yii::t("app", "Vacancy"), "url" => Url::to("/vacancy/index")],
+    ["label" => "Технические газы", "url" => Url::to("/#product")],
+    ["label" => "Наши услуги", "url" => Url::to("/service/index")],
+    ["label" => "Контакты", "url" => Url::to("/contact")],
+    ["label" => "Каталог", "url" => Url::to("/site/addition")]
+];
 
 ?>
 <!DOCTYPE html>
@@ -30,10 +38,16 @@ $this->beginPage();
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
 </head>
-<body class="mains">
+<body>
 <?php
 $this->beginBody();
-echo $content;
+?>
+<div class="home">
+<?= $this->render('/layouts/_header', ["menu" => $menu]); ?>
+<?= $content ?>
+<?= $this->render('/layouts/_footer', ['menu' => $menu]) ?>
+</div>
+<?php
 $this->endBody();
 ?>
 <!-- Global site tag (gtag.js) - Google Analytics -->
