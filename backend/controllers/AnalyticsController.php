@@ -116,7 +116,7 @@ class AnalyticsController extends BaseController
 		}
 	}
 
-    public function actionFuel()
+    public function actionFuel($from_date = null, $to_date = null, $filter = null)
     {
         $employees = Employee::find()->where(["state_id" => 3])->all();
         return $this->render("fuel", [

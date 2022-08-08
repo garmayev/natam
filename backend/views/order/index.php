@@ -61,7 +61,7 @@ echo ExportMenu::widget([
 if (Yii::$app->user->can("employee")) {
 //	echo $this->render("_search", ["model" => $searchModel]);
 }
-Yii::error(Yii::$app->formatter->asDate(Yii::$app->params['startDate'], 'y-MM-dd'));
+//Yii::error(Yii::$app->formatter->asDate(Yii::$app->params['startDate'], 'y-MM-dd'));
 $columns = [
 	[
 		"attribute" => "id",
@@ -127,7 +127,7 @@ $columns = [
 			'value' => (empty($searchModel->created_start)) ? Yii::$app->formatter->asDate(Yii::$app->params['startDate'], 'y-MM-dd') : Yii::$app->formatter->asDate($searchModel->created_start, 'y-MM-dd'),
 			'type' => DatePicker::TYPE_RANGE,
 			'name2' => 'OrderSearch[created_finish]',
-			'value2' => (empty($searchModel->created_finish)) ? Yii::$app->formatter->asDate(strtotime('+1 month'), 'y-MM-dd') : Yii::$app->formatter->asDate($searchModel->created_finish, 'y-MM-dd'),
+			'value2' => (empty($searchModel->created_finish)) ? Yii::$app->formatter->asDate(strtotime(OrderSearch::TIME_REMAIN), 'y-MM-dd') : Yii::$app->formatter->asDate($searchModel->created_finish, 'y-MM-dd'),
 			'separator' => '-',
 			'pluginOptions' => [
 				'autoclose' => true,

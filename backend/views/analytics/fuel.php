@@ -1,6 +1,8 @@
 <?php
 
 use common\models\staff\Employee;
+use kartik\date\DatePicker;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\helpers\Html;
 use common\models\TelegramMessage;
@@ -12,6 +14,27 @@ use common\models\TelegramMessage;
 
 $this->title = Yii::t("app", "Fuel consumption");
 
+$from_date = (isset($_GET['from_date'])) ? Yii::$app->formatter->asTimestamp($_GET['from_date']) : Yii::$app->params['startDate'];
+$to_date = (isset($_GET['to_date'])) ? Yii::$app->formatter->asTimestamp($_GET['to_date']) : time();
+echo Html::beginForm(Url::to(['analytics/fuel']), 'get');
+echo Html::beginTag("p");
+echo DatePicker::widget([
+    'name' => 'from_date',
+    'value' => Yii::$app->formatter->asDate($from_date, 'php:Y-m-d'),
+    'type' => DatePicker::TYPE_RANGE,
+    'name2' => 'to_date',
+    'value2' => Yii::$app->formatter->asDate($to_date, 'php:Y-m-d'),
+    'separator' => '<i class="fas fa-arrows-h"></i>',
+    'pluginOptions' => [
+        'autoclose' => true,
+        'format' => 'yyyy-mm-dd'
+    ]
+]);
+echo Html::endTag("p");
+echo Html::submitButton(Yii::t("app", 'Export'), ['class' => ['btn', 'btn-success'], 'name' => 'export', 'value' => 'export', 'style' => "margin-right: 10px;"]);
+echo Html::submitButton(Yii::t("app", 'Filter'), ['class' => ['btn', 'btn-primary'], 'name' => 'filter', 'value' => 'filter']);
+echo Html::endForm();
+
 $messages = TelegramMessage::find()
     ->where(["order_status" => $employees[0]->state_id])
     ->andWhere(["status" => TelegramMessage::STATUS_CLOSED])
@@ -20,8 +43,10 @@ $messages = TelegramMessage::find()
 
 $result = [];
 
+//var_dump($from_date, $to_date);
+
 foreach ($messages as $message) {
-    if ($message->order) {
+    if ($message->order && ($message->order->created_at > $from_date) && ($message->order->created_at < $to_date)) {
         $employee = Employee::findOne(["chat_id" => $message->chat_id]);
         if ( $employee ) {
             if (isset($result[$employee->id])) {

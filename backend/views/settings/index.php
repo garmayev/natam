@@ -1,7 +1,7 @@
 <?php
 
 use common\models\Settings;
-use garmayev\staff\models\Employee;
+use common\models\staff\Employee;
 use yii\helpers\ArrayHelper;
 use yii\web\View;
 use yii\helpers\Html;
