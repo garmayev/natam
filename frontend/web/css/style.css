@@ -34,6 +34,7 @@ li {
    width: 100%;
    margin: 0 auto;
    padding: 0 15px;
+   overflow-x: hidden;
 }
 
 .container-fluid {
@@ -217,13 +218,11 @@ li {
 
 .header {
   transition: 2s;
-  padding-bottom: 30px;
-  min-height: 800px;
+  min-height: 300px;
   background: top center/cover url("../img/main.png");
 }
-
-.header--about {
-  min-height: 315px;
+.header--indexPage {
+  min-height: 800px;
 }
 
 .header_inner {
@@ -574,9 +573,6 @@ main {
 }
 
 /*form*/
-.form {
-   padding-bottom: 75px;
-}
 
 .form_inner {
    background: center/cover url("../img/form.png");
@@ -1260,22 +1256,24 @@ main {
    background: center/cover url("../img/about.png");
    padding-bottom: 60px;
    transition: 2s;
-   transform: translateX(-100%);
-}
-.about-active {
-  transform: translateX(0%);
 }
 
 .about_inner {
-   display: -webkit-box;
-   display: -ms-flexbox;
-   display: flex;
-   -webkit-box-pack: justify;
-   -ms-flex-pack: justify;
-   justify-content: space-between;
-   -webkit-box-align: center;
-   -ms-flex-align: center;
-   align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  transition: 1.5s;
+  transform: translateX(-120%);
+}
+
+.about-active {
+  transform: translateX(0%);
 }
 
 .about_inner .title {
@@ -1692,6 +1690,9 @@ main {
    .buy_inner_content .buy_tel {
       font-size: 18px;
    }
+}
+
+@media (max-width: 1220px) {
    .about_inner .about_info img {
       display: block;
       width: 100%;
@@ -1706,7 +1707,7 @@ main {
    .home .main_text::before {
       display: none;
    }
-   .header {
+    .header {
       min-height: 70vh;
       position: relative;
       padding-bottom: 0;
@@ -1782,7 +1783,9 @@ main {
       width: 100%;
       margin-bottom: 20px;
    }
+}
 
+@media (max-width: 1220px) {
    .phone {
       font-size: 22px;
       margin-bottom: 0;

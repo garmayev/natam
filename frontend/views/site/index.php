@@ -41,7 +41,7 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
     echo \yii\bootstrap4\Html::tag("div", $success, ["class" => 'alert']);
 }
 ?>
-<main id="mainIndex">
+<main>
     <section class="form" id="form">
         <div class="container-fluid">
             <div class="form_inner">

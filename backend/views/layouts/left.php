@@ -236,6 +236,7 @@ $menu = [
             [
                 "label" => Yii::t("app", "Notify Settings"),
                 "url" => Url::to(["/settings/index"]),
+                "active" => Yii::$app->controller->id == "settings",
             ], [
                 "label" => Yii::t("user", "Users"),
                 "items" => [
@@ -264,7 +265,7 @@ $menu = [
             ], [
                 "label" => Yii::t("app", "Staff"),
                 "url" => Url::to(["/staff/index"]),
-                "active" => Yii::$app->controller->id == "employee",
+                "active" => Yii::$app->controller->id == "staff",
             ]
         ],
         "visible" => Yii::$app->user->can("admin")

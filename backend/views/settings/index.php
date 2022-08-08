@@ -11,6 +11,8 @@ use yii\helpers\Html;
  * @var $model Settings
  */
 
+$this->title = Yii::t("app", "Settings");
+
 //var_dump($model->getContent());
 echo Html::beginForm(["/settings/update"], "post");
 echo Html::beginTag("div", ["class" => "panel panel-default"]);

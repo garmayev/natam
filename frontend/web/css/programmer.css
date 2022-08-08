@@ -131,7 +131,7 @@
 }
 .form {
     padding: 10px 0 0 0;
-    /*height: 56px;*/
+    /* height: 56px; */
 }
 .form_inner form .form_content .form_item input {
     height: 52px;
@@ -256,29 +256,4 @@
 .form_inner form .form_content .form_item input.has-success {
     border: solid 3px green;
     /*filter: drop-shadow(0 0 1rem green);*/
-}
-
-#map {
-    height: 60vh;
-    width: 100%;
-    margin-bottom: 10px;
-}
-.date-address {
-    display: flex;
-    flex-direction: row;
-}
-
-@media (max-width: 700px) {
-    #map {
-        height: 300px;
-    }
-    .date-address {
-        flex-direction: column;
-    }
-}
-
-@media (max-width: 1220px) {
-    #map {
-        height: 50vh;
-    }
 }

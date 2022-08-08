@@ -157,7 +157,7 @@ $this->registerJsFile("/js/about.js");
             <div class="about_info">
                 <div class="about_slider">
                     <div class="about_item">
-                        <img src="img/about-1.png" alt="gas" />
+                        <img src="/img/about-1.png" alt="gas" />
                         <div class="about_item_info">
                             <p>
                                 15 лет
