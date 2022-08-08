@@ -10,6 +10,8 @@ use common\models\TelegramMessage;
  * @var $employees Employee[]
  */
 
+$this->title = Yii::t("app", "Fuel consumption");
+
 $messages = TelegramMessage::find()
     ->where(["order_status" => $employees[0]->state_id])
     ->andWhere(["status" => TelegramMessage::STATUS_CLOSED])
@@ -38,13 +40,15 @@ foreach ($messages as $message) {
         <tr>
             <td><?= Yii::t("app", "Fullname") ?></td>
             <td><?= Yii::t("app", "Distance") ?></td>
+            <td><?= Yii::t("app", "Fuel consumption by 100 km") ?></td>
             <td><?= Yii::t("app", "Fuel consumption") ?></td>
-            <td><?= Yii::t("app", "Mileage") ?></td>
         </tr>
     </thead>
     <tbody>
 
 <?php
+$totalDistance = 0;
+$fuel = 0;
 //var_dump($result);
 foreach ($result as $key => $value) {
     $employee = Employee::findOne($key);
@@ -54,14 +58,22 @@ foreach ($result as $key => $value) {
 //        echo "<p>Order #{$order->id} {$order->delivery_distance}</p>";
         $distance += $order->delivery_distance;
     }
-    echo "<tr><td><a href='/admin/staff/view-employee?id={$employee->id}'>{$employee->fullname}</a></td><td>".($distance * 2)."</td>";
+    echo "<tr><td><a href='/admin/staff/view-employee?id={$employee->id}'>{$employee->fullname}</a></td><td>".Yii::$app->formatter->asLength($distance * 2000)."</td>";
     if ( $employee->engine ) {
-        echo "<td>{$employee->engine}</td><td>" . ($distance/50) * $employee->engine . "</td></tr>";
+        $totalDistance += $distance;
+        $fuel += ($distance/50) * $employee->engine;
+        echo "<td>{$employee->engine}</td><td>" . ($distance/50) * $employee->engine . " л</td></tr>";
     } else {
         echo "<td class='not-set'>".Yii::t("yii", "(not set)")."</td><td class='not-set'>" . Yii::t("yii", "(not set)") . "</td></tr>";
     }
 }
 ?>
     </tbody>
+    <tfoot style="font-weight: bold">
+        <td>Итого</td>
+        <td><?= Yii::$app->formatter->asLength($totalDistance) ?></td>
+        <td></td>
+        <td><?= $fuel ?> л</td>
+    </tfoot>
 </table>
 <small>Все расчеты приблизительные, пробег взят из расчета РАССТОЯНИЕ ДО ЗАКАЗА х 2</small>

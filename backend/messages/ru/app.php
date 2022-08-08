@@ -123,6 +123,8 @@ return [
     'Create Employee' => 'Создать сотрудника',
     'Create State' => 'Создать должность',
     "Distance" => "Расстояние",
+    "Fuel consumption by 100 km" => "Расход топлива на 100 Км",
     "Fuel consumption" => "Расход топлива",
-    "Mileage" => "Пробег",
+    "Export" => "Экспорт",
+    "Filter" => "Фильтр",
 ];

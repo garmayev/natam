@@ -221,7 +221,7 @@ $menu = [
                 "url" => Url::to(["/analytics/employee"]),
                 "active" => Yii::$app->controller->action->id === "employee" && Yii::$app->controller->id === "analytics",
             ], [
-                "label" => Yii::t("app", "Fuel"),
+                "label" => Yii::t("app", "Fuel consumption"),
                 "url" => Url::to(["analytics/fuel"]),
                 "active" => Yii::$app->controller->action->id === "fuel" && Yii::$app->controller->id === "analytics",
             ]
