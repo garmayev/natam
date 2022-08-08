@@ -120,6 +120,11 @@ class TelegramMessage extends ActiveRecord
 		return self::findAll(['order_id' => $order_id]);
 	}
 
+    public static function findByChat_id($chat_id)
+    {
+        return self::findAll(['chat_id' => $chat_id]);
+    }
+
 	public function chain()
 	{
 		return self::find()

@@ -16,8 +16,9 @@ use common\models\User;
  * @property int $chat_id [int(11)]
  * @property int $last_message_at [int(11)]
  * @property string $car
+ * @property float $engine [double]
  *
- * @property string fullname
+ * @property string $fullname
  * @property User $user
  * @property State $state
  */
@@ -41,6 +42,7 @@ class Employee extends \yii\db\ActiveRecord
 		return [
 			[['name', 'family', 'car', 'birth'], 'string'],
 			[['birthday', 'chat_id', 'last_message_at'], 'integer'],
+            [['engine'], 'double'],
 			[['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
 			[['state_id'], 'exist', 'targetClass' => State::class, 'targetAttribute' => ['state_id' => 'id']],
 		];

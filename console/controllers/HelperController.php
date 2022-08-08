@@ -4,7 +4,9 @@ namespace console\controllers;
 
 use common\models\Client;
 use common\models\Company;
+use common\models\Order;
 use dektrium\user\models\Profile;
+use Faker\Factory;
 
 class HelperController extends \yii\console\Controller
 {
@@ -56,10 +58,18 @@ class HelperController extends \yii\console\Controller
 		}
 
 	}
+
 	public function actionTest() 
 	{
-		$id = 627;
-		$model = \common\models\Order::findOne($id);
-		$this->stdout($model->generateTelegramText());
+        $faker = Factory::create();
+		$models = Order::find()->all();
+        foreach ($models as $model) {
+            if ( $model->location_id ) {
+                $model->delivery_distance = $faker->numberBetween(10, 1000) + ($faker->numberBetween(10, 999) * 0.100);
+            } else {
+                $model->delivery_distance = null;
+            }
+            $model->save();
+        }
 	}
 }

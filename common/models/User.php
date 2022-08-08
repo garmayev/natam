@@ -2,7 +2,7 @@
 
 namespace common\models;
 
-use garmayev\staff\models\Employee;
+use common\models\staff\Employee;
 use Yii;
 use yii\helpers\Html;
 

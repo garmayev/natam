@@ -28,6 +28,7 @@ echo $form->field($model, 'birth')->widget(DatePicker::class, [
 echo $form->field($model, 'state_id')->dropDownList(ArrayHelper::map(State::find()->all(), 'id', 'title'))->label(Yii::t("app", "State"));
 if ( $model->state_id === 3 ) {
 	echo $form->field($model, 'car')->dropDownList($units);
+    echo $form->field($model, 'engine')->textInput();
 }
 
 echo Html::submitButton(Yii::t('app', 'Save'), ['class' => ['btn', 'btn-success']]);

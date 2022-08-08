@@ -14,8 +14,17 @@ return [
 			'class' => 'aki\telegram\Telegram',
 			'botToken' => '1989845524:AAGaba1o5Koc8PTAKuSM6HKFOfdkjTvG8Sc',
 			'botUsername' => 'Natam_Trade_bot',
-		]
-	],
+		],
+        'log' => [
+            'traceLevel' => YII_DEBUG ? 3 : 0,
+            'targets' => [
+                [
+                    'class' => 'yii\log\FileTarget',
+                    'levels' => ['error', 'warning'],
+                ],
+            ],
+        ],
+    ],
 	'modules' => [
 		'user' => [
 			'class' => 'dektrium\user\Module',
