@@ -64,7 +64,7 @@ function rebuild() {
         // console.log(options);
         let attr = {};
         let select_container = createElement("div", null, {class: 'form_select'});
-        let select_element = createElement("select", null, {value: options.product_id, "name": "Order[orderProduct]["+counter+"][product_id]"});
+        let select_element = createElement("select", null, {value: options.product_id, "name": "Order[products]["+counter+"][product_id]"});
         for (const index in products) {
             if (index == options.product_id) {
                 attr = {value: index, "selected": "selected"};
@@ -93,7 +93,7 @@ function rebuild() {
                     let count = createElement("input", null, {
                         type: 'text',
                         value: response[index].quantity,
-                        name: "Order[orderProduct]["+counter+"][product_count]",
+                        name: "Order[products]["+counter+"][product_count]",
                         style: "width: 80%",
                     });
                     let drop = createElement("a", null, {
