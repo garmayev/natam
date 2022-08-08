@@ -490,6 +490,11 @@ class TelegramController extends \yii\rest\Controller
 						TelegramMessage::send($employee, $order);
 					}
 				} else {
+                    $messages = TelegramMessage::find()
+                        ->where(["status" => TelegramMessage::STATUS_OPENED])
+                        ->andWhere(["order_id" => $order->id])
+                        ->all();
+                    foreach ($messages as $message) $message->hide();
 					$order->status = Order::STATUS_COMPLETE;
 					\Yii::error( $order->save() );
 				}
