@@ -37,7 +37,6 @@ use common\models\staff\Employee;
  * @property TelegramMessage[] $messages
  * @property-read Company $company
  * @property-read mixed $statusName
- * @property string $article [varchar(255)]
  */
 class Order extends ActiveRecord
 {
@@ -110,7 +109,7 @@ class Order extends ActiveRecord
         return [
             [['delivery_date'], 'required'],
             [['client_id', 'location_id', 'delivery_type', 'created_at', 'delivery_city'], 'integer'],
-            [['comment', 'article'], 'string'],
+            [['comment'], 'string'],
             [['delivery_distance'], 'double'],
             [['delivery_distance'], 'default', 'value' => 0],
             [['client_id'], 'exist', 'skipOnError' => false, 'targetClass' => Client::className(), 'targetAttribute' => ['client_id' => 'id']],
