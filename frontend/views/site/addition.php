@@ -15,6 +15,9 @@ $this->title = 'Дополнительно';
 $this->registerCssFile('/css/style.css');
 $this->registerCssFile('/css/programmer.css');
 //var_dump(count($productProvider->getModels()));
+$this->registerJs(<<< JS
+$("header.header").addClass("header--indexPage").css({"min-height": "300px", "transition": "none"});
+JS)
 
 ?>
 <main>
