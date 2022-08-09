@@ -11,14 +11,26 @@ class OrderController extends ActiveController
 {
 	public $modelClass = Order::class;
 
-	public function actionIndex()
-	{
-		\Yii::$app->response->format = Response::FORMAT_RAW;
-		\Yii::$app->response->headers->add('Content-Type', 'text/xml');
-		return $this->render('index', [
-			'dataProvider' => new ActiveDataProvider([
-				'query' => Order::find()
-			])
-		]);
-	}
+    public function actions()
+    {
+        return [
+            'index' => [
+                'class' => 'yii\rest\IndexAction',
+                'modelClass' => $this->modelClass,
+                'prepareDataProvider' => [$this, 'getAllData']
+            ],
+        ];
+    }
+
+    public function getAllData()
+    {
+//        $modelClass = $this->modelClass;
+
+//        $timestamp = $_GET["timestamp"];
+        $query = (isset($_GET["timestamp"]) && !is_null($_GET["timestamp"])) ? Order::find()->where([">=", "created_at", $_GET["timestamp"]]) : Order::find();
+        return new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => false,
+        ]);
+    }
 }

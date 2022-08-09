@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			'bik',
 			'kpp',
 			'ogrn',
+            'inn',
 			//'boss_id',
 			[
 				'class' => ActionColumn::className(),

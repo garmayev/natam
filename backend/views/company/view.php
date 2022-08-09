@@ -44,6 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			'bik',
 			'kpp',
 			'ogrn',
+            'inn',
 			[
 				'attribute' => 'boss_id',
 				'format' => 'html',

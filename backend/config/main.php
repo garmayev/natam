@@ -96,7 +96,10 @@ return [
 			],
 			'enableConfirmation' => false,
 			'enableUnconfirmedLogin' => true,
-		]
+		],
+        'api' => [
+            'class' => 'backend\modules\api\Module'
+        ]
 	],
     'params' => $params,
 ];

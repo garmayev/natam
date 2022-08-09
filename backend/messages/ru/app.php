@@ -127,4 +127,5 @@ return [
     "Fuel consumption" => "Расход топлива",
     "Export" => "Экспорт",
     "Filter" => "Фильтр",
+    "Delivery" => "Доставка"
 ];
