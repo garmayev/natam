@@ -12,6 +12,7 @@ use Yii;
  * @property string|null $bik
  * @property string|null $kpp
  * @property string|null $ogrn
+ * @property string|null $inn
  * @property int|null $boss_id
  *
  * @property Client $boss
@@ -34,7 +35,7 @@ class Company extends \yii\db\ActiveRecord
     {
         return [
             [['boss_id'], 'integer'],
-            [['title', 'bik', 'kpp', 'ogrn'], 'string', 'max' => 255],
+            [['title', 'bik', 'kpp', 'ogrn', 'inn'], 'string', 'max' => 255],
             [['boss_id'], 'exist', 'skipOnError' => true, 'targetClass' => Client::className(), 'targetAttribute' => ['boss_id' => 'id']],
         ];
     }

@@ -48,6 +48,8 @@ JS, View::POS_LOAD);
 
     <?= $form->field($model, 'ogrn')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'inn')->textInput(['maxlength' => true]) ?>
+
     <?= $form->field($model, 'boss_id')->dropDownList(ArrayHelper::map(Client::find()->all(), 'id', 'name')) ?>
 
     <?php

@@ -5,8 +5,8 @@ use common\models\HistoryEvent;
 use common\models\Order;
 use common\models\Settings;
 use common\models\TelegramMessage;
-use garmayev\staff\models\Employee;
-use garmayev\staff\models\State;
+use common\models\staff\Employee;
+use common\models\staff\State;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use yii\data\ArrayDataProvider;
@@ -21,9 +21,13 @@ use yii\widgets\ActiveForm;
  * @var $models Employee[]
  * @var $orders Order[]
  */
+
+$this->title = Yii::t("app", "Analytics by employee");
+
 $from_date = (isset($_GET['from_date'])) ? Yii::$app->formatter->asTimestamp($_GET['from_date']) : Yii::$app->params['startDate'];
 $to_date = (isset($_GET['to_date'])) ? Yii::$app->formatter->asTimestamp($_GET['to_date']) : time();
 echo Html::beginForm(Url::to(['analytics/employee']), 'get');
+echo Html::beginTag("p");
 echo DatePicker::widget([
 	'name' => 'from_date',
 	'value' => Yii::$app->formatter->asDate($from_date, 'php:Y-m-d'),
@@ -36,8 +40,9 @@ echo DatePicker::widget([
 		'format' => 'yyyy-mm-dd'
 	]
 ]);
-echo Html::submitButton('Export', ['class' => ['btn', 'btn-success'], 'name' => 'export', 'value' => 'export']);
-echo Html::submitButton('Filter', ['class' => ['btn', 'btn-primary'], 'name' => 'filter', 'value' => 'filter']);
+echo Html::endTag("p");
+echo Html::submitButton(Yii::t("app", 'Export'), ['class' => ['btn', 'btn-success'], 'name' => 'export', 'value' => 'export', 'style' => "margin-right: 10px;"]);
+echo Html::submitButton(Yii::t("app", 'Filter'), ['class' => ['btn', 'btn-primary'], 'name' => 'filter', 'value' => 'filter']);
 echo Html::endForm();
 ?>
 <table class="table table-striped table-hover">

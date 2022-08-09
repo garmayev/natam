@@ -1,4 +1,3 @@
 window.addEventListener('load', (event) => {
-  document.querySelector('.header').classList.add('header--about');
-  document.querySelector('.about').classList.add('about-active');
+  document.querySelector('.about_inner').classList.add('about-active');
 });

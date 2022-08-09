@@ -119,5 +119,13 @@ return [
 	"Order Delivered" => "В процессе доставки",
 	"Order Cancelled" => "Отменен",
 	"Join coworker" => "Добавить сотрудника",
-    'Loading...' => 'Идет загрузка...'
+    'Loading...' => 'Идет загрузка...',
+    'Create Employee' => 'Создать сотрудника',
+    'Create State' => 'Создать должность',
+    "Distance" => "Расстояние",
+    "Fuel consumption by 100 km" => "Расход топлива на 100 Км",
+    "Fuel consumption" => "Расход топлива",
+    "Export" => "Экспорт",
+    "Filter" => "Фильтр",
+    "Delivery" => "Доставка"
 ];

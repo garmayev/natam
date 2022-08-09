@@ -38,7 +38,7 @@ $orders = Order::find()->all();
                             <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle"
                                  alt="User Image"/>
                             <?php
-                                $employee = \garmayev\staff\models\Employee::findOne(["user_id" => Yii::$app->user->id]);
+                                $employee = \common\models\staff\Employee::findOne(["user_id" => Yii::$app->user->id]);
                                 if ( $employee !== null ) {
 	                                echo Html::tag("p", "{$employee->name} {$employee->family}" . Html::tag("small", Yii::$app->formatter->asDate(Yii::$app->user->identity->created_at)));
                                 } else {

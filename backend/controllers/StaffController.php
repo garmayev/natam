@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use common\models\search\EmployeeSearch;
 use common\models\staff\Employee;
 use common\models\staff\State;
 use yii\data\ActiveDataProvider;
@@ -35,14 +36,31 @@ class StaffController extends BaseController
 
 	public function actionIndex()
 	{
+        $searchModel = new EmployeeSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
 		return $this->render("index", [
-			"employeeProvider" => new ActiveDataProvider([
-				"query" => Employee::find()->orderBy(['state_id' => SORT_ASC])
-			])
+			"employeeProvider" => $dataProvider,
+            "searchModel" => $searchModel
 		]);
 	}
 
-	public function actionUpdate($id)
+    public function actionViewEmployee($id)
+    {
+        $model = Employee::findOne($id);
+        return $this->render("view-employee", [
+            "model" => $model
+        ]);
+    }
+
+    public function actionViewState($id)
+    {
+        $model = State::findOne($id);
+        return $this->render("view-state", [
+            "model" => $model
+        ]);
+    }
+
+    public function actionUpdate($id)
 	{
 		$model = Employee::findOne($id);
 		if ( \Yii::$app->request->isPost ) {

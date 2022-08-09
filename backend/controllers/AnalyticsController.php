@@ -5,7 +5,7 @@ namespace backend\controllers;
 use common\models\Order;
 use common\models\Settings;
 use common\models\TelegramMessage;
-use garmayev\staff\models\Employee;
+use common\models\staff\Employee;
 use kartik\mpdf\Pdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Color;
@@ -116,6 +116,14 @@ class AnalyticsController extends BaseController
 		}
 	}
 
+    public function actionFuel($from_date = null, $to_date = null, $filter = null)
+    {
+        $employees = Employee::find()->where(["state_id" => 3])->all();
+        return $this->render("fuel", [
+            "employees" => $employees,
+        ]);
+    }
+
 	protected function getDataByOrder($models)
 	{
 		$result = [];
@@ -173,7 +181,10 @@ class AnalyticsController extends BaseController
 		return $result;
 	}
 
-	protected function createSpreadByOrder($models)
+    /**
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    protected function createSpreadByOrder($models)
 	{
 		$spreadsheet = new Spreadsheet();
 		$data = $this->getDataByOrder($models);
@@ -183,11 +194,10 @@ class AnalyticsController extends BaseController
 		$sheet->setCellValue('B1', \Yii::t('app', 'Created By'));
 		$sheet->setCellValue('C1', \Yii::t('app', 'Elapsed by "{status}"', ['status' => Order::getStatusList()[Order::STATUS_NEW]]));
 		$sheet->setCellValue('D1', \Yii::t('app', 'Created By'));
-		$sheet->setCellValue('E1', \Yii::t('app', 'Elapsed by "{status}"', ['status' => Order::getStatusList()[Order::STATUS_PREPARE]]));
+		$sheet->setCellValue('E1', \Yii::t('app', 'Elapsed by "{status}"', ['status' => Order::getStatusList()[Order::STATUS_PREPARED]]));
 		$sheet->setCellValue('F1', \Yii::t('app', 'Created By'));
 		$sheet->setCellValue('G1', \Yii::t('app', 'Elapsed by "{status}"', ['status' => Order::getStatusList()[Order::STATUS_DELIVERY]]));
 		foreach ($data as $key => $item) {
-//			\Yii::error($item['details']);
 			if (count($item['model']->messages)) {
 				$sheet->setCellValue("A{$row}", $item['model']->id);
 				foreach ($item['details'] as $index => $detail) {
@@ -202,7 +212,7 @@ class AnalyticsController extends BaseController
 								$sheet->setCellValue("C{$row}", $detail['elapsed']);
 							}
 							break;
-						case Order::STATUS_PREPARE:
+						case Order::STATUS_PREPARED:
 							if (isset($detail) && isset($detail['elapsed'])) {
 								if ( isset($detail['updated']) ) {
 									$sheet->setCellValue("D{$row}", $detail['updated']->employee->getFullName());
@@ -227,7 +237,7 @@ class AnalyticsController extends BaseController
 			$row++;
 			}
 		}
-		return \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xls');
+		return \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'xls');
 	}
 
 	protected function createSpreadByEmployee($models, $orders)

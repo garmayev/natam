@@ -41,7 +41,7 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
     echo \yii\bootstrap4\Html::tag("div", $success, ["class" => 'alert']);
 }
 ?>
-<main id="mainIndex">
+<main>
     <section class="form" id="form">
         <div class="container-fluid">
             <div class="form_inner">
@@ -100,13 +100,13 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
                     </div>
                     <div class="form_content step swiper-slide swiper-no-swiping" data-index="2">
                         <div class="form_item">
-                            <input type="text" id="order-client-name" data-required="true" name="Client[name]"
+                            <input type="text" id="order-client-name" data-required="true" name="Order[client][name]"
                                    placeholder="Ваше ФИО" value="<?= $client->name ?>">
-                            <input type="text" id="order-client-phone" data-required="true" name="Client[phone]"
+                            <input type="text" id="order-client-phone" data-required="true" name="Order[client][phone]"
                                    data-inputmask="'mask': '+7(999)999 9999'" placeholder="Ваш номер телефона"
                                    value="<?= $client->phone ?>">
                             <input type="email" id="order-client-company" data-required="false"
-                                   name="Client[company]"
+                                   name="Order[client][company]"
                                    placeholder="Название организации" value="<?= $client->company ?>">
                         </div>
                         <div class="form_item">

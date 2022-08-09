@@ -25,7 +25,7 @@ class OrderSearch extends Model
 	public $delivery_start;
 	public $delivery_finish;
 
-	const TIME_REMAIN = "-1 month";
+	const TIME_REMAIN = "+1 month";
 
 	public function rules()
 	{
@@ -63,7 +63,7 @@ class OrderSearch extends Model
 				]
 			],
 			'pagination' => [
-				'pageSize' => 20,
+				'pageSize' => 25,
 			],
 		]);
 
@@ -92,7 +92,7 @@ class OrderSearch extends Model
 		}
 
 		if (!($this->load($params) && $this->validate())) {
-			$query->andFilterWhere([">", "created_at", strtotime(self::TIME_REMAIN)]);
+//			$query->andFilterWhere([">", "created_at", strtotime(self::TIME_REMAIN)]);
 			return $dataProvider;
 		}
 

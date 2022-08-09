@@ -85,10 +85,10 @@ return [
 		'rbac' => [
 			'class' => \yii2mod\rbac\Module::class,
 		],
-		'staff' => [
-			'class' => \garmayev\staff\Module::class,
-			'user_class' => \common\models\User::class,
-		],
+//		'staff' => [
+//			'class' => \garmayev\staff\Module::class,
+//			'user_class' => \common\models\User::class,
+//		],
 		'user' => [
 			'class' => 'dektrium\user\Module',
 			'modelMap' => [
@@ -96,8 +96,10 @@ return [
 			],
 			'enableConfirmation' => false,
 			'enableUnconfirmedLogin' => true,
-
-		]
+		],
+        'api' => [
+            'class' => 'backend\modules\api\Module'
+        ]
 	],
     'params' => $params,
 ];

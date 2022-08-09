@@ -1,7 +1,7 @@
 <?php
 
 use common\models\Settings;
-use garmayev\staff\models\Employee;
+use common\models\staff\Employee;
 use yii\helpers\ArrayHelper;
 use yii\web\View;
 use yii\helpers\Html;
@@ -10,6 +10,8 @@ use yii\helpers\Html;
  * @var $this View
  * @var $model Settings
  */
+
+$this->title = Yii::t("app", "Settings");
 
 //var_dump($model->getContent());
 echo Html::beginForm(["/settings/update"], "post");
