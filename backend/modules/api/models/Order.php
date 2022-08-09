@@ -38,7 +38,7 @@ class Order extends \common\models\Order
 		foreach ($this->orderProducts as $item) {
 			$result["productRow"][] = [
 				"kod" => $item->product_id,
-				"article" => $this->article,
+				"article" => $item->product->article,
 				"name" => $item->product->title,
 				"characteristic" => null,
 				"unit" => "шт",

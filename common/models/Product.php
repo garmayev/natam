@@ -19,6 +19,7 @@ use yii\db\ActiveRecord;
  * @property-read int $uniqueId
  * @property-read string $label
  * @property int $category_id [int(11)]
+ * @property string $article [varchar(255)]
  */
 class Product extends ActiveRecord
 {
@@ -33,7 +34,7 @@ class Product extends ActiveRecord
 	{
 		return [
 			[["title", "price", "value"], "required"],
-			[["title", "description", "thumbs"], "string"],
+			[["title", "description", "thumbs", "article"], "string"],
 			[["price", "isset", "visible"], "integer"],
 			[["price"], "double"],
 			[["isset"], "default", "value" => 0],
