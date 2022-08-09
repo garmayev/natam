@@ -12,7 +12,7 @@ class m220809_035602_add_column_article_to_order_table extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn("order", "article", $this->string());
+        $this->addColumn("product", "article", $this->string());
         $this->addColumn("company", "inn", $this->string());
     }
 
@@ -21,7 +21,7 @@ class m220809_035602_add_column_article_to_order_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn("order", "article");
+        $this->dropColumn("product", "article");
         $this->dropColumn("company", "inn");
     }
 
