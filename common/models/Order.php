@@ -394,7 +394,7 @@ class Order extends ActiveRecord
             $delivery_price = intval($this->delivery_distance) * Settings::getDeliveryCost();
             $result .= "<b>Стоимость доставки</b>: {$delivery_price}\n";
         }
-        $result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
+        $result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>+{$this->client->phone}</a>\n";
         $result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
         $result .= "<b>Комментарий</b>: " . $this->comment . "\n";
 //		Yii::error($this->getPrice());
