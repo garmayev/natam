@@ -83,7 +83,7 @@ $totalCost = 0;
 					echo Html::tag("td", $cost);
 					echo Html::endTag("tr");
 				}
-				if ($model->delivery_distance) {
+				if (is_null($model->delivery_city)) {
                     $totalCost += $delivery_price;
 					echo Html::beginTag("tr");
 					echo Html::tag("td", "Доставка за пределы города", ['colspan' => 2]);
