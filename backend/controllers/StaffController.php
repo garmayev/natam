@@ -121,4 +121,10 @@ class StaffController extends BaseController
 			'model' => $model
 		]);
 	}
+
+    public function actionDeleteEmployee($id) {
+        $model = Employee::findOne($id);
+        $model->delete();
+        return $this->redirect(Url::previous());
+    }
 }

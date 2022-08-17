@@ -5,6 +5,7 @@ use common\models\staff\Employee;
 use yii\data\ActiveDataProvider;
 use yii\grid\ActionColumn;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\View;
 use yii\grid\GridView;
 
@@ -51,6 +52,36 @@ echo GridView::widget([
 			}
 		], [
 			"class" => ActionColumn::class,
-		]
+            'template' => '{view} {delete}',
+            'buttons' => [
+                'view' => function ($url, $model) {
+                    return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, [
+                        'title' => Yii::t('app', 'lead-view'),
+                    ]);
+                },
+
+                'update' => function ($url, $model) {
+                    return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url, [
+                        'title' => Yii::t('app', 'lead-update'),
+                    ]);
+                },
+                'delete' => function ($url, $model) {
+                    return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url, [
+                        'title' => Yii::t('app', 'lead-delete'),
+                    ]);
+                }
+
+            ],
+            'urlCreator' => function ($action, Employee $model, $key, $index) {
+                if ($action === 'view') {
+                    return Url::to(["/staff/view-employee", "id" => $model->id]);
+                }
+
+                if ($action === 'delete') {
+                    return Url::to(["/staff/delete-employee", "id" => $model->id]);
+                }
+
+            }
+        ]
 	]
 ]);
