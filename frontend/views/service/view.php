@@ -11,9 +11,9 @@ use yii\helpers\Html;
  */
 
 ?>
-    <section class="about about-active">
+    <section class="about">
         <div class="container">
-            <div class="about_inner">
+            <div class="about_inner about-active">
                 <div class="about_content">
 					<?php
 					echo Html::tag("h2", $model->title, ["class" => "about_title"]);
