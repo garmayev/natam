@@ -40,6 +40,10 @@ $count = count(Yii::$app->cart->getItems());
 if (!empty($success = Yii::$app->session->getFlash("success"))) {
     echo \yii\bootstrap4\Html::tag("div", $success, ["class" => 'alert']);
 }
+$this->registerJs(<<< JS
+console.log(window.location.href);
+JS
+);
 ?>
 <main>
     <section class="form" id="form">

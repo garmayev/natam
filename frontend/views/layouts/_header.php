@@ -18,7 +18,7 @@ use yii\widgets\Menu;
     </div>
 </div>
 <div class="shadow"></div>
-<header class="header header--indexPage">
+<header class="header <?= ((Yii::$app->controller->id === "site") && (Yii::$app->controller->action->id === "index")) ? "header--indexPage" : "" ?>">
 	<div class="container">
 		<div class="header_inner">
 			<div class="header_left">
