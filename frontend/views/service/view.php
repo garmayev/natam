@@ -10,6 +10,12 @@ use yii\helpers\Html;
  * @var $model Service
  */
 
+$this->registerCss(<<< CSS
+.about_info::before {
+display: none;
+}
+CSS
+)
 ?>
     <section class="about">
         <div class="container">
