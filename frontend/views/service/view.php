@@ -11,7 +11,7 @@ use yii\helpers\Html;
  */
 
 ?>
-    <section class="about">
+    <section class="about about-active">
         <div class="container">
             <div class="about_inner">
                 <div class="about_content">
