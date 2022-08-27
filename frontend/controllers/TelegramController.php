@@ -331,13 +331,11 @@ class TelegramController extends \yii\rest\Controller
 				}
 				$telegram->sendMessage([
 					'chat_id' => $telegram->input->message->chat->id,
-					"text" => "Здравствуйте! Вас приветствует бот компании Натам-Трейд!",
+					"text" => "Здравствуйте! Вас приветствует сервис повторного заказа компании Натам-Трейд!",
 					"reply_markup" => json_encode([
 						"keyboard" => [
 							[
 								["text" => "/all_orders"]
-	//						], [
-//									["text" => "/new_order"]
 							]
 						],
 						"resize_keyboard" => true,
@@ -364,7 +362,7 @@ class TelegramController extends \yii\rest\Controller
 //            return $keyboard;
                 $telegram->sendMessage([
                     'chat_id' => $chat_id,
-                    "text" => "Список заказов",
+                    "text" => "Список заказов\n\nНажмите на соответствующий заказ для получения более развернутой информации",
                     "reply_markup" => json_encode([
                         "inline_keyboard" => $keyboard
                     ]),

@@ -457,12 +457,18 @@ class Order extends ActiveRecord
     public function deepClone()
     {
         $model = new Order();
+        $data = [];
+
         $model->attributes = $this->attributes;
+        $model->save(false);
         foreach ($this->orderProducts as $orderProduct) {
-            $op = new OrderProduct();
-            $op->attributes = $orderProduct->attributes;
-            $op->save();
+            $data[] = [
+                "product_id" => $orderProduct->product_id,
+                "product_count" => $orderProduct->product_count
+            ];
         }
+        $model->setProducts($data);
         $model->save();
+        return $model;
     }
 }
