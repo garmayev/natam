@@ -325,11 +325,13 @@ class TelegramController extends \yii\rest\Controller
 					if ($client) {
 						$client->chat_id = $telegram->input->message->chat->id;
 						$client->save();
+                        $user = $client->user;
+                        Yii::$app->user->switchIdentity($user, 0);
 					}
 				}
 				$telegram->sendMessage([
 					'chat_id' => $telegram->input->message->chat->id,
-					"text" => "Welcome!",
+					"text" => "Здравствуйте! Вас приветствует бот компании Натам-Трейд!",
 					"reply_markup" => json_encode([
 						"keyboard" => [
 							[
