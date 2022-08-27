@@ -449,7 +449,6 @@ class TelegramController extends \yii\rest\Controller
 
 	public static function copy($telegram, $args = null)
 	{
-		\Yii::error($args);
 		if (isset($args["order_id"])) {
 			$order = Order::findOne($args["order_id"]);
 			$copy = $order->deepClone();
