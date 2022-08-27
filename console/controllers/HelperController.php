@@ -51,6 +51,7 @@ class HelperController extends \yii\console\Controller
 		$clients = Profile::find()->where(['in', 'name', $deleted])->all();
 		foreach ($clients as $client) {
 			if ($client->user->delete()) {
+                $client->delete();
 				$this->stdout("User {$client->user_id} is deleted\n");
 			} else {
 				$this->stdout("User {$client->user_id} can`t delete\n");

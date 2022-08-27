@@ -1563,7 +1563,7 @@ main {
 /* Страница входа */
 .login-main {
   height: 100vh;
-  background-image: url('/img/login-page2.png');
+  background-image: url('../img/login-page2.png');
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -1596,7 +1596,7 @@ main {
   height: 107px;
   top: 12px;
   right: 15px;
-  background-image: url('/img/logoAMG.svg');
+  background-image: url('../img/logoAMG.svg');
 }
 
 .login__title {
