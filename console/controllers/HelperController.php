@@ -59,17 +59,17 @@ class HelperController extends \yii\console\Controller
 
 	}
 
-	public function actionTest() 
+	public function actionTest($order_id)
 	{
-        $faker = Factory::create();
-		$models = Order::find()->all();
-        foreach ($models as $model) {
-            if ( $model->location_id ) {
-                $model->delivery_distance = $faker->numberBetween(10, 1000) + ($faker->numberBetween(10, 999) * 0.100);
-            } else {
-                $model->delivery_distance = null;
-            }
-            $model->save();
-        }
+        $order = Order::findOne($order_id);
+        $order->deepClone();
 	}
+
+    public function actionPhones()
+    {
+        foreach (Client::find()->all() as $client)
+        {
+            $this->stdout("| $client->name\t| $client->phone\t| https://t.me/natam_trade_bot?start=$client->phone |\n");
+        }
+    }
 }
