@@ -33,4 +33,17 @@ class OrderController extends ActiveController
             'pagination' => false,
         ]);
     }
+    
+    public function actionByStatus($status = null) {
+	$statusNumber = array_search($status, Order::getStatusList());
+	if (is_null($status)) {
+	    $query = Order::find();
+	} else {
+	    $query = Order::find()->where(['status' => $statusNumber]);
+	}
+	return new ActiveDataProvider([
+	    'query' => $query,
+	    'pagination' => false
+	]);
+    }
 }

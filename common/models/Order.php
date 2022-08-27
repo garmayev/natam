@@ -321,7 +321,7 @@ class Order extends ActiveRecord
     public function getTotalPrice()
     {
         $sum = 0;
-        foreach ($this->productOrders as $productOrder) {
+        foreach ($this->orderProducts as $productOrder) {
             $sum += $productOrder->product->price * $productOrder->product_count;
         }
         return $sum;

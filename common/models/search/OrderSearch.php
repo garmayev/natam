@@ -83,7 +83,7 @@ class OrderSearch extends Model
 
 		if ( !\Yii::$app->user->can('employee') ) {
 			$client = Client::findOne(['user_id' => \Yii::$app->user->id]);
-			if ( $client->organization->boss_id === $client->id ) {
+			if ( isset($client->organization) && $client->organization->boss_id === $client->id ) {
 //				$coworkers = Client::findAll(['company_id' => $client->company_id]);
 				$query->andFilterWhere(['in', 'client_id', ArrayHelper::map(Client::findAll(['company_id' => $client->company_id]), 'id', 'id')]);
 			} else {
