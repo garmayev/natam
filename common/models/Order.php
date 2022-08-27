@@ -453,4 +453,16 @@ class Order extends ActiveRecord
         }
         return $keyboard;
     }
+
+    public function deepClone()
+    {
+        $model = new Order();
+        $model->attributes = $this->attributes;
+        foreach ($this->orderProducts as $orderProduct) {
+            $op = new OrderProduct();
+            $op->attributes = $orderProduct->attributes;
+            $op->save();
+        }
+        $model->save();
+    }
 }
