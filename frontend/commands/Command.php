@@ -8,10 +8,12 @@ class Command extends \aki\telegram\base\Command
 {
 	public static function run($command, callable $fun)
 	{
+		$text = '';
 		$telegram = Yii::$app->telegram;
 		if ( isset($telegram->input->message->text) ) {
 			$text = $telegram->input->message->text;
 		} else {
+			if (isset($telegram->input->callback_query))
 			$text = $telegram->input->callback_query->data;
 		}
 		$args = explode(' ', $text);

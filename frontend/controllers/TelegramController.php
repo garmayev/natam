@@ -362,7 +362,7 @@ class TelegramController extends \yii\rest\Controller
 //            return $keyboard;
                 $telegram->sendMessage([
                     'chat_id' => $chat_id,
-                    "text" => "Список заказов\n\nНажмите на соответствующий заказ для получения более развернутой информации",
+                    "text" => "Список ваших заказов\n\nНажмите на соответствующий заказ для получения более развернутой информации",
                     "reply_markup" => json_encode([
                         "inline_keyboard" => $keyboard
                     ]),
@@ -396,7 +396,7 @@ class TelegramController extends \yii\rest\Controller
 			if ( isset($telegram->input->message) ) {
 				$telegram->sendMessage([
 					'chat_id' => $chat_id,
-					"text" => "Список заказов",
+					"text" => "Список ваших заказов!\n\nНажмите на соответствующий заказ для получения более развернутой информации",
 					"reply_markup" => json_encode([
 						"inline_keyboard" => $keyboard
 					]),
@@ -406,7 +406,7 @@ class TelegramController extends \yii\rest\Controller
 				$telegram->editMessageText([
 					"chat_id" => $chat_id,
 					"message_id" => $telegram->input->callback_query->message['message_id'],
-					"text" => "Список заказов",
+					"text" => "Список ваших заказов\n\nНажмите на соответствующий заказ для получения более развернутой информации",
 					"reply_markup" => json_encode([
 						"inline_keyboard" => $keyboard
 					])
@@ -453,7 +453,7 @@ class TelegramController extends \yii\rest\Controller
 			$telegram->editMessageText([
 				"message_id" => $telegram->input->callback_query->message["message_id"],
 				'chat_id' => $telegram->input->callback_query->message["chat"]["id"],
-				"text" => "Ваш заказ успешно повторен",
+				"text" => "Ваш заказ успешно повторен! Ожидайте звонка менеджера",
 				"parse_mode" => "html",
 				"reply_markup" => json_encode([
 					"inline_keyboard" => [
