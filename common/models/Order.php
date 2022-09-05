@@ -460,6 +460,7 @@ class Order extends ActiveRecord
         $data = [];
 
         $model->attributes = $this->attributes;
+        $model->status = Order::STATUS_NEW;
         $model->save(false);
         foreach ($this->orderProducts as $orderProduct) {
             $data[] = [

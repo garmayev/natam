@@ -463,9 +463,9 @@ class TelegramController extends \yii\rest\Controller
 					]
 				]),
 			]);
-            foreach (Employee::find()->where(['state_id' => Order::STATUS_NEW]) as $employee) {
-                TelegramMessage::send($employee, $copy);
-            }
+//            foreach (Employee::find()->where(['state_id' => Order::STATUS_NEW]) as $employee) {
+//                TelegramMessage::send($employee, $copy);
+//            }
 		}
 	}
 
