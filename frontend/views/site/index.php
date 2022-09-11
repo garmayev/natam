@@ -489,7 +489,7 @@ JS
         </div>
     </section>
     <section class="buy">
-        <div class="container">
+        <div class="container-buy">
             <div class="buy_inner">
                 <h2 class="title white" data-aos="fade-right">
                     ПОКУПАЕМ Б/У <br/>
