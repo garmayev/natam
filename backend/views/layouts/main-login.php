@@ -62,7 +62,7 @@ use yii\helpers\Html;
     <div class="login-size-wrapper">
         <div class="login-footer-info" style="display: flex; flex-direction: column">
             <div class="login-footer__contacts" style="width: 100%; text-align: right">
-                <a href="tel:88001012316" class="login-footer__contacts-text">8 800 101 23 16</a>
+                <a href="tel:88001012316" class="login-footer__contacts-text">8 800 550 61 10</a>
             </div>
             <div class="login-footer__info" style="width: 100%; text-align: center">
                 Created by <a href="amgcompany.ru">AMG Company</a>
