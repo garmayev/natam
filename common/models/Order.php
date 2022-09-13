@@ -464,9 +464,11 @@ class Order extends ActiveRecord
         $model = new Order();
         $data = [];
 
-        $model->attributes = $this->attributes;
+        $model->location_id = $this->location_id;
+        $model->client_id = $this->client_id;
         $model->status = Order::STATUS_NEW;
         $model->telegram = 1;
+        $model->delivery_date = time();
         $model->save(false);
         foreach ($this->orderProducts as $orderProduct) {
             $data[] = [

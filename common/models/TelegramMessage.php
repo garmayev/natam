@@ -151,7 +151,20 @@ class TelegramMessage extends ActiveRecord
 		}
 	}
 
-	public static function send(Employee $employee, Order $order)
+    public function beforeDelete()
+    {
+        try {
+            \Yii::$app->telegram->send('/deleteMessage', [
+                'chat_id' => $this->chat_id,
+                'message_id' => $this->message_id,
+            ]);
+        } catch (ClientException $e) {
+            \Yii::error($e->getMessage());
+        }
+        return parent::beforeDelete();
+    }
+
+    public static function send(Employee $employee, Order $order)
 	{
 		try {
 			if (isset($employee->chat_id)) {
