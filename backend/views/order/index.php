@@ -65,11 +65,16 @@ if (Yii::$app->user->can("employee")) {
 $columns = [
 	[
 		"attribute" => "id",
-		"headerOptions" => ["style" => "width: 4%;"],
+		"headerOptions" => ["style" => "width: 4%"],
+        "contentOptions" => ["style" => "text-align: center"],
 		"format" => "html",
 		"filter" => Html::activeTextInput($searchModel, 'id', ['class' => 'form-control']),
 		"value" => function (Order $model) {
-			return Html::a("#{$model->id}", ["order/view", "id" => $model->id]);
+            $telegram = '';
+            if ( $model->telegram ) {
+                $telegram = Html::tag('i', '', ['class' => ['fa', 'fa-telegram'], 'style' => 'margin: 0 5px;']);
+            }
+			return Html::a("#{$model->id}", ["order/view", "id" => $model->id]).$telegram;
 		},
 		"visible" => true,
 	], [

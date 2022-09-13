@@ -37,6 +37,7 @@ use common\models\staff\Employee;
  * @property TelegramMessage[] $messages
  * @property-read Company $company
  * @property-read mixed $statusName
+ * @property int $telegram [int(11)]
  */
 class Order extends ActiveRecord
 {
@@ -108,7 +109,7 @@ class Order extends ActiveRecord
     {
         return [
             [['delivery_date'], 'required'],
-            [['client_id', 'location_id', 'delivery_type', 'created_at', 'delivery_city'], 'integer'],
+            [['client_id', 'location_id', 'delivery_type', 'created_at', 'delivery_city', 'telegram'], 'integer'],
             [['comment'], 'string'],
             [['delivery_distance'], 'double'],
             [['delivery_distance'], 'default', 'value' => 0],
@@ -118,6 +119,7 @@ class Order extends ActiveRecord
             [['delivery_date'], 'filter', 'filter' => function ($value) {
                 return Yii::$app->formatter->asTimestamp($value);
             }],
+            [['telegram'], 'default', 'value' => 0],
             [['delivery_type'], 'default', 'value' => self::DELIVERY_STORE],
             [['client', 'location', 'products'], 'safe']
         ];
@@ -461,6 +463,7 @@ class Order extends ActiveRecord
 
         $model->attributes = $this->attributes;
         $model->status = Order::STATUS_NEW;
+        $model->telegram = 1;
         $model->save(false);
         foreach ($this->orderProducts as $orderProduct) {
             $data[] = [
