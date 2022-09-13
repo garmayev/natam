@@ -133,11 +133,12 @@ JS
                                         'data-required' => "true"
                                     ],
                                     'pluginOptions' => [
-                                        'startDate' => date('Y-m-d'),
+                                        'startDate' => date('Y-m-d HH:00'),
                                         'daysOfWeekDisabled' => [0],
-                                        'minuteStep' => 30,
+                                        'minuteStep' => 60,
                                         'autoclose' => true,
                                         'hoursDisabled' => '0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24',
+                                        'minView' => 1,
                                     ],
                                     'pluginEvents' => [
                                         'changeMode' => "function (e) {
@@ -146,18 +147,21 @@ JS
                                             if ((typeof e.delegateTarget[index] === \"object\") && (e.delegateTarget[index] !== null)) {
                                                 if (e.delegateTarget[index].hasOwnProperty(\"krajeeDatetimepicker\")) {
                                                     picker = e.delegateTarget[index];
+                                                    console.log(picker);
                                                     break;
                                                 }
                                             }
                                         }
                                         date = picker.datetimepicker.viewDate;
                                         if ( picker !== undefined ) {
+                                            let val = date.valueOf() / 1000;
+                                            val = (val - (val % 3600)) * 1000;
                                             if ( (e.newViewMode === 1) && (e.date.getDay() !== 6) ) {
                                                 picker.datetimepicker.setHoursDisabled('0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24');
-                                                picker.datetimepicker.setDate(new Date(date.valueOf() + (date.getTimezoneOffset() * 60000)));
+                                                picker.datetimepicker.setDate(new Date(val + (date.getTimezoneOffset() * 60000)));
                                             } else if ( (e.newViewMode === 1) && (e.date.getDay() === 6) ) {
                                                 picker.datetimepicker.setHoursDisabled('0,1,2,3,4,5,6,7,8,14,15,16,17,18,19,20,21,22,23,24');
-                                                picker.datetimepicker.setDate(new Date(date.valueOf() + (date.getTimezoneOffset() * 60000)));
+                                                picker.datetimepicker.setDate(new Date(val + (date.getTimezoneOffset() * 60000)));
                                             } else {
                                                 return false;
                                             }
@@ -437,7 +441,6 @@ JS
                         }
                         e.preventDefault();
                     })
-
                 </script>
             </div>
         </div>
