@@ -73,4 +73,17 @@ class HelperController extends \yii\console\Controller
             $this->stdout("| $client->name\t| $client->phone\t| https://t.me/natam_trade_bot?start=$client->phone |\n");
         }
     }
+
+    public function actionXml($id = null)
+    {
+        if ( is_null($id) ) {
+            $orders = Order::find()->all();
+        } else {
+            $orders = Order::find()->where(["id" => $id])->all();
+        }
+        foreach ($orders as $order) {
+            $order->createFile("C:\\wamp\\www\\natam\\frontend\\web\\xml\\");
+        }
+//        $this->stdout(count($orders));
+    }
 }

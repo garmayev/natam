@@ -1,0 +1,28 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<Order>
+	<parameter>
+            <numberDate>13-09-2022 15:55</numberDate>
+            <numberOrder>848</numberOrder>
+            <INN></INN>
+            <customer>Гармаев Бато</customer>
+            <email></email>
+            <phone>+79503975524</phone>
+            <contact></contact>
+        </parameter>
+	<Tabl>
+		<productRow>
+			<kod>16</kod>
+			<article></article>
+			<name>Гелий</name>
+            <characteristic>5.7</characteristic>
+			<unit>шт</unit>
+			<quantity>1</quantity>
+			<cost>28000</cost>
+            <sum>28000</sum>
+			<rateNDS>безНДС</rateNDS>
+			<sumNDS>0</sumNDS>
+		</productRow>
+            
+	</Tabl>
+</Order>

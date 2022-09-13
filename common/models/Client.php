@@ -26,6 +26,10 @@ use Yii;
  * @property int $company_id [int(11)]
  * @property Company $organization
  * @property string $mail
+ * @property string $inn [varchar(255)]
+ * @property string $bik [varchar(255)]
+ * @property string $kpp [varchar(255)]
+ * @property string $ogrn [varchar(255)]
  */
 class Client extends \yii\db\ActiveRecord
 {
