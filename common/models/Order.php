@@ -232,6 +232,7 @@ class Order extends ActiveRecord
 						TelegramMessage::send($employee, $this);
                     }
                 }
+                $this->createFile();
             }
         }
     }
@@ -245,7 +246,9 @@ class Order extends ActiveRecord
      */
     public function getCompany()
     {
-        return $this->client->organization;
+        if ( isset($this->client) && isset($this->client->organization) )
+            return $this->client->organization;
+        return null;
     }
 
     /**
@@ -474,5 +477,51 @@ class Order extends ActiveRecord
         $model->setProducts($data);
         $model->save();
         return $model;
+    }
+
+    public function createFile($path = null)
+    {
+        if ( is_null($path) ) {
+            $path = Yii::getAlias('@webroot') . "/xml/";
+        }
+        $fileName = "{$this->id}.xml";
+        $template = '
+<?xml version="1.0" encoding="UTF-8"?>
+<Order>
+	<parameter>
+            <numberDate>'.Yii::$app->formatter->asDatetime($this->created_at, "php:d-m-Y H:i").'</numberDate>
+            <numberOrder>'.$this->id.'</numberOrder>
+            <INN>';
+        if ( $this->company ) {
+            $template .= $this->company->inn;
+        }
+        $template .= '</INN>
+            <customer>'.$this->client->name.'</customer>
+            <email>'.$this->client->email.'</email>
+            <phone>+'.$this->client->phone.'</phone>
+            <contact>'.$this->comment.'</contact>
+        </parameter>
+	<Tabl>
+';
+        foreach ($this->orderProducts as $orderProduct) {
+            $template .= '
+		<productRow>
+			<kod>'.$orderProduct->product_id.'</kod>
+			<article></article>
+			<name>'.$orderProduct->product->title.'</name>
+            <characteristic>'.$orderProduct->product->value.'</characteristic>
+			<unit>шт</unit>
+			<quantity>'.$orderProduct->product_count.'</quantity>
+			<cost>'.$orderProduct->product->price.'</cost>
+            <sum>'.($orderProduct->product_count * $orderProduct->product->price).'</sum>
+			<rateNDS>безНДС</rateNDS>
+			<sumNDS>0</sumNDS>
+		</productRow>
+            ';
+        }
+        $template .= '
+	</Tabl>
+</Order>';
+        file_put_contents($path.$fileName, $template);
     }
 }
