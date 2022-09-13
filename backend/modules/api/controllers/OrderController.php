@@ -9,7 +9,7 @@ use yii\web\Response;
 
 class OrderController extends ActiveController
 {
-	public $modelClass = Order::class;
+    public $modelClass = Order::class;
 
     public function actions()
     {
@@ -18,6 +18,31 @@ class OrderController extends ActiveController
                 'class' => 'yii\rest\IndexAction',
                 'modelClass' => $this->modelClass,
                 'prepareDataProvider' => [$this, 'getAllData']
+            ],
+            'view' => [
+                'class' => 'yii\rest\ViewAction',
+                'modelClass' => $this->modelClass,
+                'checkAccess' => [$this, 'checkAccess'],
+            ],
+            'create' => [
+                'class' => 'yii\rest\CreateAction',
+                'modelClass' => $this->modelClass,
+                'checkAccess' => [$this, 'checkAccess'],
+                'scenario' => $this->createScenario,
+            ],
+            'update' => [
+                'class' => 'yii\rest\UpdateAction',
+                'modelClass' => $this->modelClass,
+                'checkAccess' => [$this, 'checkAccess'],
+                'scenario' => $this->updateScenario,
+            ],
+            'delete' => [
+                'class' => 'yii\rest\DeleteAction',
+                'modelClass' => $this->modelClass,
+                'checkAccess' => [$this, 'checkAccess'],
+            ],
+            'options' => [
+                'class' => 'yii\rest\OptionsAction',
             ],
         ];
     }
@@ -33,17 +58,18 @@ class OrderController extends ActiveController
             'pagination' => false,
         ]);
     }
-    
-    public function actionByStatus($status = null) {
-	$statusNumber = array_search($status, Order::getStatusList());
-	if (is_null($status)) {
-	    $query = Order::find();
-	} else {
-	    $query = Order::find()->where(['status' => $statusNumber]);
-	}
-	return new ActiveDataProvider([
-	    'query' => $query,
-	    'pagination' => false
-	]);
+
+    public function actionByStatus($status = null)
+    {
+        $statusNumber = array_search($status, Order::getStatusList());
+        if (is_null($status)) {
+            $query = Order::find();
+        } else {
+            $query = Order::find()->where(['status' => $statusNumber]);
+        }
+        return new ActiveDataProvider([
+            'query' => $query,
+            'pagination' => false
+        ]);
     }
 }
