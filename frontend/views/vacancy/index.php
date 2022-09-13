@@ -13,7 +13,7 @@ use yii\widgets\ListView;
 
 //$this->registerJsFile("/js/about.js");
 
-echo Html::beginTag("section");
+echo Html::beginTag("section", ["class" => "about", "style" => "padding-top: 25px; min-height: 60vh"]);
 echo Html::beginTag("div", ["class" => "container"]);
 
 echo ListView::widget([

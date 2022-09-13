@@ -37,7 +37,7 @@ if (Yii::$app->user->can("employee")) {
 			'header' => 'QR Code for Telegram Authorization',
 			'toggleButton' => ['label' => Yii::t('app', 'Show QR for Telegram'), 'class' => ['btn', 'btn-primary']],
 		]);
-		if (file_exists("/admin/images/qr/{$client->phone}.png")) {
+		if (!file_exists(\Yii::getAlias('@webroot') . "/images/qr/{$client->phone}.png")) {
 			$qrCode = (new QrCode("https://t.me/" . \Yii::$app->telegram->botUsername . "?start={$client->phone}"))
 				->setSize(300)
 				->setMargin(10);

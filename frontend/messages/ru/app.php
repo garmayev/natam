@@ -39,7 +39,6 @@ return [
 	'View' => 'Просмотреть',
 	'Delete' => 'Удалить',
 	'Your ticket is not created! Our programmer is worked in' => 'Ва вопрос не создан! Наши программисты работают над этим',
-	'New Order' => 'Новый заказ',
 	'Failed! News is not saved! Our programmers already repair it!' => 'Ошибка! Новость не сохранена! Наши программисты работают над этим',
 	'Failed! News is not saved' => 'Ошибка! Новость не сохранена',
 	'News is successfully saved' => 'Новость успешно сохранена',
@@ -91,4 +90,9 @@ return [
 	'Update Client' => 'Обновить информацию клиента',
 	'Sorry, You don`t have permission to this command' => 'Простите, у Вас нет разрешений для этой команды',
 	'Order #{n} is updated again' => 'Заказ #{n} был изменен',
+    'New Order' => 'Новый заказ',
+    "Order Complete" => "Заказ выполнен",
+    "Order Prepared" => "Подготовлен для отправки",
+    "Order Delivered" => "В процессе доставки",
+    "Order Cancelled" => "Отменен",
 ];

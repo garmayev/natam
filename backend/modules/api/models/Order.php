@@ -28,7 +28,8 @@ class Order extends \common\models\Order
 			'customer' => $this->client->name,
 			'email' => $this->client->mail,
 			'phone' => "+{$this->client->phone}",
-			'contact' => $this->comment
+			'contact' => $this->comment,
+			'status' => $this->getStatusName(),
  		];
 	}
 
@@ -38,7 +39,7 @@ class Order extends \common\models\Order
 		foreach ($this->orderProducts as $item) {
 			$result["productRow"][] = [
 				"kod" => $item->product_id,
-				"article" => $this->article,
+				"article" => $item->product->article,
 				"name" => $item->product->title,
 				"characteristic" => null,
 				"unit" => "шт",

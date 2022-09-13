@@ -47,7 +47,7 @@ $totalCost = 0;
             <p>Дата доставки: <?= Yii::$app->formatter->asDatetime($model->delivery_date, "php:d M Y H:i") ?></p>
 			<?php
 			$delivery_price = intval($model->delivery_distance) * Settings::getDeliveryCost();
-			if ($model->delivery_city) {
+			if (is_null($model->delivery_city)) {
 				echo Html::tag("p", "Стоимость доставки: " . Yii::$app->formatter->asCurrency($delivery_price));
 			}
             if ( isset($model->comment) && $model->comment !== "" ) {
@@ -83,7 +83,7 @@ $totalCost = 0;
 					echo Html::tag("td", $cost);
 					echo Html::endTag("tr");
 				}
-				if ($model->delivery_distance) {
+				if (is_null($model->delivery_city)) {
                     $totalCost += $delivery_price;
 					echo Html::beginTag("tr");
 					echo Html::tag("td", "Доставка за пределы города", ['colspan' => 2]);

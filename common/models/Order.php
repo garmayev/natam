@@ -37,7 +37,6 @@ use common\models\staff\Employee;
  * @property TelegramMessage[] $messages
  * @property-read Company $company
  * @property-read mixed $statusName
- * @property string $article [varchar(255)]
  */
 class Order extends ActiveRecord
 {
@@ -110,7 +109,7 @@ class Order extends ActiveRecord
         return [
             [['delivery_date'], 'required'],
             [['client_id', 'location_id', 'delivery_type', 'created_at', 'delivery_city'], 'integer'],
-            [['comment', 'article'], 'string'],
+            [['comment'], 'string'],
             [['delivery_distance'], 'double'],
             [['delivery_distance'], 'default', 'value' => 0],
             [['client_id'], 'exist', 'skipOnError' => false, 'targetClass' => Client::className(), 'targetAttribute' => ['client_id' => 'id']],
@@ -322,7 +321,7 @@ class Order extends ActiveRecord
     public function getTotalPrice()
     {
         $sum = 0;
-        foreach ($this->productOrders as $productOrder) {
+        foreach ($this->orderProducts as $productOrder) {
             $sum += $productOrder->product->price * $productOrder->product_count;
         }
         return $sum;
@@ -395,7 +394,7 @@ class Order extends ActiveRecord
             $delivery_price = intval($this->delivery_distance) * Settings::getDeliveryCost();
             $result .= "<b>Стоимость доставки</b>: {$delivery_price}\n";
         }
-        $result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>{$this->client->phone}</a>\n";
+        $result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>+{$this->client->phone}</a>\n";
         $result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
         $result .= "<b>Комментарий</b>: " . $this->comment . "\n";
 //		Yii::error($this->getPrice());
@@ -425,7 +424,7 @@ class Order extends ActiveRecord
                 break;
             case self::STATUS_PREPARED:
                 if ($this->delivery_type == self::DELIVERY_STORE) {
-                    $employees = \garmayev\staff\models\Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->all();
+                    $employees = \garmayev\staff\models\Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->limit(5)->all();
                     foreach ($employees as $employee) {
                         $keyboard[] = [
                             [
@@ -453,5 +452,24 @@ class Order extends ActiveRecord
                 break;
         }
         return $keyboard;
+    }
+
+    public function deepClone()
+    {
+        $model = new Order();
+        $data = [];
+
+        $model->attributes = $this->attributes;
+        $model->status = Order::STATUS_NEW;
+        $model->save(false);
+        foreach ($this->orderProducts as $orderProduct) {
+            $data[] = [
+                "product_id" => $orderProduct->product_id,
+                "product_count" => $orderProduct->product_count
+            ];
+        }
+        $model->setProducts($data);
+        $model->save();
+        return $model;
     }
 }

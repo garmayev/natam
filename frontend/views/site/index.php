@@ -40,6 +40,10 @@ $count = count(Yii::$app->cart->getItems());
 if (!empty($success = Yii::$app->session->getFlash("success"))) {
     echo \yii\bootstrap4\Html::tag("div", $success, ["class" => 'alert']);
 }
+$this->registerJs(<<< JS
+console.log(window.location.href);
+JS
+);
 ?>
 <main>
     <section class="form" id="form">
@@ -485,7 +489,7 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
         </div>
     </section>
     <section class="buy">
-        <div class="container">
+        <div class="container-buy">
             <div class="buy_inner">
                 <h2 class="title white" data-aos="fade-right">
                     ПОКУПАЕМ Б/У <br/>

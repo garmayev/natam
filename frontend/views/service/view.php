@@ -10,10 +10,16 @@ use yii\helpers\Html;
  * @var $model Service
  */
 
+$this->registerCss(<<< CSS
+.about_info::before {
+display: none;
+}
+CSS
+)
 ?>
     <section class="about">
         <div class="container">
-            <div class="about_inner">
+            <div class="about_inner about-active">
                 <div class="about_content">
 					<?php
 					echo Html::tag("h2", $model->title, ["class" => "about_title"]);
