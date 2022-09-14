@@ -54,18 +54,18 @@ class TelegramController extends \yii\rest\Controller
 		if ( isset($data["callback_query"]) ) {
 			$user = $this->findUser($data["callback_query"]["from"]["id"]);
 		} elseif( isset($data["message"]) ) {
-            $user = $this->findUser($data["message"]["from"]["id"]);
-            if ( !empty($user) ) {
-                Yii::$app->user->switchIdentity($user, 0);
-                $this->enableCsrfValidation = false;
-                return parent::beforeAction($action);
-            } else {
-                if (preg_match('/(\/start)/', $data['message']['text'])) {
-                    return parent::beforeAction($action);
-                } else {
-                    $user = $this->findUser($data["message"]["from"]["id"]);
-                }
-            }
+        		$user = $this->findUser($data["message"]["from"]["id"]);
+	        	if ( !empty($user) ) {
+	        		Yii::$app->user->switchIdentity($user, 0);
+				$this->enableCsrfValidation = false;
+				return parent::beforeAction($action);
+			} else {
+            			if (preg_match('/(\/start)/', $data['message']['text'])) {
+                			return parent::beforeAction($action);
+            			} else {
+                			$user = $this->findUser($data["message"]["from"]["id"]);
+            			}
+        		}
 		}
 		if ( empty($user) ) {
 			$this->asJson([
@@ -468,23 +468,26 @@ class TelegramController extends \yii\rest\Controller
 	{
 		if (isset($args["order_id"])) {
 			$order = Order::findOne($args["order_id"]);
-            $last = Order::find()->where(["client_id" => $order->client_id])->andWhere(["location_id" => $order->location_id])->one();
-            if ( $last->created_at < (time() - 5) ) {
-                $copy = $order->deepClone();
-                $telegram->editMessageText([
-                    "message_id" => $telegram->input->callback_query->message["message_id"],
-                    'chat_id' => $telegram->input->callback_query->message["chat"]["id"],
-                    "text" => "Ваш заказ успешно повторен!",
-                    "parse_mode" => "html",
-                    "reply_markup" => json_encode([
-                        "inline_keyboard" => [
-                            [
-                                ["text" => "Назад", "callback_data" => "/all_orders"],
-                            ]
-                        ]
-                    ]),
-                ]);
-            }
+			$last = Order::find()->where(["client_id" => $order->client_id])->orderBy(['id' => SORT_DESC])->one();
+			\Yii::error($last->attributes);
+			\Yii::error(time() - 5);
+			\Yii::error( $last->created_at < (time() - 5) );
+			if ( $last->created_at < (time() - 5) ) {
+				$copy = $order->deepClone();
+				$telegram->editMessageText([
+					"message_id" => $telegram->input->callback_query->message["message_id"],
+					'chat_id' => $telegram->input->callback_query->message["chat"]["id"],
+					"text" => "Ваш заказ успешно повторен!",
+					"parse_mode" => "html",
+					"reply_markup" => json_encode([
+						"inline_keyboard" => [
+							[
+								["text" => "Назад", "callback_data" => "/all_orders"],
+							]
+						]
+					]),
+				]);
+			}
 //            foreach (Employee::find()->where(['state_id' => Order::STATUS_NEW]) as $employee) {
 //                TelegramMessage::send($employee, $copy);
 //            }

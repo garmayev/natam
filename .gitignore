@@ -35,17 +35,9 @@ phpunit.phar
 /.vagrant
 
 # ignore generated files
-#/frontend/web/index.php
-/frontend/web/index-test.php
-/frontend/web/robots.txt
-/backend/config/main-local.php
-/backend/web/index.php
-/backend/web/index-test.php
-/backend/web/robots.txt
-/frontend/web/spik.json
-/frontend/config/params-local.php
-/frontend/config/main-local.php
-/console/config/params-local.php
-/console/config/main-local.php
-/backend/config/params-local.php
-/backend/config/main-local.php
+*/frontend/web/index.php
+*/web/index-test.php
+frontend/web/robots.txt
+*/config/main-local.php
+*/web/spik.json
+*/config/params-local.php

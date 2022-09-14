@@ -113,11 +113,11 @@ class OrderController extends BaseController
 	{
 		$model = Order::findOne($id);
 		if (Yii::$app->user->can('employee')) {
-            $order_id = $model->id;
+        		$order_id = $model->id;
 			if ($model->delete()) {
-                foreach ($model->messages as $message) {
-                    $message->delete();
-                }
+            			foreach ($model->messages as $message) {
+                			$message->delete();
+            			}
 				Yii::$app->session->setFlash("success", Yii::t("app", "Order #{n} is successfully deleted!", ["n" => $id]));
 			} else {
 				Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order #{n} is not deleted!", ["n" => $id]));
