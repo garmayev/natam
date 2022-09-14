@@ -4,6 +4,10 @@ namespace backend\modules\api\controllers;
 
 use common\models\Product;
 use yii\data\ActiveDataProvider;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBasicAuth;
+use yii\filters\auth\HttpBearerAuth;
+use yii\filters\auth\QueryParamAuth;
 
 class ProductController extends \yii\rest\ActiveController
 {
@@ -20,24 +24,24 @@ class ProductController extends \yii\rest\ActiveController
             'view' => [
                 'class' => 'yii\rest\ViewAction',
                 'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
+//                'checkAccess' => [$this, 'checkAccess'],
             ],
             'create' => [
                 'class' => 'yii\rest\CreateAction',
                 'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
+//                'checkAccess' => [$this, 'checkAccess'],
                 'scenario' => $this->createScenario,
             ],
             'update' => [
                 'class' => 'yii\rest\UpdateAction',
                 'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
+//                'checkAccess' => [$this, 'checkAccess'],
                 'scenario' => $this->updateScenario,
             ],
             'delete' => [
                 'class' => 'yii\rest\DeleteAction',
                 'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
+//                'checkAccess' => [$this, 'checkAccess'],
             ],
             'options' => [
                 'class' => 'yii\rest\OptionsAction',
@@ -52,5 +56,19 @@ class ProductController extends \yii\rest\ActiveController
             'query' => $query,
             'pagination' => false,
         ]);
+    }
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::class,
+            'authMethods' => [
+                HttpBasicAuth::class,
+                HttpBearerAuth::class,
+                QueryParamAuth::class,
+            ],
+        ];
+        return $behaviors;
     }
 }

@@ -29,7 +29,7 @@ class Order extends \common\models\Order
 			'email' => $this->client->mail,
 			'phone' => "+{$this->client->phone}",
 			'contact' => $this->comment,
-			'status' => $this->getStatusName(),
+			'status' => $this->status,
  		];
 	}
 

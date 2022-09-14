@@ -4,6 +4,10 @@ namespace backend\modules\api\controllers;
 
 use backend\modules\api\models\Order;
 use yii\data\ActiveDataProvider;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBasicAuth;
+use yii\filters\auth\HttpBearerAuth;
+use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 use yii\web\Response;
 
@@ -45,6 +49,20 @@ class OrderController extends ActiveController
                 'class' => 'yii\rest\OptionsAction',
             ],
         ];
+    }
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::class,
+            'authMethods' => [
+                HttpBasicAuth::class,
+                HttpBearerAuth::class,
+                QueryParamAuth::class,
+            ],
+        ];
+        return $behaviors;
     }
 
     public function getAllData()
