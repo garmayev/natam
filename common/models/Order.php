@@ -484,7 +484,7 @@ class Order extends ActiveRecord
     public function createFile($path = null)
     {
         if ( is_null($path) ) {
-            $path = "C:/wamp/www/natam/frontend/web/xml/";
+            $path = Yii::getAlias("@frontend")."/web/xml/";
         }
         $fileName = "{$this->id}.xml";
         $template = '
