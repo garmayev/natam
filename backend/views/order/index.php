@@ -63,7 +63,7 @@ echo ExportMenu::widget([
 if (Yii::$app->user->can("employee")) {
 //	echo $this->render("_search", ["model" => $searchModel]);
 }
-//Yii::error(Yii::$app->formatter->asDate(Yii::$app->params['startDate'], 'y-MM-dd'));
+
 $columns = [
     [
         "attribute" => "id",
@@ -109,11 +109,11 @@ $columns = [
     ], [
         "attribute" => "comment",
         "format" => "html",
+        "headerOptions" => [
+            "class" => "col-xs-2"
+        ],
         "content" => function (Order $model, $key) {
-            if (isset($model->comment) && $model->comment != '') {
-                return Html::tag('div', $model->comment);
-            }
-            return Html::tag("p", Yii::t("yii", "(not set)"), ["class" => "not-set"]);
+            return Html::textarea("Order[comment]", $model->comment, ["class" => ["form-control", "order-comment"], "data-key" => $model->id]);
         }
     ],
     "price",
@@ -177,7 +177,8 @@ echo kartik\grid\GridView::widget([
 //    "perfectScrollbar" => true,
 ]);
 
-$this->registerJs("$('.comment').on('blur', function (e) {
+$this->registerJs("
+$('.order-comment').on('blur', function (e) {
 	$.ajax({
 		url: '/admin/order/update-comment',
 		method: 'get',
