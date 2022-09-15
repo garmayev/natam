@@ -51,14 +51,13 @@ use yii\helpers\Html;
  * @property string $plugin [char(64)]
  * @property string $authentication_string
  * @property string $password_expired [enum('N', 'Y')]
- * @property string $is_role [enum('N', 'Y')]
- * @property string $default_role [char(80)]
- * @property string $max_statement_time [decimal(12,6)]
- * @property string $password
  *
  * @property Client $client
  * @property Employee $employee
  * @property-read string $name
+ * @property int $password_last_changed [timestamp]
+ * @property int $password_lifetime [smallint(5) unsigned]
+ * @property string $account_locked [enum('N', 'Y')]
  */
 
 class User extends \dektrium\user\models\User
@@ -109,4 +108,9 @@ class User extends \dektrium\user\models\User
 		}
 		return $this->username;
 	}
+
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return User::findOne(1);
+    }
 }

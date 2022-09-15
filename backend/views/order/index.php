@@ -86,6 +86,12 @@ $columns = [
         "value" => function (Order $model) {
             return Html::a($model->client->name, ["client/view", "id" => $model->client_id]);
         },
+        "headerOptions" => [
+            "class" => ["hidden-xs"]
+        ],
+        "contentOptions" => [
+            "class" => ["hidden-xs"]
+        ]
     ], [
         "attribute" => "client.phone",
         "label" => Yii::t("app", "Customer`s phone"),
@@ -164,7 +170,7 @@ $columns = [
     ]
 ];
 
-echo kartik\grid\GridView::widget([
+echo yii\grid\GridView::widget([
     "dataProvider" => $orderProvider,
     "summary" => "",
     "filterModel" => $searchModel,

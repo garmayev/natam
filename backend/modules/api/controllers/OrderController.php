@@ -10,6 +10,7 @@ use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 use yii\web\Response;
+use yii\web\ServerErrorHttpException;
 
 class OrderController extends ActiveController
 {
@@ -33,12 +34,6 @@ class OrderController extends ActiveController
                 'modelClass' => $this->modelClass,
                 'checkAccess' => [$this, 'checkAccess'],
                 'scenario' => $this->createScenario,
-            ],
-            'update' => [
-                'class' => 'yii\rest\UpdateAction',
-                'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
-                'scenario' => $this->updateScenario,
             ],
             'delete' => [
                 'class' => 'yii\rest\DeleteAction',
@@ -75,6 +70,21 @@ class OrderController extends ActiveController
             'query' => $query,
             'pagination' => false,
         ]);
+    }
+
+    public function actionUpdate($id)
+    {
+        /**
+         * @var $model Order
+         */
+        $model = Order::findOne($id);
+
+        $model->load(\Yii::$app->request->getBodyParams(), '');
+        if ($model->save() === false && !$model->hasErrors()) {
+            throw new ServerErrorHttpException('Failed to update the object for unknown reason.');
+        }
+
+        return $model;
     }
 
     public function actionByStatus($status = null)

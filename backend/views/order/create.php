@@ -5,6 +5,7 @@ use common\models\Order;
 use common\models\OrderProduct;
 use common\models\Product;
 use common\models\search\OrderSearch;
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\web\View;
 use yii\helpers\Html;
@@ -24,27 +25,36 @@ $this->registerJsFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/
 $this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU");
 $this->registerCssFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/css/suggestions.min.css");
 if (Yii::$app->user->can('employee')) {
-	?>
+    ?>
     <div class="panel panel-default">
         <div class="panel-heading">
-			<?= Yii::t("app", "Information about Client") ?>
+            <?= Yii::t("app", "Information about Client") ?>
         </div>
         <div class="panel-body">
-			<?php
-			if (is_null($model->client)) {
-				$model->client = new Client();
-			}
-			echo $form->field($model, "client")->textInput(['name' => 'Order[client][name]'])->label(Yii::t('app', 'Customer`s name'));
-			echo $form->field($model, "client")->textInput(['name' => 'Order[client][phone]'])->label(Yii::t('app', 'Customer`s phone'));
-			echo $form->field($model, "client")->textInput(['name' => 'Order[client][email]'])->label(Yii::t('app', 'Customer`s email'));
-			?>
+            <?php
+            if (is_null($model->client)) {
+                $model->client = new Client();
+            }
+            echo $form->field($model, "client")->widget(Select2::class, [
+                'name' => 'Order[client][name]',
+                'data' => ArrayHelper::map(Client::find()->all(), 'id', 'name'),
+                'options' => ['placeholder' => 'Select a state ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'tags' => true,
+                    'dropdownParent' => '#kartik-modal'
+                ],
+            ])->label(Yii::t('app', 'Customer`s name'));
+            echo $form->field($model, "client")->textInput(['name' => 'Order[client][phone]'])->label(Yii::t('app', 'Customer`s phone'));
+            echo $form->field($model, "client")->textInput(['name' => 'Order[client][email]'])->label(Yii::t('app', 'Customer`s email'));
+            ?>
         </div>
     </div>
 
-	<?php
+    <?php
 } else {
-	$client = Client::findOne(['phone' => Yii::$app->user->identity->username]);
-	echo $form->field($model, 'client_id')->hiddenInput(['value' => $client->id])->label(false);
+    $client = Client::findOne(['phone' => Yii::$app->user->identity->username]);
+    echo $form->field($model, 'client_id')->hiddenInput(['value' => $client->id])->label(false);
 }
 ?>
 <?php
@@ -52,18 +62,18 @@ $allProducts = Product::find()->all();
 //$list = ArrayHelper::map(Product::find()->all(), "id", "title");
 $list = [];
 foreach ($allProducts as $product) {
-	$list[$product->id] = "{$product->title} ({$product->value})";
+    $list[$product->id] = "{$product->title} ({$product->value})";
 }
 
 $selector = Html::dropDownList(
-	"Order[products][{$index}][product_id]",
-	null,
-	$list,
-	[
-		"class" => ["form-control"],
-		"style" => "width: 20%",
-		"prompt" => "Выберите товар"
-	]
+    "Order[products][{$index}][product_id]",
+    null,
+    $list,
+    [
+        "class" => ["form-control"],
+        "style" => "width: 20%",
+        "prompt" => "Выберите товар"
+    ]
 );
 $js = "
 $(document).on('click', '.panel-heading', function(e){
@@ -82,11 +92,11 @@ $('[name=\'Client[phone]\']').mask('+7(999)999 9999');
 let myMap = myPlacemark = undefined
 ";
 if ($model->location) {
-	if ($model->location->latitude) {
-		$js .= ",latitude = " . $model->location->latitude . ",longitude = " . $model->location->longitude;
-	}
+    if ($model->location->latitude) {
+        $js .= ",latitude = " . $model->location->latitude . ",longitude = " . $model->location->longitude;
+    }
 } else {
-	$js .= ",latitude = undefined, longitude = undefined";
+    $js .= ",latitude = undefined, longitude = undefined";
 }
 $js .= ";
 ymaps.ready(init);
@@ -210,83 +220,83 @@ $this->registerCss("
 ?>
     <div class="panel panel-default">
         <div class="panel-heading" data-toggle="collapse" aria-controls="order-info">
-			<?= Yii::t("app", "Information about Order") ?>
+            <?= Yii::t("app", "Information about Order") ?>
         </div>
         <div class="panel-body" id="order-info">
-			<?php
-			if ($model->isNewRecord || is_null($model->location_id)) {
-				$location = new \common\models\Location();
-			} else {
-				$location = $model->location;
-			}
-			echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
-			echo $form->field($location, "title")->hiddenInput(['name' => 'Order[location][title]'])->label(false);
-			echo $form->field($location, "latitude", ["enableClientValidation" => false])->hiddenInput(['name' => 'Order[location][latitude]'])->label(false);
-			echo $form->field($location, "longitude", ["enableClientValidation" => false])->hiddenInput(['name' => 'Order[location][longitude]'])->label(false);
-			echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
-			echo $form->field($model, "status")->dropDownList(Order::getStatusList());
-			echo \kartik\datetime\DateTimePicker::widget([
-				'name' => 'Order[delivery_date]',
-				'value' => ($model->delivery_date > 0) ? Yii::$app->formatter->asDatetime($model->delivery_date, 'php:Y-m-d H:i') : "",
-				'options' => [
-					"id" => "order-delivery_date",
-					"placeholder" => Yii::t("app", "Delivery Date"),
-				],
-				"pluginOptions" => [
-					'daysOfWeekDisabled' => [0, 6],
-					'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
-					'minuteStep' => 30,
-					'startDate' => date("Y-m-d"),
-					'autoclose' => true,
-				]
-			]);
-			echo $form->field($model, 'delivery_type')->checkbox(['label' => 'Самовывоз']);
-			?>
+            <?php
+            if ($model->isNewRecord || is_null($model->location_id)) {
+                $location = new \common\models\Location();
+            } else {
+                $location = $model->location;
+            }
+            echo $form->field($model, "address")->textInput(["placeholder" => Yii::t("app", "Address")]);
+            echo $form->field($location, "title")->hiddenInput(['name' => 'Order[location][title]'])->label(false);
+            echo $form->field($location, "latitude", ["enableClientValidation" => false])->hiddenInput(['name' => 'Order[location][latitude]'])->label(false);
+            echo $form->field($location, "longitude", ["enableClientValidation" => false])->hiddenInput(['name' => 'Order[location][longitude]'])->label(false);
+            echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
+            echo $form->field($model, "status")->dropDownList(Order::getStatusList());
+            echo \kartik\datetime\DateTimePicker::widget([
+                'name' => 'Order[delivery_date]',
+                'value' => ($model->delivery_date > 0) ? Yii::$app->formatter->asDatetime($model->delivery_date, 'php:Y-m-d H:i') : "",
+                'options' => [
+                    "id" => "order-delivery_date",
+                    "placeholder" => Yii::t("app", "Delivery Date"),
+                ],
+                "pluginOptions" => [
+                    'daysOfWeekDisabled' => [0, 6],
+                    'hoursDisabled' => '0,1,2,3,4,5,6,7,8,20,21,22,23',
+                    'minuteStep' => 30,
+                    'startDate' => date("Y-m-d"),
+                    'autoclose' => true,
+                ]
+            ]);
+            echo $form->field($model, 'delivery_type')->checkbox(['label' => 'Самовывоз']);
+            ?>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading" data-toggle="collapse" aria-controls="order-controls">
-			<?= Yii::t("app", "Order content") ?>
+            <?= Yii::t("app", "Order content") ?>
         </div>
         <div class="panel-body" id="order-controls">
-			<?php
-			$op = ($model->orderProducts) ? $model->orderProducts[0] : new \common\models\OrderProduct();
-			\wbraganca\dynamicform\DynamicFormWidget::begin([
-				'widgetContainer' => 'dynamicform_wrapper',
-				'widgetBody' => '.container-items',
-				'widgetItem' => '.item',
-				'model' => $op,
-				'formId' => "w0",
-				'insertButton' => '.add-product',
-				'deleteButton' => '.delete',
-				"min" => 1,
-				'formFields' => [
-					'product_id',
-					'product_count',
-					'order_id',
-				],
-			]);
-			// necessary for update action.
-			echo Html::beginTag("div", ["class" => "container-items"]);
-			//            var_dump($model->orderProducts); die;
-			$ops = ($model->orderProducts) ? $model->orderProducts : [new OrderProduct()];
-			foreach ($ops as $index => $orderProduct) {
-				echo Html::beginTag("div", ["class" => "item"]);
-				echo Html::activeHiddenInput($orderProduct, "[{$index}]order_id", ["value" => $model->id, "name" => "Order[products][{$index}][order_id]"]);
-				echo $form->field($orderProduct, "[{$index}]product_id")->dropDownList($list, [
-					"class" => ["form-control"],
+            <?php
+            $op = ($model->orderProducts) ? $model->orderProducts[0] : new \common\models\OrderProduct();
+            \wbraganca\dynamicform\DynamicFormWidget::begin([
+                'widgetContainer' => 'dynamicform_wrapper',
+                'widgetBody' => '.container-items',
+                'widgetItem' => '.item',
+                'model' => $op,
+                'formId' => "w0",
+                'insertButton' => '.add-product',
+                'deleteButton' => '.delete',
+                "min" => 1,
+                'formFields' => [
+                    'product_id',
+                    'product_count',
+                    'order_id',
+                ],
+            ]);
+            // necessary for update action.
+            echo Html::beginTag("div", ["class" => "container-items"]);
+            //            var_dump($model->orderProducts); die;
+            $ops = ($model->orderProducts) ? $model->orderProducts : [new OrderProduct()];
+            foreach ($ops as $index => $orderProduct) {
+                echo Html::beginTag("div", ["class" => "item"]);
+                echo Html::activeHiddenInput($orderProduct, "[{$index}]order_id", ["value" => $model->id, "name" => "Order[products][{$index}][order_id]"]);
+                echo $form->field($orderProduct, "[{$index}]product_id")->dropDownList($list, [
+                    "class" => ["form-control"],
                     "name" => "Order[products][{$index}][product_id]",
-					"prompt" => "Выберите товар"
-				])->label(false);
-				echo $form->field($orderProduct, "[{$index}]product_count")->textInput(["placeholder" => "Введите количество", "name" => "Order[products][{$index}][product_count]"])->label(false);
-				echo Html::endTag("div");
-			}
-			echo Html::endTag("div");
-			echo Html::tag("p", Html::a(Yii::t("app", "Append Product"), "#", ["class" => ["btn", "btn-success", "add-product"]]));
-			\wbraganca\dynamicform\DynamicFormWidget::end();
-			echo Html::submitButton(Yii::t("app", "Save"), ["class" => ["btn", "btn-primary"], "style" => "margin-right: 10px;"]);
-			echo Html::a(Yii::t("app", "Cancel"), Yii::$app->request->referrer, ["class" => ["btn", "btn-danger"]]);
-			?>
+                    "prompt" => "Выберите товар"
+                ])->label(false);
+                echo $form->field($orderProduct, "[{$index}]product_count")->textInput(["placeholder" => "Введите количество", "name" => "Order[products][{$index}][product_count]"])->label(false);
+                echo Html::endTag("div");
+            }
+            echo Html::endTag("div");
+            echo Html::tag("p", Html::a(Yii::t("app", "Append Product"), "#", ["class" => ["btn", "btn-success", "add-product"]]));
+            \wbraganca\dynamicform\DynamicFormWidget::end();
+            echo Html::submitButton(Yii::t("app", "Save"), ["class" => ["btn", "btn-primary"], "style" => "margin-right: 10px;"]);
+            echo Html::a(Yii::t("app", "Cancel"), Yii::$app->request->referrer, ["class" => ["btn", "btn-danger"]]);
+            ?>
         </div>
     </div>
 <?php

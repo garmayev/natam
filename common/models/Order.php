@@ -156,8 +156,10 @@ class Order extends ActiveRecord
             $data[$scope]["delivery_type"] = ($data[$scope]["delivery_type"] === "on") ? Order::DELIVERY_SELF : Order::DELIVERY_STORE;
         }
 
-        $client = Client::findOrCreate($data[$scope]["client"]);
-        $this->client_id = $client->id;
+        if ( isset($data[$scope]["client"]) ) {
+            $client = Client::findOrCreate($data[$scope]["client"]);
+            $this->client_id = $client->id;
+        }
 
         return parent::load($data, $formName);
     }
@@ -429,7 +431,7 @@ class Order extends ActiveRecord
                 break;
             case self::STATUS_PREPARED:
                 if ($this->delivery_type == self::DELIVERY_STORE) {
-                    $employees = \garmayev\staff\models\Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->limit(5)->all();
+                    $employees = \common\models\staff\Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->limit(5)->all();
                     foreach ($employees as $employee) {
                         $keyboard[] = [
                             [
@@ -487,8 +489,7 @@ class Order extends ActiveRecord
             $path = Yii::getAlias("@frontend")."/web/xml/";
         }
         $fileName = "{$this->id}.xml";
-        $template = '
-<?xml version="1.0" encoding="UTF-8"?>
+        $template = '<?xml version="1.0" encoding="UTF-8"?>
 <Order>
 	<parameter>
             <numberDate>'.Yii::$app->formatter->asDatetime($this->created_at, "php:d-m-Y H:i").'</numberDate>
@@ -516,7 +517,7 @@ class Order extends ActiveRecord
 			<quantity>'.$orderProduct->product_count.'</quantity>
 			<cost>'.$orderProduct->product->price.'</cost>
             <sum>'.($orderProduct->product_count * $orderProduct->product->price).'</sum>
-			<rateNDS>безНДС</rateNDS>
+			<rateNDS>20</rateNDS>
 			<sumNDS>0</sumNDS>
 		</productRow>
             ';

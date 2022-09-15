@@ -5,6 +5,7 @@ use common\models\Order;
 use common\models\OrderProduct;
 use common\models\Product;
 use common\models\search\OrderSearch;
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\web\View;
 use yii\helpers\Html;
@@ -28,7 +29,9 @@ if (Yii::$app->user->can('employee')) {
 		</div>
 		<div class="panel-body">
 			<?php
-			echo $form->field($model, "client[name]")->label(Yii::t('app', 'Customer`s name'));
+			echo $form->field($model, "client[name]")->widget(Select2::class, [
+
+            ])->label(Yii::t('app', 'Customer`s name'));
 			echo $form->field($model, "client[phone]")->label(Yii::t('app', 'Customer`s phone'));
 			echo $form->field($model, "client[email]")->label(Yii::t('app', 'Customer`s email'));
 			?>
