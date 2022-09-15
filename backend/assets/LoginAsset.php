@@ -5,10 +5,10 @@ namespace backend\assets;
 class LoginAsset extends \yii\web\AssetBundle
 {
     public $css = [
-        'css/admin_login.css',
+        '/admin/css/lk-natam-style.css',
     ];
 
     public $js = [
-//        'js/main.js'
+        '/admin/js/lk-natam-js.js'
     ];
 }
