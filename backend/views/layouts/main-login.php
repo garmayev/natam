@@ -67,7 +67,7 @@ use yii\helpers\Html;
                 <a href="#" class="login-footer__agreement">Пользовательское соглашение</a>
             </div>
             <div class="login-footer__contacts">
-                <a href="tel:88001012316" class="login-footer__contacts-text">8 800 101 23 16</a>
+                <a href="tel:88001012316" class="login-footer__contacts-text">8 800 550 61 10</a>
             </div>
         </div>
     </div>
