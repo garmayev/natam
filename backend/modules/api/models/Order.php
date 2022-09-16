@@ -32,6 +32,7 @@ class Order extends \common\models\Order
 			'numberDate' => \Yii::$app->formatter->asDate($this->created_at, "php:d-m-Y H:i"),
 			'numberOrder' => $this->id,
             'IDЗаказа' => $this->id,
+            'organization' => $this->client->company_id,
 			'INN' => isset($this->client->company_id) ? $this->client->organization->inn : null,
 			'customer' => $this->client->name,
 			'email' => $this->client->mail,

@@ -8,9 +8,10 @@
             <customer>Гармаев Бато</customer>
             <email></email>
             <phone>+79503975524</phone>
-            <contact></contact>
+            <contact>Проверка комментария</contact>
         </parameter>
 	<Tabl>
+
 		<productRow>
 			<kod>16</kod>
 			<article></article>
