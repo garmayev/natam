@@ -39,7 +39,7 @@ $totalCost = 0;
 			<?php
 			if ($model->delivery_type !== Order::DELIVERY_SELF) {
 				?>
-                <p>Адрес доставки: <?= isset($model->address) ? $model->address : $model->location->title ?></p>
+                <p>Адрес доставки: <?= isset($model->location_id) ? $model->location->title : $model->address ?></p>
 				<?php
 			}
 			?>
