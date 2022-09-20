@@ -25,7 +25,7 @@ return [
 	"Customer`s name" => "ФИО заказчика",
 	"Customer`s phone" => "Телефон заказчика",
 	"Customer`s email" => "E-mail заказчика",
-	"Customer`s company" => "Организация заказчика",
+	"Customer`s company" => "Заказчик",
 
 	'You have {n} new orders' => 'У вас {n} новых заказов',
 	'Append Product' => 'Добавить',

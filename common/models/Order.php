@@ -489,38 +489,39 @@ class Order extends ActiveRecord
             $path = Yii::getAlias("@frontend")."/web/xml/";
         }
         $fileName = "{$this->id}.xml";
-        $template = '<?xml version="1.0" encoding="UTF-8"?>
+        $template = '<?xml version="1.0" encoding="UTF-8" ?>
 <Order>
 	<parameter>
-            <numberDate>'.Yii::$app->formatter->asDatetime($this->created_at, "php:d-m-Y H:i").'</numberDate>
-            <numberOrder>'.$this->id.'</numberOrder>
-            <INN>';
+		<numberDate>'.Yii::$app->formatter->asDate($this->created_at, "php:d-m-Y").'</numberDate>
+		<numberOrder>'.$this->id.'</numberOrder>
+		<id>'.$this->id.'</id>
+		<status>'.$this->status.'</status>
+		<organization>1</organization>
+		<inn>';
         if ( $this->company ) {
             $template .= $this->company->inn;
         }
-        $template .= '</INN>
-            <customer>'.$this->client->name.'</customer>
-            <email>'.$this->client->email.'</email>
-            <phone>+'.$this->client->phone.'</phone>
-            <contact>'.$this->comment.'</contact>
-        </parameter>
-	<Tabl>
-';
+        $template .= '</inn>
+		<customer>'.$this->client->name.'</customer>
+		<email>'.$this->client->email.'</email>
+		<phone>'.$this->client->phone.'</phone>
+		<contact>'.$this->comment.'</contact>
+	</parameter>
+	<Tabl>';
         foreach ($this->orderProducts as $orderProduct) {
             $template .= '
 		<productRow>
-			<kod>'.$orderProduct->product_id.'</kod>
-			<article></article>
+			<kod>'.$orderProduct->product->article.'</kod>
+			<article>'.$orderProduct->product_id.'</article>
 			<name>'.$orderProduct->product->title.'</name>
-            <characteristic>'.$orderProduct->product->value.'</characteristic>
+			<characteristic>'.$orderProduct->product->value.'</characteristic>
 			<unit>шт</unit>
 			<quantity>'.$orderProduct->product_count.'</quantity>
 			<cost>'.$orderProduct->product->price.'</cost>
-            <sum>'.($orderProduct->product_count * $orderProduct->product->price).'</sum>
+			<sum>'.($orderProduct->product_count * $orderProduct->product->price).'</sum>
 			<rateNDS>20</rateNDS>
 			<sumNDS>0</sumNDS>
-		</productRow>
-            ';
+		</productRow>';
         }
         $template .= '
 	</Tabl>
