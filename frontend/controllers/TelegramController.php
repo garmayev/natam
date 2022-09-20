@@ -422,7 +422,7 @@ class TelegramController extends \yii\rest\Controller
 				]);
 
 			} else {
-				$telegram->editMessageText([
+/*				$telegram->editMessageText([
 					"chat_id" => $chat_id,
 					"message_id" => $telegram->input->callback_query->message['message_id'],
 					"text" => "Список ваших заказов\n\nНажмите на соответствующий заказ для получения более развернутой информации",
@@ -430,7 +430,7 @@ class TelegramController extends \yii\rest\Controller
 						"inline_keyboard" => $keyboard
 					])
 				]);
-			}
+*/			}
 		} else {
 			$telegram->sendMessage([
 				'chat_id' => $telegram->input->message->chat->id,
@@ -443,7 +443,7 @@ class TelegramController extends \yii\rest\Controller
 	{
 		if (isset($args["order_id"])) {
 			$order = Order::findOne($args["order_id"]);
-			\Yii::error($order->generateTelegramText());
+//			\Yii::error($order->generateTelegramText());
 			$telegram->editMessageText([
 				"message_id" => $telegram->input->callback_query->message["message_id"],
 				'chat_id' => $telegram->input->callback_query->message["chat"]["id"],

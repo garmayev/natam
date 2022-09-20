@@ -1289,8 +1289,6 @@ main {
   width: 49%;
   padding: 50px 0;
   position: relative;
-  display: flex;
-  justify-content: flex-end;
 }
 
 .about_info::before {

@@ -127,13 +127,13 @@ JS
                                     'type' => DateTimePicker::TYPE_INPUT,
                                     'options' => [
                                         'class' => 'form',
-                                        'autocomplete' => 'qwsedrfrgtghyhuj',
+                                        // 'autocomplete' => true,
                                         'id' => 'order-delivery_date',
                                         'placeholder' => Yii::t('app', 'Delivery Date'),
                                         'data-required' => "true"
                                     ],
                                     'pluginOptions' => [
-                                        'startDate' => date('Y-m-d HH:00'),
+                                        'startDate' => date('Y-m-d H:00'),
                                         'daysOfWeekDisabled' => [0],
                                         'minuteStep' => 60,
                                         'autoclose' => true,
@@ -147,7 +147,7 @@ JS
                                             if ((typeof e.delegateTarget[index] === \"object\") && (e.delegateTarget[index] !== null)) {
                                                 if (e.delegateTarget[index].hasOwnProperty(\"krajeeDatetimepicker\")) {
                                                     picker = e.delegateTarget[index];
-                                                    console.log(picker);
+                                                    // console.log(picker);
                                                     break;
                                                 }
                                             }
