@@ -67,16 +67,17 @@ CSS )
 
 <footer class="login-footer">
     <div class="login-size-wrapper">
-        <div class="login-footer-info">
-            <div class="login-footer-company">
-                <a href="#" class="login-footer__agreement">Пользовательское соглашение</a>
-            </div>
-            <div class="login-footer__contacts">
-                <a href="tel:88001012316" class="login-footer__contacts-text">8 800 550 61 10</a>
-            </div>
-        </div>
+	<div class="login-footer-info">
+	    <div class="login-footer-company">
+		<a href="#" class="login-footer__agreement">Created by <span class="login-footer__agreement-span">AMGCompany </span>© 2022</a>
+	    </div>
+	    <div class="login-footer__contacts">
+		<a href="tel:88005506110" class="login-footer__contacts-text">8 800 550 61 10</a>
+	    </div>
+	</div>
     </div>
 </footer>
+
 <?php $this->endBody() ?>
 </body>
 <?php $this->endPage() ?>
