@@ -9,6 +9,11 @@ use yii\helpers\Html;
 
 //AppAsset::register($this);
 \backend\assets\LoginAsset::register($this);
+$this->registerCss(<<< CSS
+    .login-form-content::after {
+        background: none;
+    }
+CSS )
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -31,7 +36,7 @@ use yii\helpers\Html;
             <div class="login-form-slide">
                 <div class="login-form-content">
                     <h1 class="login__title">Вход</h1>
-                    <p class="login__text">Добро пожаловать в AMG Systems</p>
+                    <p class="login__text">Добро пожаловать в <img src="/img/logo_amgsystems_new.svg" height="23px"></p>
                     <?php
                     $form = \yii\widgets\ActiveForm::begin([
                         "options" => ["class" => "login-form"],
