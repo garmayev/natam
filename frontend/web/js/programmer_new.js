@@ -148,7 +148,7 @@ $(".cart_product_id").on('change', (e) => {
     let target = $(e.currentTarget);
     let product_id = target.val();
     $.ajax({
-        url: '/product/get-product',
+        url: '/product/get-product', // /products/get-product?id=${product_id}
         data: {id: product_id},
         success: (response) => {
             console.log(response);
