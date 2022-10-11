@@ -115,7 +115,11 @@ $(() => {
     }
 
     function getClientInfo(client) {
-        return `<div><b>ФИО клиента</b>: ${client.name}</div><div><b>Номер телефона</b>: <a href="tel:${client.phone}">${client.phone}</a></div>`;
+        if ( client ) {
+            return `<div><b>ФИО клиента</b>: ${client.name}</div><div><b>Номер телефона</b>: <a href="tel:${client.phone}">${client.phone}</a></div>`;
+        } else {
+            return `<div></div>`;
+        }
     }
 
     function getAddress(item) {
