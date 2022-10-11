@@ -358,7 +358,10 @@ JS
                             token: '2c9418f4fdb909e7469087c681aac4dd7eca158c',
                             type: 'ADDRESS',
                             constraints: {
-                                locations: {region: 'Бурятия'},
+                                locations: [
+                                    {region: 'Бурятия'},
+                                    {region: 'Забайкальский'}
+                                ],
                             },
                             onSelect: function (suggestion) {
                                 ymaps.geocode(suggestion.value, {

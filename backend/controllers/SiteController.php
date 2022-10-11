@@ -105,12 +105,14 @@ class SiteController extends Controller
 		$units = [];
 		$token = \Yii::$app->runAction('cars/login')["SessionId"];
 		$ids = \Yii::$app->runAction('cars/units', ['token' => "$token"]);
-		foreach ( $ids["Units"] as $id ) {
-			$units[$id["UnitId"]] = [
-				"name" => $id["Name"],
-				"driver" => Employee::findOne(["car" => $id["UnitId"]])
-			];
-		}
+        if ( $ids ) {
+            foreach ($ids["Units"] as $id) {
+                $units[$id["UnitId"]] = [
+                    "name" => $id["Name"],
+                    "driver" => Employee::findOne(["car" => $id["UnitId"]])
+                ];
+            }
+        }
 		Yii::$app->response->format = Response::FORMAT_HTML;
 		return $units;
 	}
