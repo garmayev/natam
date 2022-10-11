@@ -578,7 +578,7 @@ main {
   padding-bottom: 90px;
   padding-right: 20px;
   position: relative;
-  max-height: none !important;
+  /*max-height: none !important;*/
 }
 
 .form_inner form .form_content {
@@ -662,7 +662,7 @@ main {
 }
 
 .form_inner form label {
-  padding-left: 6%;
+  /*padding-left: 6%;*/
   font-size: 14px;
   color: #ffffff;
   font-weight: 400;

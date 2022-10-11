@@ -182,9 +182,8 @@ JS
                             </div>
                         </div>
                         <div id="map" style=""></div>
-                        <div class="form-group"
-                             style="display: flex; flex-direction: row; justify-content: space-between">
-                            <div style="display: flex; flex-direction: row-reverse">
+                        <div class="form-group">
+                            <div class="form-group__elem" style="/*display: flex; flex-direction: row-reverse*/">
                                 <label for="delivery_type"
                                        style="font-size: 18px; font-weight: bold; text-transform: uppercase;">Самовывоз</label>
                                 <input type="checkbox" name="Order[delivery_type]" id="delivery_type"
