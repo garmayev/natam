@@ -150,7 +150,7 @@ $(() => {
         for (const index in response) {
             let item = response[index];
             if (item.order.status < 4) {
-                console.log(item);
+                // console.log(item);
                 if (orderCollection[item.id] === undefined) {
                     if (item.location) {
                         orderCollection[item.id] = {
@@ -208,6 +208,7 @@ $(() => {
                 async: false,
                 data: {token: app.login.SessionId},
                 success: (response) => {
+		    console.log(response);
                     app.allUnits = response.Units;
                 },
                 error: (e) => {
