@@ -546,6 +546,13 @@ class TelegramController extends \yii\rest\Controller
 						Yii::error($order->getErrorSummary(true));
 					} else {
 						TelegramMessage::send($employee, $order);
+                        if ( !empty($order->client->chat_id) ) {
+                            Yii::$app->telegram->sendMessage([
+                                'chat_id' => $order->client->chat_id,
+                                'text' => "По вашему заказу #$order->id ожидайте доставку в течении 2-х часов",
+                                'parse_mode' => 'HTML'
+                            ]);
+                        }
 					}
 				} else {
                     $messages = TelegramMessage::find()
