@@ -57,13 +57,6 @@ if (Yii::$app->user->isGuest) {
         ) ?>
 
     </div>
-    <script type="text/javascript">(function (c, s, t, r, e, a, m) {
-            c[e] = c[e] || function () {
-                (c[e].q = c[e].q || []).push(arguments)
-            }, c[e].p = r, a = s.createElement(t), m = s.getElementsByTagName(t)[0], a.async = 1, a.src = r, m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', 'https://c.sberlead.ru/clickstream.bundle.js', 'csa');
-        csa('init', {analyticsId: 'ddd29733-cb08-472a-9035-f89a32cee563'}, true, true);</script>
-
     <?php $this->endBody() ?>
     </body>
     </html>
