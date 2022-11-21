@@ -83,10 +83,12 @@ class StaffController extends BaseController
 	public function cars()
 	{
 		$units = [];
-		$token = \Yii::$app->runAction('cars/login')["SessionId"];
-		$ids = \Yii::$app->runAction('cars/units', ['token' => "$token"]);
-		foreach ( $ids["Units"] as $id ) {
-			$units[$id["UnitId"]] = $id["Name"];
+		// $token = \Yii::$app->runAction('/cars/login')["SessionId"];
+		// $ids = \Yii::$app->runAction('/cars/units', ['token' => $token]);
+		if (isset($ids)) {
+			foreach ( $ids["Units"] as $id ) {
+				$units[$id["UnitId"]] = $id["Name"];
+			}
 		}
 		return $units;
 	}
