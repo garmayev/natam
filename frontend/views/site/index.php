@@ -1,18 +1,14 @@
 <?php
 
 use common\models\Client;
-use common\models\Order;
-use common\models\Product;
 use common\models\Service;
 use common\models\Settings;
 use common\models\Ticket;
 use kartik\datetime\DateTimePicker;
-use yii\web\View;
 use yii\data\ActiveDataProvider;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\widgets\ActiveForm;
+use yii\web\View;
 use yii\widgets\ListView;
 
 /**
@@ -126,7 +122,7 @@ JS
                                     'name' => 'Order[delivery_date]',
                                     'type' => DateTimePicker::TYPE_INPUT,
                                     'options' => [
-                                        'class' => 'form',
+                                        'class' => ['form'],
                                         // 'autocomplete' => true,
                                         'id' => 'order-delivery_date',
                                         'placeholder' => Yii::t('app', 'Delivery Date'),
@@ -402,6 +398,7 @@ JS
                         });
                     }
 
+                    $("#order-delivery_date").removeClass("form-control")
                     $("div.swiper-button-next").on('click', (e) => {
                         index++;
                         if ($('.form_item > .form_select').length) {
@@ -418,11 +415,14 @@ JS
                     })
                     $("#delivery_type").on('change', (e) => {
                         if ($(e.currentTarget).is(":checked")) {
-                            $("#order-address").addClass("disabled").attr({disabled: "disabled"}).val('');
+                            let date = new Date();
+                            $("#order-address").addClass("disabled").attr({disabled: "disabled"});
+                            $("#order-delivery_date").addClass("disabled").attr({disabled: "disabled"}).val(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`);
                             myMap.destroy();
                             myMap = undefined;
                         } else {
                             $("#order-address").removeClass("disabled").removeAttr("disabled");
+                            $("#order-delivery_date").removeClass("disabled").removeAttr("disabled");
                             initMap();
                         }
                     })
