@@ -1,4 +1,4 @@
-if ((window.location.pathname !== `/`) ) {
+if ((window.location.pathname !== `/`)) {
     $("header.header--indexPage").removeClass("header--indexPage");
 } else {
 
@@ -33,7 +33,7 @@ $(".main_inner > .blue, .main_content > .blue").on("click", (e) => {
         // e.preventDefault();
         // console.log("CLICK")
         // $("html, body").animate({
-    	//     scrollTop: $("#product").offset().top
+        //     scrollTop: $("#product").offset().top
         // });
     }
 })
@@ -60,11 +60,15 @@ function createElement(tag, value, attr, event) {
 
 function rebuild() {
     counter = 0;
+
     function build_select(options) {
         // console.log(options);
         let attr = {};
         let select_container = createElement("div", null, {class: 'form_select'});
-        let select_element = createElement("select", null, {value: options.product_id, "name": "Order[products]["+counter+"][product_id]"});
+        let select_element = createElement("select", null, {
+            value: options.product_id,
+            "name": "Order[products][" + counter + "][product_id]"
+        });
         for (const index in products) {
             if (index == options.product_id) {
                 attr = {value: index, "selected": "selected"};
@@ -93,7 +97,7 @@ function rebuild() {
                     let count = createElement("input", null, {
                         type: 'text',
                         value: response[index].quantity,
-                        name: "Order[products]["+counter+"][product_count]",
+                        name: "Order[products][" + counter + "][product_count]",
                         style: "width: 80%",
                     });
                     let drop = createElement("a", null, {
@@ -105,7 +109,7 @@ function rebuild() {
                     select_container.appendChild(count);
                     select_container.appendChild(drop);
                     container.find(".form_item:last-child").append(select_container);
-		    counter++;
+                    counter++;
                 }
             } else {
                 container.find(".form_item:first-child").html("");
@@ -155,4 +159,12 @@ $(".cart_product_id").on('change', (e) => {
             target.next().html(response.price + "<span> руб.</span>");
         }
     })
+});
+
+$(".btn.recall").on("click", (e) => {
+    e.preventDefault();
+    $(".form_tab button:first-child").trigger("click");
+    $('html, body').animate({
+        scrollTop: $('#form').offset().top
+    });
 });
