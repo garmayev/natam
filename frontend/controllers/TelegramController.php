@@ -469,9 +469,6 @@ class TelegramController extends \yii\rest\Controller
 		if (isset($args["order_id"])) {
 			$order = Order::findOne($args["order_id"]);
 			$last = Order::find()->where(["client_id" => $order->client_id])->orderBy(['id' => SORT_DESC])->one();
-			// \Yii::error($last->attributes);
-			// \Yii::error(time() - 5);
-			// \Yii::error( $last->created_at < (time() - 5) );
 			if ( $last->created_at < (time() - 5) ) {
 				$copy = $order->deepClone();
 				$telegram->editMessageText([
@@ -488,9 +485,6 @@ class TelegramController extends \yii\rest\Controller
 					]),
 				]);
 			}
-//            foreach (Employee::find()->where(['state_id' => Order::STATUS_NEW]) as $employee) {
-//                TelegramMessage::send($employee, $copy);
-//            }
 		}
 	}
 
