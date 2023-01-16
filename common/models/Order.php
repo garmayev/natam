@@ -108,7 +108,6 @@ class Order extends ActiveRecord
     public function rules()
     {
         return [
-            [['delivery_date'], 'required'],
             [['client_id', 'location_id', 'delivery_type', 'created_at', 'delivery_city', 'telegram'], 'integer'],
             [['comment'], 'string'],
             [['delivery_distance'], 'double'],

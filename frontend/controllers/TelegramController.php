@@ -67,6 +67,7 @@ class TelegramController extends \yii\rest\Controller
             			}
         		}
 		}
+		if ( $user->id === 1 ) \Yii::error($data);
 		if ( empty($user) ) {
 			$this->asJson([
 				'code' => 'ERROR',
@@ -320,7 +321,7 @@ class TelegramController extends \yii\rest\Controller
 		return ["ok" => false];
 	}
 
-	public function actionCheck()
+	public function actionTelegram()
 	{
 		$telegram = Yii::$app->telegram;
 		Command::run("/start", [$this, "start"]);
@@ -331,6 +332,8 @@ class TelegramController extends \yii\rest\Controller
 		Command::run("/all_orders", [$this, "orders"]);
 		Command::run("/order", [$this, "view"]);
 		Command::run("/copy", [$this, "copy"]);
+		Command::run("/startgame", [$this, "startgame"]);
+		Command::run("game=personal", [$this, "game"]);
 //		Command::run("/status_store", [$this, "status_store"]);
 	}
 
@@ -592,5 +595,37 @@ class TelegramController extends \yii\rest\Controller
 			$text = Yii::t("telegram", "You don`t have permissions for this action");
 			Yii::error($text);
 		}
+	}
+
+	public static function startgame($telegram, $args = [])
+	{
+		$telegram->sendMessage([
+			"chat_id" => $telegram->input->message->chat->id,
+			"text" => "Start Game?",
+			"reply_markup" => json_encode([
+				"inline_keyboard" => [
+					[["text" => "Personal", "callback_data" => "game=personal"]]
+				]
+			])
+		]);
+	}
+
+	public static function game($telegram, $args = [])
+	{
+		\Yii::error("send game url?");
+		$telegram->sendGame([
+			"chat_id" => $telegram->input->callback_query->message["chat"]["id"],
+			"game_short_name" => "personal",
+			"reply_markup" => json_encode([
+				"inline_keyboard" => [
+					[["text" => "Start", "url"=> "https://t.me/share/url?url=https://natam03.ru/telegram/game"]]
+				]
+			])
+		]);
+	}
+
+	public function actionGame()
+	{
+		return $this->render('game');
 	}
 }
