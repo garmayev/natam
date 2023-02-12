@@ -50,7 +50,7 @@ use yii\widgets\Menu;
 					<p class="main_text">
 						с доставкой и самовывозом по всей России
 					</p>
-                    <?= Html::a("ОФОРМИТЬ ЗАКАЗ", Url::to("/#product"), ["class" => ["btn", "blue"], "style" => "padding: 15px 25px;"]) ?>
+                    <?= Html::a("ОФОРМИТЬ ЗАКАЗ", Url::to("/#product"), ["class" => ["btn"], "style" => "padding: 15px 25px;"]) ?>
 				</div>
                 <div class="main_content">
                     <div class="main_content_inner">
@@ -61,7 +61,7 @@ use yii\widgets\Menu;
                             с доставкой и самовывозом по всей России
                         </p>
                     </div>
-                    <a href="/#product" class="btn blue" style="padding: 15px 20px">ОФОРМИТЬ ЗАКАЗ</a>
+                    <a href="/#product" class="btn" style="padding: 15px 20px">ОФОРМИТЬ ЗАКАЗ</a>
                     <p class="header_price">
                         <img src="/img/price.svg" alt="icon">
                         выгодные цены <br>
@@ -73,7 +73,7 @@ use yii\widgets\Menu;
 				<a href="tel:+73012204056" class="phone">
 					+7 3012 20 40 56
 				</a>
-				<a href="#" class="btn recall">
+				<a href="#" class="btn recall blue">
 					<img src="/img/phone.svg" alt="phone" />
 					Заказать звонок
 				</a>

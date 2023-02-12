@@ -16,10 +16,10 @@ $this->beginPage();
 $menu = [
     ["label" => Yii::t("app", "About company"), "url" => Url::to("/site/about")],
     ["label" => "Технические газы", "url" => Url::to("/#product")],
+    ["label" => "Товары", "url" => Url::to("/site/addition")],
     ["label" => "Наши услуги", "url" => Url::to("/service/index")],
     ["label" => Yii::t("app", "Vacancy"), "url" => Url::to("/vacancy/index")],
     ["label" => "Контакты", "url" => Url::to("/contact")],
-    ["label" => "Каталог", "url" => Url::to("/site/addition")]
 ];
 
 ?>

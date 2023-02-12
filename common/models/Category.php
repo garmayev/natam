@@ -14,6 +14,7 @@ use Yii;
  * @property int $main [int(11)]
  *
  * @property Product[] $products
+ * @property int $count
  */
 class Category extends \yii\db\ActiveRecord
 {
@@ -38,6 +39,17 @@ class Category extends \yii\db\ActiveRecord
 	        [['main'], 'integer'],
 	        [['main'], 'default', 'value' => true],
         ];
+    }
+
+    public function fields()
+    {
+	return [
+	    'id',
+	    'title',
+	    'thumbs',
+	    'content',
+	    'count',
+	];
     }
 
     /**
@@ -73,5 +85,10 @@ class Category extends \yii\db\ActiveRecord
     public function getProducts()
     {
         return $this->hasMany(Product::className(), ['category_id' => 'id']);
+    }
+
+    public function getCount()
+    {
+	return count($this->products) > 0;
     }
 }

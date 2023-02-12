@@ -53,18 +53,22 @@ class NotifyController extends \yii\console\Controller
 			} else {
 				$this->stdout("\tОтправка уведомления не требуется");
 			} */
+			$s = ['950683849'];
 			if ( $this->isNeedAlert($model) ) {
 				$this->stdout("Заказ #{$model->id}\n", Console::BOLD);
 				$this->stdout("\tТребуется отправка сообщения начальнику\n");
-				$response = Telegram::sendMessage([
-					"chat_id" => $this->settings["alert"][$model->status - 1]["chat_id"],
-					"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatusName()} никто не обработал"
-				]);
-				if ($response->isOk) {
-					\Yii::$app->user->switchIdentity(User::findOne(1));
-					$model->boss_chat_id = $this->settings["alert"][$model->status - 1]["chat_id"];
-					$model->save(false);
+				foreach ( $s as $t ) {
+					$response = Telegram::sendMessage([
+						"chat_id" => $t,
+						"text" => "Заказ #{$model->id}, находящийся в статусе {$model->getStatusName()} никто не обработал"
+					]);
+					if ($response->isOk) {
+						\Yii::$app->user->switchIdentity(User::findOne(1));
+						$model->boss_chat_id = $t;
+						$model->save(false);
+					}
 				}
+				// $this->stdout()
 			}
 		}
 	}
@@ -172,7 +176,7 @@ class NotifyController extends \yii\console\Controller
 				"message_timestamp" => $data["result"]["date"],
 			]);
 			$update->save(); */
-			
+			$this->stdout($employee->chat_id);
 		}
 		return true;
 	}

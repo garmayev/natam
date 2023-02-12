@@ -6,6 +6,7 @@ use common\models\Client;
 use common\models\Order;
 use common\models\OrderProduct;
 use common\models\TelegramMessage;
+use common\models\Category;
 use frontend\commands\Command;
 use frontend\models\Staff;
 use frontend\models\Telegram;
@@ -14,6 +15,8 @@ use common\models\User;
 use common\models\staff\Employee;
 use yii\hepers\Url;
 use Yii;
+use yii\web\Response;
+use yii\data\ActiveDataProvider;
 
 /**
  *
@@ -23,26 +26,26 @@ class TelegramController extends \yii\rest\Controller
 	protected function findUser($chat_id) {
 		$employee = Employee::find()->where(["chat_id" => $chat_id])->one();
 		if ( $employee ) {
-			$user = $employee->user;
+			return $employee->user;
 		} else {
 			$client = Client::findOne(['chat_id' => $chat_id]);
 			if ($client) {
-				$user = Client::findOne(["chat_id" => $chat_id])->user;
+				return Client::findOne(["chat_id" => $chat_id])->user;
 			} else {
 				return null;
 			}
-//			$user = Client::findOne(["chat_id" => $chat_id])->user;
+			// $user = Client::findOne(["chat_id" => $chat_id])->user;
 		}
-		return $user;
+		// return $user;
 	}
 
 	protected static function checkPermission($telegram, $permission) {
 		if ( !Yii::$app->user->can($permission) ) {
-//			$message = isset($telegram->input->message) ? $telegram->input->message : $telegram->input->callback_query;
-//			$result = $telegram->sendMessage([
-//				'chat_id' => $message->chat->id,
-//				"text" => Yii::t("telegram", "You don`t have permissions for this action")
-//			]);
+			$message = isset($telegram->input->message) ? $telegram->input->message : $telegram->input->callback_query;
+			$result = $telegram->sendMessage([
+				'chat_id' => $message->chat->id,
+				"text" => Yii::t("telegram", "You don`t have permissions for this action")
+			]);
 			return false;
 		}
 		return true;
@@ -50,37 +53,38 @@ class TelegramController extends \yii\rest\Controller
 
 	public function beforeAction($action)
 	{
-		$data = json_decode(file_get_contents("php://input"), true);
-		if ( isset($data["callback_query"]) ) {
-			$user = $this->findUser($data["callback_query"]["from"]["id"]);
-		} elseif( isset($data["message"]) ) {
-        		$user = $this->findUser($data["message"]["from"]["id"]);
-	        	if ( !empty($user) ) {
-	        		Yii::$app->user->switchIdentity($user, 0);
-				$this->enableCsrfValidation = false;
-				return parent::beforeAction($action);
-			} else {
-            			if (preg_match('/(\/start)/', $data['message']['text'])) {
-                			return parent::beforeAction($action);
-            			} else {
-                			$user = $this->findUser($data["message"]["from"]["id"]);
-            			}
-        		}
+		if ($action->id === "telegram") {
+			$data = json_decode(file_get_contents("php://input"), true);
+			if ( isset($data["callback_query"]) ) {
+				$user = $this->findUser($data["callback_query"]["from"]["id"]);
+			} elseif( isset($data["message"]) ) {
+				$user = $this->findUser($data["message"]["from"]["id"]);
+				if ( !empty($user) ) {
+					Yii::$app->user->switchIdentity($user, 0);
+					$this->enableCsrfValidation = false;
+					return parent::beforeAction($action);
+				} else {
+					if (preg_match('/(\/start)/', $data['message']['text'])) {
+						return parent::beforeAction($action);
+					} else {
+						$user = $this->findUser($data["message"]["from"]["id"]);
+					}
+				}
+			}
+			if ( empty($user) ) {
+				$this->asJson([
+					'code' => 'ERROR',
+					'message' => 'You are not logged',
+				]);
+				Yii::error([
+					"input_data" => $data,
+					"message" => 'user is not logged',
+				]);
+				return false;
+			}
+			Yii::$app->user->switchIdentity($user, 0);
+			$this->enableCsrfValidation = false;
 		}
-		if ( $user->id === 1 ) \Yii::error($data);
-		if ( empty($user) ) {
-			$this->asJson([
-				'code' => 'ERROR',
-				'message' => 'You are not logged',
-			]);
-			Yii::error([
-				"input_data" => $data,
-				"message" => 'user is not logged',
-			]);
-			return false;
-		}
-		Yii::$app->user->switchIdentity($user, 0);
-		$this->enableCsrfValidation = false;
 		return parent::beforeAction($action);
 	}
 
@@ -405,7 +409,6 @@ class TelegramController extends \yii\rest\Controller
 			$client = Client::findOne(["user_id" => Yii::$app->user->id]);
 			$orders = Order::find()->where(["client_id" => $client->id])->all();
 		}
-
 		if ( count($orders) ) {
 			$keyboard = [];
 			foreach ($orders as $order) {
@@ -413,7 +416,6 @@ class TelegramController extends \yii\rest\Controller
 					["text" => "Заказ #{$order->id} Стоимость: {$order->totalPrice}", "callback_data" => "/order order_id={$order->id}"]
 				];
 			}
-			// \Yii::error($keyboard);
 			$chat_id = isset($telegram->input->message) ? $telegram->input->message->chat->id : $telegram->input->callback_query->from["id"];
 			if ( isset($telegram->input->message) ) {
 				$telegram->sendMessage([
@@ -425,7 +427,7 @@ class TelegramController extends \yii\rest\Controller
 				]);
 
 			} else {
-/*				$telegram->editMessageText([
+				$telegram->editMessageText([
 					"chat_id" => $chat_id,
 					"message_id" => $telegram->input->callback_query->message['message_id'],
 					"text" => "Список ваших заказов\n\nНажмите на соответствующий заказ для получения более развернутой информации",
@@ -433,7 +435,7 @@ class TelegramController extends \yii\rest\Controller
 						"inline_keyboard" => $keyboard
 					])
 				]);
-*/			}
+			}
 		} else {
 			$telegram->sendMessage([
 				'chat_id' => $telegram->input->message->chat->id,
@@ -626,6 +628,18 @@ class TelegramController extends \yii\rest\Controller
 
 	public function actionGame()
 	{
-		return $this->render('game');
+		Yii::$app->response->format = Response::FORMAT_HTML;
+		// $this->layout = "_blank";
+		return $this->renderPartial('game', [
+			'models' => new ActiveDataProvider([
+				'query' => Category::find()->where(['main' => 1])
+			]),
+		]);
+	}
+
+	public function actionTest()
+	{
+		Yii::$app->response->format = Response::FORMAT_HTML;
+		return $this->renderPartial('test');
 	}
 }

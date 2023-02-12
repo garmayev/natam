@@ -15,6 +15,7 @@ $this->title = Yii::t("app", "Settings");
 
 //var_dump($model->getContent());
 echo Html::beginForm(["/settings/update"], "post");
+/*
 echo Html::beginTag("div", ["class" => "panel panel-default"]);
 echo Html::tag("div", "Уведомления для сотрудников", ["class" => "panel-heading"]);
 
@@ -37,7 +38,7 @@ echo Html::endTag("div");
 
 echo Html::endTag("div");
 echo Html::endTag("div");
-
+*/
 echo Html::beginTag("div", ["class" => "panel panel-info"]);
 echo Html::tag("div", "Настройка трефожноых уведомлений", ["class" => "panel-heading"]);
 
@@ -50,10 +51,10 @@ echo Html::endTag("div");
 
 
 //if ( isset($model->getContent()["notify"]["alert"][0]["chat_id"]) ) {
-echo Html::beginTag("div", ["class" => ["form-group"]]);
-echo Html::label("Адресат тревоги", "Settings[notify][alert][0][chat_id]");
-echo Html::dropDownList("Settings[notify][alert][0][chat_id]", (isset($model->getContent()["notify"]["alert"][0]["chat_id"])) ? $model->getContent()["notify"]["alert"][0]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->andWhere(["state_id" => 0])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
-echo Html::endTag("div");
+//echo Html::beginTag("div", ["class" => ["form-group"]]);
+//echo Html::label("Адресат тревоги", "Settings[notify][alert][0][chat_id]");
+//echo Html::dropDownList("Settings[notify][alert][0][chat_id]", (isset($model->getContent()["notify"]["alert"][0]["chat_id"])) ? $model->getContent()["notify"]["alert"][0]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->andWhere(["state_id" => 0])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
+//echo Html::endTag("div");
 //}
 
 echo Html::tag("hr");
@@ -64,10 +65,10 @@ echo Html::textInput("Settings[notify][alert][1][time]", $model->getContent()["n
 echo Html::endTag("div");
 
 //if (isset($model->getContent()["notify"]["alert"][1]["chat_id"])) {
-	echo Html::beginTag("div", ["class" => ["form-group"]]);
-	echo Html::label("Адресат тревоги", "Settings[notify][alert][1][chat_id]");
-	echo Html::dropDownList("Settings[notify][alert][1][chat_id]", (isset($model->getContent()["notify"]["alert"][1]["chat_id"])) ? $model->getContent()["notify"]["alert"][1]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->andWhere(["state_id" => 0])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
-	echo Html::endTag("div");
+//	echo Html::beginTag("div", ["class" => ["form-group"]]);
+//	echo Html::label("Адресат тревоги", "Settings[notify][alert][1][chat_id]");
+//	echo Html::dropDownList("Settings[notify][alert][1][chat_id]", (isset($model->getContent()["notify"]["alert"][1]["chat_id"])) ? $model->getContent()["notify"]["alert"][1]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->andWhere(["state_id" => 0])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
+//	echo Html::endTag("div");
 
 //}
 echo Html::tag("hr");
@@ -79,10 +80,10 @@ echo Html::textInput("Settings[notify][alert][2][time]", $model->getContent()["n
 echo Html::endTag("div");
 
 //if (isset($model->getContent()["notify"]["alert"][2]["chat_id"])) {
-	echo Html::beginTag("div", ["class" => ["form-group"]]);
-	echo Html::label("Алресат тревоги", "Settings[notify][alert][2][chat_id]");
-	echo Html::dropDownList("Settings[notify][alert][2][chat_id]", (isset($model->getContent()["notify"]["alert"][2]["chat_id"])) ? $model->getContent()["notify"]["alert"][2]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->andWhere(["state_id" => 0])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
-	echo Html::endTag("div");
+//	echo Html::beginTag("div", ["class" => ["form-group"]]);
+//	echo Html::label("Алресат тревоги", "Settings[notify][alert][2][chat_id]");
+//	echo Html::dropDownList("Settings[notify][alert][2][chat_id]", (isset($model->getContent()["notify"]["alert"][2]["chat_id"])) ? $model->getContent()["notify"]["alert"][2]["chat_id"] : 0, ArrayHelper::map(Employee::find()->where(["<>", "chat_id", "null"])->andWhere(["state_id" => 0])->all(), "chat_id", "user.username"), ["class" => "form-control"]);
+//	echo Html::endTag("div");
 //}
 
 echo Html::endTag("div");

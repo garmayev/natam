@@ -20,6 +20,7 @@ use yii\db\ActiveRecord;
  * @property-read string $label
  * @property int $category_id [int(11)]
  * @property string $article [varchar(255)]
+ * @property Category $category
  */
 class Product extends ActiveRecord
 {
@@ -56,6 +57,20 @@ class Product extends ActiveRecord
 		];
 	}
 
+	public function fields()
+	{
+		return [
+			"title",
+			"description",
+			"price",
+			"thumbs",
+			"value",
+			"isset",
+			"visible",
+			"category" => function ($model) { return $model->category; }
+		];
+	}
+
 	public function upload()
 	{
 		if ( $this->validate() ) {
@@ -86,5 +101,10 @@ class Product extends ActiveRecord
 	public function getUniqueId()
 	{
 		return $this->id;
+	}
+
+	public function getCategory()
+	{
+		return $this->hasOne(Category::class, ['id' => 'category_id']);
 	}
 }
