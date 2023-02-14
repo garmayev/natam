@@ -92,43 +92,42 @@ class TelegramMessage extends ActiveRecord
                 }
             } else {
                 $employees = Employee::find()->where(['state_id' => 0])->andWhere(['level' => $level])->all();
+                Yii::error(count($employees));
                 foreach ($employees as $employee) {
-                    if ($employee->chat_id) {
-                        $response = Yii::$app->telegram->sendMessage([
-                            'chat_id' => $employee->chat_id,
-                            'text' => "Заказ #{$order->id} не был никем обработан",
-                            "parse_mode" => "HTML",
-                            'reply_markup' => json_encode([
-                                'inline_keyboard' => [
-                                    [
-                                        "text" => "Принято",
-                                    ]
-                                ]
-                            ]),
-                        ]);
-                        if ($response->isOk) {
-                            $message = new TelegramMessage([
-                                'order_id' => $order->id,
-                                'order_status' => $order->status,
-                                'message_id' => $response->result->message_id,
-                                'content' => "Заказ #{$order->id} не был никем обработан",
-                                'chat_id' => $employee->chat_id,
-                                'updated_at' => null,
-                                'updated_by' => null,
-                                'type' => 1,
-                                'level' => $level,
-                            ]);
-                            if (!$message->save()) {
-                                Yii::error($message->getErrorSummary(true));
-                            }
-                        }
+//                    if ($employee->chat_id) {
+//                        $response = Yii::$app->telegram->sendMessage([
+//                            'chat_id' => $employee->chat_id,
+//                            'text' => "Заказ #{$order->id} не был никем обработан",
+//                            "parse_mode" => "HTML",
+//                            'reply_markup' => json_encode([
+//                                'inline_keyboard' => [
+//                                    [
+//                                        "text" => "Принято",
+//                                    ]
+//                                ]
+//                            ]),
+//                        ]);
+//                        if ($response->isOk) {
+                    $message = new TelegramMessage([
+                        'order_id' => $order->id,
+                        'order_status' => $order->status,
+                        'message_id' => 1,
+                        'content' => "Заказ #{$order->id} не был никем обработан",
+                        'chat_id' => $employee->chat_id,
+                        'updated_at' => null,
+                        'updated_by' => null,
+                        'type' => 1,
+                        'level' => $level,
+                    ]);
+                    if (!$message->save()) {
+                        Yii::error($message->getErrorSummary(true));
                     }
+//                        }
+//                }
                 }
-                Yii::error($employee->attributes);
+//                Yii::error($employee->attributes);
             }
-        } catch (ClientException $e) {
-            Yii::error($e);
-        } catch (RequestException $e) {
+        } catch (ClientException|RequestException $e) {
             Yii::error($e);
         }
     }
