@@ -63,55 +63,86 @@ class TelegramMessage extends ActiveRecord
     {
         try {
             if (isset($employee) && isset($employee->chat_id)) {
-                if (is_null($level)) {
-                    $response = Yii::$app->telegram->sendMessage([
+                $response = Yii::$app->telegram->sendMessage([
+                    'chat_id' => $employee->chat_id,
+                    'text' => $order->generateTelegramText(),
+                    "parse_mode" => "HTML",
+                    'reply_markup' => json_encode([
+                        'inline_keyboard' => $order->generateTelegramKeyboard()
+                    ]),
+                ]);
+                if ($response->ok) {
+                    $message = new TelegramMessage([
+                        'order_id' => $order->id,
+                        'order_status' => $order->status,
+                        'message_id' => $response->result->message_id,
+                        'content' => $order->generateTelegramText(),
                         'chat_id' => $employee->chat_id,
-                        'text' => $order->generateTelegramText(),
-                        "parse_mode" => "HTML",
-                        'reply_markup' => json_encode([
-                            'inline_keyboard' => $order->generateTelegramKeyboard()
-                        ]),
+                        'updated_at' => null,
+                        'updated_by' => null,
                     ]);
-                    if ($response->ok) {
-                        $message = new TelegramMessage([
-                            'order_id' => $order->id,
-                            'order_status' => $order->status,
-                            'message_id' => $response->result->message_id,
-                            'content' => $order->generateTelegramText(),
-                            'chat_id' => $employee->chat_id,
-                            'updated_at' => null,
-                            'updated_by' => null,
-                        ]);
-                        if (!$message->save()) {
-                            Yii::error($message->getErrorSummary(true));
-                        }
-                    } else {
-                        Yii::error($employee->attributes);
-                        Yii::error($response->result);
+                    if (!$message->save()) {
+                        Yii::error($message->getErrorSummary(true));
                     }
+                } else {
+                    Yii::error($employee->attributes);
+                    Yii::error($response->result);
                 }
             } else {
                 $employees = Employee::find()->where(['state_id' => 0])->andWhere(['level' => $level])->all();
                 Yii::error(count($employees));
                 foreach ($employees as $employee) {
-//                    if ($employee->chat_id) {
-//                        $response = Yii::$app->telegram->sendMessage([
-//                            'chat_id' => $employee->chat_id,
-//                            'text' => "Заказ #{$order->id} не был никем обработан",
-//                            "parse_mode" => "HTML",
-//                            'reply_markup' => json_encode([
-//                                'inline_keyboard' => [
-//                                    [
-//                                        "text" => "Принято",
-//                                    ]
-//                                ]
-//                            ]),
-//                        ]);
-//                        if ($response->isOk) {
+                    if ($employee->chat_id) {
+                        $response = Yii::$app->telegram->sendMessage([
+                            'chat_id' => $employee->chat_id,
+                            'text' => "Заказ #{$order->id} не был никем обработан",
+                            "parse_mode" => "HTML",
+                            'reply_markup' => json_encode([
+                                'inline_keyboard' => [
+                                    [
+                                        "text" => "Принято",
+                                    ]
+                                ]
+                            ]),
+                        ]);
+                        if ($response->isOk) {
+                            $message = new TelegramMessage([
+                                'order_id' => $order->id,
+                                'order_status' => $order->status,
+                                'message_id' => 1,
+                                'content' => "Заказ #{$order->id} не был никем обработан",
+                                'chat_id' => $employee->chat_id,
+                                'updated_at' => null,
+                                'updated_by' => null,
+                                'type' => 1,
+                                'level' => $level,
+                            ]);
+                            if (!$message->save()) {
+                                Yii::error($message->getErrorSummary(true));
+                            }
+                        }
+                    }
+                }
+            }
+            // \Yii::error($employee->attributes);
+            if ($employee->chat_id) {
+                $response = Yii::$app->telegram->sendMessage([
+                    'chat_id' => $employee->chat_id,
+                    'text' => "Заказ #{$order->id} не был никем обработан",
+                    "parse_mode" => "HTML",
+                    'reply_markup' => json_encode([
+                        'inline_keyboard' => [
+                            [
+                                ["text" => "Принято", "callback_data" => "/empty id={$order->id}"]
+                            ]
+                        ]
+                    ]),
+                ]);
+                if ($response->ok) {
                     $message = new TelegramMessage([
                         'order_id' => $order->id,
                         'order_status' => $order->status,
-                        'message_id' => 1,
+                        'message_id' => $response->result->message_id,
                         'content' => "Заказ #{$order->id} не был никем обработан",
                         'chat_id' => $employee->chat_id,
                         'updated_at' => null,
@@ -122,10 +153,9 @@ class TelegramMessage extends ActiveRecord
                     if (!$message->save()) {
                         Yii::error($message->getErrorSummary(true));
                     }
-//                        }
-//                }
+                } else {
+                    Yii::error($response->getData());
                 }
-//                Yii::error($employee->attributes);
             }
         } catch (ClientException|RequestException $e) {
             Yii::error($e);
@@ -154,7 +184,8 @@ class TelegramMessage extends ActiveRecord
         ];
     }
 
-    public function rules()
+    public
+    function rules()
     {
         return [
             [['order_id', 'order_status', 'message_id'], 'required'],
@@ -168,7 +199,8 @@ class TelegramMessage extends ActiveRecord
         ];
     }
 
-    public function beforeSave($insert)
+    public
+    function beforeSave($insert)
     {
         if (Yii::$app->user->isGuest) {
             $order = Order::findOne($this->order_id);
@@ -186,22 +218,26 @@ class TelegramMessage extends ActiveRecord
         return $this->hasOne(Order::class, ['id' => 'order_id']);
     }
 
-    public function getCreatedBy()
+    public
+    function getCreatedBy()
     {
         return $this->hasOne(User::class, ['id' => 'created_by']);
     }
 
-    public function getUpdatedBy()
+    public
+    function getUpdatedBy()
     {
         return $this->hasOne(User::class, ['id' => 'updated_by']);
     }
 
-    public function isExpired($time)
+    public
+    function isExpired($time)
     {
         return $time < $this->getTimeElapsed();
     }
 
-    public function getTimeElapsed()
+    public
+    function getTimeElapsed()
     {
         if ($this->status == self::STATUS_CLOSED) {
             return $this->updated_at - $this->created_at;
@@ -210,14 +246,16 @@ class TelegramMessage extends ActiveRecord
         }
     }
 
-    public function chain()
+    public
+    function chain()
     {
         return self::find()
             ->where(['order_id' => $this->order_id])
             ->orderBy('order_status');
     }
 
-    public function hide()
+    public
+    function hide()
     {
         try {
             $response = Yii::$app->telegram->editMessageText([
@@ -236,7 +274,8 @@ class TelegramMessage extends ActiveRecord
         }
     }
 
-    public function beforeDelete()
+    public
+    function beforeDelete()
     {
         try {
             Yii::$app->telegram->send('/deleteMessage', [

@@ -45,7 +45,7 @@ class Employee extends ActiveRecord
     {
         return [
             [['name', 'family', 'car', 'birth'], 'string'],
-            [['birthday', 'chat_id', 'last_message_at'], 'integer'],
+            [['birthday', 'chat_id', 'last_message_at', 'level'], 'integer'],
             [['engine'], 'double'],
             [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['state_id'], 'exist', 'targetClass' => State::class, 'targetAttribute' => ['state_id' => 'id']],
