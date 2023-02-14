@@ -63,36 +63,35 @@ class TelegramMessage extends ActiveRecord
     {
         try {
             if (isset($employee) && isset($employee->chat_id)) {
-                if (is_null($level)) {
-                    $response = Yii::$app->telegram->sendMessage([
+                $response = Yii::$app->telegram->sendMessage([
+                    'chat_id' => $employee->chat_id,
+                    'text' => $order->generateTelegramText(),
+                    "parse_mode" => "HTML",
+                    'reply_markup' => json_encode([
+                        'inline_keyboard' => $order->generateTelegramKeyboard()
+                    ]),
+                ]);
+                if ($response->ok) {
+                    $message = new TelegramMessage([
+                        'order_id' => $order->id,
+                        'order_status' => $order->status,
+                        'message_id' => $response->result->message_id,
+                        'content' => $order->generateTelegramText(),
                         'chat_id' => $employee->chat_id,
-                        'text' => $order->generateTelegramText(),
-                        "parse_mode" => "HTML",
-                        'reply_markup' => json_encode([
-                            'inline_keyboard' => $order->generateTelegramKeyboard()
-                        ]),
+                        'updated_at' => null,
+                        'updated_by' => null,
                     ]);
-                    if ($response->ok) {
-                        $message = new TelegramMessage([
-                            'order_id' => $order->id,
-                            'order_status' => $order->status,
-                            'message_id' => $response->result->message_id,
-                            'content' => $order->generateTelegramText(),
-                            'chat_id' => $employee->chat_id,
-                            'updated_at' => null,
-                            'updated_by' => null,
-                        ]);
-                        if (!$message->save()) {
-                            Yii::error($message->getErrorSummary(true));
-                        }
-                    } else {
-                        Yii::error($employee->attributes);
-                        Yii::error($response->result);
+                    if (!$message->save()) {
+                        Yii::error($message->getErrorSummary(true));
                     }
+                } else {
+                    Yii::error($employee->attributes);
+                    Yii::error($response->result);
                 }
             } else {
                 $employees = Employee::find()->where(['state_id' => 0])->andWhere(['level' => $level])->all();
                 foreach ($employees as $employee) {
+		    // \Yii::error($employee->attributes);
                     if ($employee->chat_id) {
                         $response = Yii::$app->telegram->sendMessage([
                             'chat_id' => $employee->chat_id,
@@ -101,12 +100,12 @@ class TelegramMessage extends ActiveRecord
                             'reply_markup' => json_encode([
                                 'inline_keyboard' => [
                                     [
-                                        "text" => "Принято",
+                                        [ "text" => "Принято", "callback_data" => "/empty id={$order->id}" ]
                                     ]
                                 ]
                             ]),
                         ]);
-                        if ($response->isOk) {
+                        if ($response->ok) {
                             $message = new TelegramMessage([
                                 'order_id' => $order->id,
                                 'order_status' => $order->status,
@@ -121,10 +120,12 @@ class TelegramMessage extends ActiveRecord
                             if (!$message->save()) {
                                 Yii::error($message->getErrorSummary(true));
                             }
-                        }
+                        } else {
+				Yii::error($response->getData());
+			}
                     }
                 }
-                Yii::error($employee->attributes);
+                // Yii::error($employee->attributes);
             }
         } catch (ClientException $e) {
             Yii::error($e);

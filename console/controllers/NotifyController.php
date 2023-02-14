@@ -25,7 +25,7 @@ class NotifyController extends Controller
 
     public function actionIndex()
     {
-        $models = Order::find()->where(["<", "status", Order::STATUS_DELIVERY])->all();
+        $models = Order::find()->where(["<", "status", Order::STATUS_COMPLETE])->all();
 
 //        if (!$this->checkHours()) {
         foreach ($models as $model) {
@@ -49,13 +49,13 @@ class NotifyController extends Controller
             } */
             if ($this->isNeedAlert($model)) {
                 $level = $this->findAlertLevel($model);
-                if (YII_ENV === 'prod') {
+//                if (YII_ENV === 'prod') {
                     TelegramMessage::send(null, $model, $level);
-                } else {
+//                } else {
                     $this->stdout("Уровень тревоги: $level\n");
-                    $this->stdout("Заказ #{$model->id}\n", Console::BOLD);
+                    $this->stdout("\tЗаказ #{$model->id}\n", Console::BOLD);
                     $this->stdout("\tТребуется отправка сообщения начальнику\n");
-                }
+//                }
             }
         }
 //        }
@@ -72,12 +72,15 @@ class NotifyController extends Controller
             return false;
         }
         if ($lastMessage = $model->lastMessage) {
-            if ($lastMessage->type === TelegramMessage::TYPE_ALERT) {
-                $this->stdout($lastMessage->type);
-                if (time() - ($lastMessage->created_at + 900))
-                    return true;
+            if ($lastMessage->type === TelegramMessage::TYPE_NOTIFY || $lastMessage->type === null) {
+                return true;
+            } else {
+                if ($lastMessage->type === TelegramMessage::TYPE_ALERT && $lastMessage->level) {
+                    return false;
+                } else {
+                    return ((time() - ($lastMessage->created_at + 900)) > 0);
+                }
             }
-            return false;
         }
         return $timeout;
     }

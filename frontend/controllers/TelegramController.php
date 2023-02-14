@@ -84,9 +84,10 @@ class TelegramController extends Controller
     protected static function checkPermission($telegram, $permission)
     {
         if (!Yii::$app->user->can($permission)) {
-            $message = isset($telegram->input->message) ? $telegram->input->message : $telegram->input->callback_query;
+            $chat_id = isset($telegram->input->message) ? $telegram->input->message->chat_id : $telegram->input->callback_query->from["id"];
+	    Yii::error($chat_id);
             $result = $telegram->sendMessage([
-                'chat_id' => $message->chat->id,
+                'chat_id' => $chat_id,
                 "text" => Yii::t("telegram", "You don`t have permissions for this action")
             ]);
             return false;
@@ -222,6 +223,20 @@ class TelegramController extends Controller
         }
     }
 
+    public static function empty($telegram, $args = null)
+    {
+	Yii::error($args);
+	if (self::checkPermission($telegram, "employee")) {
+	    if (isset($args)) {
+		$order = Order::findOne($args["id"]);
+		$messages = $order->getMessages()->where(['type' => 1])->all();
+		foreach ($messages as $message) {
+		    $message->hide();
+		}
+	    }
+	}
+    }
+
     public static function store($telegram, $args = null)
     {
         /**
@@ -332,7 +347,7 @@ class TelegramController extends Controller
 
     public function beforeAction($action)
     {
-        if ($action->id === "telegram") {
+        if ($action->id === "check") {
             $data = json_decode(file_get_contents("php://input"), true);
             if (isset($data["callback_query"])) {
                 $user = $this->findUser($data["callback_query"]["from"]["id"]);
@@ -620,7 +635,7 @@ class TelegramController extends Controller
         return ["ok" => false];
     }
 
-    public function actionTelegram()
+    public function actionCheck()
     {
         $telegram = Yii::$app->telegram;
         Command::run("/start", [$this, "start"]);
@@ -634,6 +649,7 @@ class TelegramController extends Controller
         Command::run("/startgame", [$this, "startgame"]);
         Command::run("game=personal", [$this, "game"]);
         Command::run("/alert", [$this, "alert"]);
+	Command::run("/empty", [$this, "empty"]);
 //		Command::run("/status_store", [$this, "status_store"]);
     }
 
