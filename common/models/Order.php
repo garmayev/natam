@@ -362,21 +362,17 @@ class Order extends ActiveRecord
         return $sum;
     }
 
+    public function getLastMessage()
+    {
+        return $this->getMessages()->orderBy(['created_at' => SORT_DESC])->one();
+    }
+
     /**
      * @return ActiveQuery
      */
     public function getMessages()
     {
         return $this->hasMany(TelegramMessage::class, ['order_id' => 'id']);
-    }
-
-    public function getLastMessage()
-    {
-        $messages = $this->messages;
-        if (count($messages)) {
-            return $messages[count($messages) - 1];
-        }
-        return null;
     }
 
     public function getDeliveryPrice()
