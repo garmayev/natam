@@ -1,5 +1,27 @@
 $(document).ready(function () {
 
+
+    let datePopup = document.querySelector('.date-popup');
+    if (datePopup) {
+        setTimeout(() => {
+            datePopup.classList.add('active');
+        }, 500);
+    
+        setTimeout(() => {
+            datePopup.classList.remove('active');
+        }, 5000)
+        
+        datePopup.addEventListener('click', (event) => {
+            event.preventDefault();
+            if(event.target.classList.contains('date-popup__close')) {
+                datePopup.classList.remove('active');
+            }
+            if(event.target.classList.contains('date-popup__container')) { 
+                datePopup.classList.remove('active');
+            }
+        });
+    }
+
     AOS.init();
     window.onload = function () {
         document.querySelector(".preloader").classList.add("active");
@@ -105,4 +127,4 @@ window.addEventListener("scroll", function () {
     console.log('gaz ' + value)
 
 });
-
+

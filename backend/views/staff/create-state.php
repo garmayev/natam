@@ -1,9 +1,9 @@
 <?php
 
 use common\models\staff\State;
+use yii\helpers\Html;
 use yii\web\View;
 use yii\widgets\ActiveForm;
-use yii\helpers\Html;
 
 /**
  * @var $this View
@@ -11,7 +11,8 @@ use yii\helpers\Html;
  */
 
 $form = ActiveForm::begin();
-$form->field($model, "title");
-$form->field($model, 'salary');
-$form->field($model, 'priority');
+echo $form->field($model, "title");
+echo $form->field($model, 'salary');
+echo $form->field($model, 'priority');
+echo Html::submitButton(Yii::t('app', 'Save'), ['class' => ['btn', 'btn-success']]);
 ActiveForm::end();

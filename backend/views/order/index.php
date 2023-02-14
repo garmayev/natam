@@ -3,7 +3,7 @@
 use common\models\Order;
 use common\models\search\OrderSearch;
 use kartik\date\DatePicker;
-use kartik\export\ExportMenu;
+// use kartik\export\ExportMenu;
 
 //use kartik\grid\GridView;
 use yii\data\ActiveDataProvider;
@@ -55,10 +55,10 @@ $gridColumns = [
         }
     ],
 ];
-echo ExportMenu::widget([
+/* echo ExportMenu::widget([
     'dataProvider' => $orderProvider,
     'columns' => $gridColumns
-]);
+]); */
 
 if (Yii::$app->user->can("employee")) {
 //	echo $this->render("_search", ["model" => $searchModel]);

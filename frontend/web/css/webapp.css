@@ -1,0 +1,88 @@
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/roboto/v30/KFOlCnqEu92Fr1MmSU5vAw.ttf) format('truetype');
+}
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Roboto, 'sans-serif';
+  font-weight: 500;
+  overflow: hidden;
+  background: var(--tg-theme-bg-color);
+}
+.popup {
+  position: fixed;
+  top: 100vh;
+  overflow: auto;
+  transition: 0.5s;
+  height: 100vh;
+  width: 100vw;
+  border-top-right-radius: 1rem;
+  border-top-left-radius: 1rem;
+  box-shadow: 0 0 1rem #c8c8c8;
+}
+.popup::before {
+  display: inline-block;
+  height: 10px;
+  width: 30vw;
+  position: absolute;
+  left: 35vw;
+}
+.popup * {
+  position: static;
+}
+.popup .header {
+  padding: 0.3rem 1rem;
+}
+.popup .header .title {
+  font-weight: bold;
+}
+.popup .content {
+  padding: 0.3rem 1rem;
+}
+.popup.active .close {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  text-align: center;
+  margin-top: -0.3rem;
+  float: right;
+  content: "\f00d";
+  font-family: "Font Awesome 5 Free", 'sans-serif';
+  font-weight: 900;
+  cursor: pointer;
+}
+.category::before {
+  background: #999;
+}
+.category.active {
+  top: 1rem;
+  min-height: calc(100vh - 1rem);
+  max-height: calc(100vh - 1rem);
+  background: #ccc;
+  display: block;
+}
+.products::before {
+  background: #666;
+}
+.products.active {
+  top: 3rem;
+  min-height: calc(100vh - 3rem);
+  max-height: calc(100vh - 3rem);
+  background: #999;
+  display: block;
+}
+.info::before {
+  background: #333;
+}
+.info.active {
+  top: 5rem;
+  min-height: calc(100vh - 5rem);
+  max-height: calc(100vh - 5rem);
+  background: #666;
+  display: block;
+}

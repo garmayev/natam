@@ -7,6 +7,11 @@ $config = [
             'cookieValidationKey' => 'MRUHoTKRk4ZIQR2reOUnWXLNjsBJv_qb',
         ],
     ],
+    'modules' => [
+	'api' => [
+	    'class' => frontend\modules\api\Module::class
+	]
+    ],
 ];
 
 if (!YII_ENV_TEST) {

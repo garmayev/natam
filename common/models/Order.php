@@ -2,13 +2,14 @@
 
 namespace common\models;
 
-use common\models\Product;
+use common\models\staff\Employee;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsTrait;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
-use common\models\staff\Employee;
 
 /**
  *
@@ -35,6 +36,7 @@ use common\models\staff\Employee;
  * @property OrderProduct[] $orderProducts
  * @property Location $location
  * @property TelegramMessage[] $messages
+ * @property TelegramMessage $lastMessage
  * @property-read Company $company
  * @property-read mixed $statusName
  * @property int $telegram [int(11)]
@@ -43,28 +45,30 @@ class Order extends ActiveRecord
 {
     use SaveRelationsTrait;
 
-    public $deliveryPrice;
-
     const STATUS_NEW = 1;
     const STATUS_PREPARED = 2;
     const STATUS_DELIVERY = 3;
     const STATUS_COMPLETE = 4;
     const STATUS_CANCEL = 5;
     const STATUS_HOLD = 6;
-
     const DELIVERY_SELF = 0;
     const DELIVERY_STORE = 1;
-
     const STORE_RESERVED = 1;
     const STORE_SOLD = 2;
     const STORE_CANCELLED = 3;
-
     const EVENT_TELEGRAM_INSERT = 'event_insert';
     const EVENT_TELEGRAM_UPDATE = 'event_update';
-
     const SCENARIO_TELEGRAM = 'telegram';
-
+    public $deliveryPrice;
     public $_status;
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return 'order';
+    }
 
     public function behaviors()
     {
@@ -87,14 +91,6 @@ class Order extends ActiveRecord
         ];
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public static function tableName()
-    {
-        return 'order';
-    }
-
     public function transactions()
     {
         return [
@@ -108,7 +104,6 @@ class Order extends ActiveRecord
     public function rules()
     {
         return [
-            [['delivery_date'], 'required'],
             [['client_id', 'location_id', 'delivery_type', 'created_at', 'delivery_city', 'telegram'], 'integer'],
             [['comment'], 'string'],
             [['delivery_distance'], 'double'],
@@ -146,17 +141,17 @@ class Order extends ActiveRecord
     }
 
     /**
-     * @throws \yii\base\InvalidConfigException
+     * @throws InvalidConfigException
      */
     public function load($data, $formName = null)
     {
         $this->save(false);
         $scope = isset($formName) ? $formName : $this->formName();
-        if ( isset($data[$scope]["delivery_type"]) ) {
+        if (isset($data[$scope]["delivery_type"])) {
             $data[$scope]["delivery_type"] = ($data[$scope]["delivery_type"] === "on") ? Order::DELIVERY_SELF : Order::DELIVERY_STORE;
         }
 
-        if ( isset($data[$scope]["client"]) ) {
+        if (isset($data[$scope]["client"])) {
             $client = Client::findOrCreate($data[$scope]["client"]);
             $this->client_id = $client->id;
         }
@@ -215,23 +210,32 @@ class Order extends ActiveRecord
         ];
     }
 
+    public function getPrice()
+    {
+        $price = 0;
+        foreach ($this->orderProducts as $orderProduct) {
+            $price += $orderProduct->product->price * $orderProduct->product_count;
+        }
+        return $price;
+    }
+
+    /**
+     * Model Attributes
+     */
+
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-//        Yii::error($changedAttributes);
         if (!$insert) {
-			$messages = TelegramMessage::find()->where(['order_id' => $this->id])->andWhere(['order_status' => $this->status - 1])->andWhere(['status' => TelegramMessage::STATUS_OPENED])->all();
-//			Yii::error();
-			foreach ($messages as $message) {
-				$message->hide();
-			}
+            $messages = TelegramMessage::find()->where(['order_id' => $this->id])->andWhere(['order_status' => $this->status - 1])->andWhere(['status' => TelegramMessage::STATUS_OPENED])->all();
+            foreach ($messages as $message) {
+                $message->hide();
+            }
             if (count($this->orderProducts)) {
                 if ($this->status !== Order::STATUS_DELIVERY) {
                     $employees = Employee::find()->where(['state_id' => $this->status])->all();
-//					Yii::error(count($this->orderProducts));
                     foreach ($employees as $employee) {
-//						\Yii::error($employee->attributes);
-						TelegramMessage::send($employee, $this);
+                        TelegramMessage::send($employee, $this);
                     }
                 }
                 $this->createFile();
@@ -239,16 +243,58 @@ class Order extends ActiveRecord
         }
     }
 
-    /**
-     * Model Attributes
-     */
+    public function createFile($path = null)
+    {
+        if (is_null($path)) {
+            $path = Yii::getAlias("@frontend") . "/web/xml/";
+        }
+        $fileName = "{$this->id}.xml";
+        $template = '<?xml version="1.0" encoding="UTF-8" ?>
+<Order>
+	<parameter>
+		<numberDate>' . Yii::$app->formatter->asDate($this->created_at, "php:d-m-Y") . '</numberDate>
+		<numberOrder>' . $this->id . '</numberOrder>
+		<id>' . $this->id . '</id>
+		<status>' . $this->status . '</status>
+		<organization>1</organization>
+		<inn>';
+        if ($this->company) {
+            $template .= $this->company->inn;
+        }
+        $template .= '</inn>
+		<customer>' . $this->client->name . '</customer>
+		<email>' . $this->client->email . '</email>
+		<phone>' . $this->client->phone . '</phone>
+		<contact>' . $this->comment . '</contact>
+	</parameter>
+	<Tabl>';
+        foreach ($this->orderProducts as $orderProduct) {
+            $template .= '
+		<productRow>
+			<kod>' . $orderProduct->product->article . '</kod>
+			<article>' . $orderProduct->product_id . '</article>
+			<name>' . $orderProduct->product->title . '</name>
+			<characteristic>' . $orderProduct->product->value . '</characteristic>
+			<unit>шт</unit>
+			<quantity>' . $orderProduct->product_count . '</quantity>
+			<cost>' . $orderProduct->product->price . '</cost>
+			<sum>' . ($orderProduct->product_count * $orderProduct->product->price) . '</sum>
+			<rateNDS>20</rateNDS>
+			<sumNDS>0</sumNDS>
+		</productRow>';
+        }
+        $template .= '
+	</Tabl>
+</Order>';
+        file_put_contents($path . $fileName, $template);
+    }
 
     /**
      * @return Company
      */
     public function getCompany()
     {
-        if ( isset($this->client) && isset($this->client->organization) )
+        if (isset($this->client) && isset($this->client->organization))
             return $this->client->organization;
         return null;
     }
@@ -256,7 +302,7 @@ class Order extends ActiveRecord
     /**
      * Gets query for [[Location]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getLocation()
     {
@@ -278,40 +324,22 @@ class Order extends ActiveRecord
     /**
      * Gets query for [[ProductOrders]].
      *
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getOrderProducts()
     {
         return $this->hasMany(OrderProduct::className(), ['order_id' => 'id']);
     }
 
-    public function getPrice()
-    {
-        $price = 0;
-        foreach ($this->orderProducts as $orderProduct) {
-            $price += $orderProduct->product->price * $orderProduct->product_count;
-        }
-        return $price;
-    }
-
     /**
      * Gets query for [[Products]].
      *
-     * @return \yii\db\ActiveQuery
-     * @throws \yii\base\InvalidConfigException
+     * @return ActiveQuery
+     * @throws InvalidConfigException
      */
     public function getProducts()
     {
         return $this->hasMany(Product::className(), ['id' => 'product_id'])->viaTable('order_product', ['order_id' => 'id']);
-    }
-
-    public function setProducts($data)
-    {
-        foreach ($this->orderProducts as $orderProduct) $orderProduct->delete();
-        foreach ($data as $item) {
-            $product = Product::findOne($item['product_id']);
-            $this->link('products', $product, ['product_count' => $item['product_count']]);
-        }
     }
 
     public function getClient()
@@ -334,49 +362,29 @@ class Order extends ActiveRecord
         return $sum;
     }
 
-    public function getStatusName()
-    {
-        return Order::getStatusList()[$this->status];
-    }
-
-    public static function getStatusList()
-    {
-        return [
-            self::STATUS_NEW => Yii::t('app', 'New Order'),
-            self::STATUS_PREPARED => Yii::t('app', 'Order Prepared'),
-            self::STATUS_DELIVERY => Yii::t('app', 'Order Delivered'),
-            self::STATUS_COMPLETE => Yii::t('app', 'Order Complete'),
-            self::STATUS_CANCEL => Yii::t('app', 'Order Cancelled'),
-        ];
-    }
-
-    public function getCount($product_id)
-    {
-        foreach ($this->orderProducts as $orderProduct) {
-            if ( $orderProduct->product_id === $product_id ) return $orderProduct->product_count;
-        }
-        return 0;
-    }
-
     /**
-     * @return \yii\db\ActiveQuery
+     * @return ActiveQuery
      */
     public function getMessages()
     {
         return $this->hasMany(TelegramMessage::class, ['order_id' => 'id']);
     }
 
+    public function getLastMessage()
+    {
+        $messages = $this->messages;
+        if (count($messages)) {
+            return $messages[count($messages) - 1];
+        }
+        return null;
+    }
+
     public function getDeliveryPrice()
     {
-        if ( !$this->delivery_city ) {
+        if (!$this->delivery_city) {
             return $this->delivery_distance * Settings::getDeliveryCost();
         }
         return 0;
-    }
-
-    public function getMostExpensive($limit)
-    {
-//		$query = Order::find("*, ")
     }
 
     public function generateTelegramText()
@@ -404,59 +412,90 @@ class Order extends ActiveRecord
         $result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>+{$this->client->phone}</a>\n";
         $result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
         $result .= "<b>Комментарий</b>: " . $this->comment . "\n";
-//		Yii::error($this->getPrice());
-//		Yii::error($delivery_price);
         $price = $this->getPrice() + $delivery_price;
         $result .= "<i>Общая стоимость: {$price}</i>";
         return $result;
     }
 
+    public function getCount($product_id)
+    {
+        foreach ($this->orderProducts as $orderProduct) {
+            if ($orderProduct->product_id === $product_id) return $orderProduct->product_count;
+        }
+        return 0;
+    }
+
+    public function getStatusName()
+    {
+        return Order::getStatusList()[$this->status];
+    }
+
+    public static function getStatusList()
+    {
+        return [
+            self::STATUS_NEW => Yii::t('app', 'New Order'),
+            self::STATUS_PREPARED => Yii::t('app', 'Order Prepared'),
+            self::STATUS_DELIVERY => Yii::t('app', 'Order Delivered'),
+            self::STATUS_COMPLETE => Yii::t('app', 'Order Complete'),
+            self::STATUS_CANCEL => Yii::t('app', 'Order Cancelled'),
+        ];
+    }
+
     public function generateTelegramKeyboard()
     {
         $keyboard = [];
-        switch ($this->status) {
-            case self::STATUS_NEW:
-                $keyboard[] = [
-                    [
-                        "text" => "Передать заказ кладовщику",
-                        "callback_data" => "/manager id={$this->id}"
-                    ],
-                ];
-                $keyboard[] = [
-                    [
-                        "text" => "Отложить",
-                        "callback_data" => "/order_hold id={$this->id}"
-                    ]
-                ];
-                break;
-            case self::STATUS_PREPARED:
-                if ($this->delivery_type == self::DELIVERY_STORE) {
-                    $employees = \common\models\staff\Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->limit(5)->all();
-                    foreach ($employees as $employee) {
+        if ($lastMessage = $this->lastMessage) {
+            $keyboard[] = [
+                [
+                    "text" => "Выполнено",
+                    "callback_data" => "/alert id={$this->id}"
+                ]
+            ];
+        } else {
+            switch ($this->status) {
+                case self::STATUS_NEW:
+                    $keyboard[] = [
+                        [
+                            "text" => "Передать заказ кладовщику",
+                            "callback_data" => "/manager id={$this->id}"
+                        ],
+                    ];
+                    $keyboard[] = [
+                        [
+                            "text" => "Отложить",
+                            "callback_data" => "/order_hold id={$this->id}"
+                        ]
+                    ];
+                    break;
+                case self::STATUS_PREPARED:
+                    if ($this->delivery_type == self::DELIVERY_STORE) {
+                        $employees = Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->limit(5)->all();
+                        foreach ($employees as $employee) {
+                            $keyboard[] = [
+                                [
+                                    "text" => "{$employee->family} {$employee->name}",
+                                    "callback_data" => "/store id={$this->id}&driver_id={$employee->id}",
+                                ]
+                            ];
+                        }
+                    } else {
                         $keyboard[] = [
                             [
-                                "text" => "{$employee->family} {$employee->name}",
-                                "callback_data" => "/store id={$this->id}&driver_id={$employee->id}",
+                                "text" => "Выполнено",
+                                "callback_data" => "/store id={$this->id}",
                             ]
                         ];
                     }
-                } else {
+                    break;
+                case self::STATUS_DELIVERY:
                     $keyboard[] = [
                         [
                             "text" => "Выполнено",
-                            "callback_data" => "/store id={$this->id}",
+                            "callback_data" => "/driver id={$this->id}"
                         ]
                     ];
-                }
-                break;
-            case self::STATUS_DELIVERY:
-                $keyboard[] = [
-                    [
-                        "text" => "Выполнено",
-                        "callback_data" => "/driver id={$this->id}"
-                    ]
-                ];
-                break;
+                    break;
+            }
         }
         return $keyboard;
     }
@@ -483,49 +522,12 @@ class Order extends ActiveRecord
         return $model;
     }
 
-    public function createFile($path = null)
+    public function setProducts($data)
     {
-        if ( is_null($path) ) {
-            $path = Yii::getAlias("@frontend")."/web/xml/";
+        foreach ($this->orderProducts as $orderProduct) $orderProduct->delete();
+        foreach ($data as $item) {
+            $product = Product::findOne($item['product_id']);
+            $this->link('products', $product, ['product_count' => $item['product_count']]);
         }
-        $fileName = "{$this->id}.xml";
-        $template = '<?xml version="1.0" encoding="UTF-8" ?>
-<Order>
-	<parameter>
-		<numberDate>'.Yii::$app->formatter->asDate($this->created_at, "php:d-m-Y").'</numberDate>
-		<numberOrder>'.$this->id.'</numberOrder>
-		<id>'.$this->id.'</id>
-		<status>'.$this->status.'</status>
-		<organization>1</organization>
-		<inn>';
-        if ( $this->company ) {
-            $template .= $this->company->inn;
-        }
-        $template .= '</inn>
-		<customer>'.$this->client->name.'</customer>
-		<email>'.$this->client->email.'</email>
-		<phone>'.$this->client->phone.'</phone>
-		<contact>'.$this->comment.'</contact>
-	</parameter>
-	<Tabl>';
-        foreach ($this->orderProducts as $orderProduct) {
-            $template .= '
-		<productRow>
-			<kod>'.$orderProduct->product->article.'</kod>
-			<article>'.$orderProduct->product_id.'</article>
-			<name>'.$orderProduct->product->title.'</name>
-			<characteristic>'.$orderProduct->product->value.'</characteristic>
-			<unit>шт</unit>
-			<quantity>'.$orderProduct->product_count.'</quantity>
-			<cost>'.$orderProduct->product->price.'</cost>
-			<sum>'.($orderProduct->product_count * $orderProduct->product->price).'</sum>
-			<rateNDS>20</rateNDS>
-			<sumNDS>0</sumNDS>
-		</productRow>';
-        }
-        $template .= '
-	</Tabl>
-</Order>';
-        file_put_contents($path.$fileName, $template);
     }
 }

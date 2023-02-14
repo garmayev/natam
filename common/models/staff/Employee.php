@@ -3,6 +3,8 @@
 namespace common\models\staff;
 
 use common\models\User;
+use Yii;
+use yii\db\ActiveRecord;
 
 /**
  *
@@ -17,65 +19,67 @@ use common\models\User;
  * @property int $last_message_at [int(11)]
  * @property string $car
  * @property float $engine [double]
+ * @property int $level [int(11)]
  *
  * @property string $fullname
  * @property User $user
  * @property State $state
  */
-class Employee extends \yii\db\ActiveRecord
+class Employee extends ActiveRecord
 {
-	public $birth;
-	public function attributeLabels()
-	{
-		return [
-			"name" => \Yii::t("app", 'Name'),
-			"family" => \Yii::t("app", "Family"),
-			"phone" => \Yii::t("app", "Phone"),
-			"birthday" => \Yii::t("app", "Birthday"),
-			"state" => \Yii::t("app", "State"),
-			"fullname" => \Yii::t("app", "Fullname"),
-		];
-	}
+    public $birth;
 
-	public function rules()
-	{
-		return [
-			[['name', 'family', 'car', 'birth'], 'string'],
-			[['birthday', 'chat_id', 'last_message_at'], 'integer'],
+    public function attributeLabels()
+    {
+        return [
+            "name" => Yii::t("app", 'Name'),
+            "family" => Yii::t("app", "Family"),
+            "phone" => Yii::t("app", "Phone"),
+            "birthday" => Yii::t("app", "Birthday"),
+            "state" => Yii::t("app", "State"),
+            "fullname" => Yii::t("app", "Fullname"),
+        ];
+    }
+
+    public function rules()
+    {
+        return [
+            [['name', 'family', 'car', 'birth'], 'string'],
+            [['birthday', 'chat_id', 'last_message_at'], 'integer'],
             [['engine'], 'double'],
-			[['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
-			[['state_id'], 'exist', 'targetClass' => State::class, 'targetAttribute' => ['state_id' => 'id']],
-		];
-	}
+            [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['state_id'], 'exist', 'targetClass' => State::class, 'targetAttribute' => ['state_id' => 'id']],
+        ];
+    }
 
-	public function load($data, $formName = null)
-	{
-		$scope = isset($formName) ? $formName : $this->formName();
-		$this->birthday = \Yii::$app->formatter->asTimestamp($data[$scope]["birth"]);
-		return parent::load($data, $formName);
-	}
+    public function load($data, $formName = null)
+    {
+        $scope = isset($formName) ? $formName : $this->formName();
+        $this->birthday = Yii::$app->formatter->asTimestamp($data[$scope]["birth"]);
+        return parent::load($data, $formName);
+    }
 
-	public function getFullname()
-	{
-		return "{$this->family} {$this->name}";
-	}
+    public function getFullname()
+    {
+        return "{$this->family} {$this->name}";
+    }
 
-	public function getUser()
-	{
-		return $this->hasOne(User::class, ["id" => "user_id"]);
-	}
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ["id" => "user_id"]);
+    }
 
-	public function getState()
-	{
-		return $this->hasOne(State::class, ['id' => 'state_id']);
-	}
+    public function getState()
+    {
+        return $this->hasOne(State::class, ['id' => 'state_id']);
+    }
 
-	public function setBirthday($value)
-	{
-		if ( is_int($value) ) {
-			$this->birthday = $value;
-		} else {
-			$this->birthday = \Yii::$app->formatter->asTimestamp($value);
-		}
-	}
+    public function setBirthday($value)
+    {
+        if (is_int($value)) {
+            $this->birthday = $value;
+        } else {
+            $this->birthday = Yii::$app->formatter->asTimestamp($value);
+        }
+    }
 }
