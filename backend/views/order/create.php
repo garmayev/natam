@@ -1,14 +1,18 @@
 <?php
 
 use common\models\Client;
+use common\models\Location;
 use common\models\Order;
 use common\models\OrderProduct;
 use common\models\Product;
-use common\models\search\OrderSearch;
+use kartik\datetime\DateTimePicker;
 use kartik\select2\Select2;
+use wbraganca\dynamicform\DynamicFormWidget;
 use yii\helpers\ArrayHelper;
-use yii\web\View;
 use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\web\JqueryAsset;
+use yii\web\View;
 use yii\widgets\ActiveForm;
 
 /**
@@ -19,9 +23,9 @@ use yii\widgets\ActiveForm;
 
 $this->title = Yii::t("app", "New Order");
 $index = 0;
-$form = ActiveForm::begin(["action" => ($model->isNewRecord) ? \yii\helpers\Url::to(["/order/create"]) : \yii\helpers\Url::to(["/order/update", "id" => $model->id])]);
-$this->registerJsFile("/js/jquery.maskedinput.min.js", ["depends" => \yii\web\JqueryAsset::class]);
-$this->registerJsFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js", ["depends" => \yii\web\JqueryAsset::class]);
+$form = ActiveForm::begin(["action" => ($model->isNewRecord) ? Url::to(["/order/create"]) : Url::to(["/order/update", "id" => $model->id])]);
+$this->registerJsFile("/js/jquery.maskedinput.min.js", ["depends" => JqueryAsset::class]);
+$this->registerJsFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.8.0/dist/js/jquery.suggestions.min.js", ["depends" => JqueryAsset::class]);
 $this->registerJsFile("//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU");
 $this->registerCssFile("//cdn.jsdelivr.net/npm/suggestions-jquery@21.6.0/dist/css/suggestions.min.css");
 if (Yii::$app->user->can('employee')) {
@@ -35,14 +39,12 @@ if (Yii::$app->user->can('employee')) {
             if (is_null($model->client)) {
                 $model->client = new Client();
             }
-            echo $form->field($model, "client")->widget(Select2::class, [
+            echo $form->field($model, "client[name]")->widget(Select2::class, [
                 'name' => 'Order[client][name]',
                 'data' => ArrayHelper::map(Client::find()->all(), 'id', 'name'),
-                'options' => ['placeholder' => 'Select a state ...'],
                 'pluginOptions' => [
                     'allowClear' => true,
                     'tags' => true,
-                    'dropdownParent' => '#kartik-modal'
                 ],
             ])->label(Yii::t('app', 'Customer`s name'));
             echo $form->field($model, "client")->textInput(['name' => 'Order[client][phone]'])->label(Yii::t('app', 'Customer`s phone'));
@@ -225,7 +227,7 @@ $this->registerCss("
         <div class="panel-body" id="order-info">
             <?php
             if ($model->isNewRecord || is_null($model->location_id)) {
-                $location = new \common\models\Location();
+                $location = new Location();
             } else {
                 $location = $model->location;
             }
@@ -235,7 +237,7 @@ $this->registerCss("
             echo $form->field($location, "longitude", ["enableClientValidation" => false])->hiddenInput(['name' => 'Order[location][longitude]'])->label(false);
             echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
             echo $form->field($model, "status")->dropDownList(Order::getStatusList());
-            echo \kartik\datetime\DateTimePicker::widget([
+            echo DateTimePicker::widget([
                 'name' => 'Order[delivery_date]',
                 'value' => ($model->delivery_date > 0) ? Yii::$app->formatter->asDatetime($model->delivery_date, 'php:Y-m-d H:i') : "",
                 'options' => [
@@ -260,8 +262,8 @@ $this->registerCss("
         </div>
         <div class="panel-body" id="order-controls">
             <?php
-            $op = ($model->orderProducts) ? $model->orderProducts[0] : new \common\models\OrderProduct();
-            \wbraganca\dynamicform\DynamicFormWidget::begin([
+            $op = ($model->orderProducts) ? $model->orderProducts[0] : new OrderProduct();
+            DynamicFormWidget::begin([
                 'widgetContainer' => 'dynamicform_wrapper',
                 'widgetBody' => '.container-items',
                 'widgetItem' => '.item',
@@ -293,7 +295,7 @@ $this->registerCss("
             }
             echo Html::endTag("div");
             echo Html::tag("p", Html::a(Yii::t("app", "Append Product"), "#", ["class" => ["btn", "btn-success", "add-product"]]));
-            \wbraganca\dynamicform\DynamicFormWidget::end();
+            DynamicFormWidget::end();
             echo Html::submitButton(Yii::t("app", "Save"), ["class" => ["btn", "btn-primary"], "style" => "margin-right: 10px;"]);
             echo Html::a(Yii::t("app", "Cancel"), Yii::$app->request->referrer, ["class" => ["btn", "btn-danger"]]);
             ?>
