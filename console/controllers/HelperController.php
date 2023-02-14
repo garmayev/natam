@@ -82,7 +82,7 @@ class HelperController extends \yii\console\Controller
             $orders = Order::find()->where(["id" => $id])->all();
         }
         foreach ($orders as $order) {
-            $order->createFile("C:\\wamp\\www\\natam\\frontend\\web\\xml\\");
+            $order->createFile("/data/www/natam/frontend/web/xml/");
         }
 //        $this->stdout(count($orders));
     }
