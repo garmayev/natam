@@ -444,58 +444,49 @@ class Order extends ActiveRecord
     public function generateTelegramKeyboard()
     {
         $keyboard = [];
-        if ($lastMessage = $this->lastMessage) {
-            $keyboard[] = [
-                [
-                    "text" => "Выполнено",
-                    "callback_data" => "/alert id={$this->id}"
-                ]
-            ];
-        } else {
-            switch ($this->status) {
-                case self::STATUS_NEW:
-                    $keyboard[] = [
-                        [
-                            "text" => "Передать заказ кладовщику",
-                            "callback_data" => "/manager id={$this->id}"
-                        ],
-                    ];
-                    $keyboard[] = [
-                        [
-                            "text" => "Отложить",
-                            "callback_data" => "/order_hold id={$this->id}"
-                        ]
-                    ];
-                    break;
-                case self::STATUS_PREPARED:
-                    if ($this->delivery_type == self::DELIVERY_STORE) {
-                        $employees = Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->limit(5)->all();
-                        foreach ($employees as $employee) {
-                            $keyboard[] = [
-                                [
-                                    "text" => "{$employee->family} {$employee->name}",
-                                    "callback_data" => "/store id={$this->id}&driver_id={$employee->id}",
-                                ]
-                            ];
-                        }
-                    } else {
+        switch ($this->status) {
+            case self::STATUS_NEW:
+                $keyboard[] = [
+                    [
+                        "text" => "Передать заказ кладовщику",
+                        "callback_data" => "/manager id={$this->id}"
+                    ],
+                ];
+                $keyboard[] = [
+                    [
+                        "text" => "Отложить",
+                        "callback_data" => "/order_hold id={$this->id}"
+                    ]
+                ];
+                break;
+            case self::STATUS_PREPARED:
+                if ($this->delivery_type == self::DELIVERY_STORE) {
+                    $employees = Employee::find()->where(["state_id" => Order::STATUS_DELIVERY])->limit(5)->all();
+                    foreach ($employees as $employee) {
                         $keyboard[] = [
                             [
-                                "text" => "Выполнено",
-                                "callback_data" => "/store id={$this->id}",
+                                "text" => "{$employee->family} {$employee->name}",
+                                "callback_data" => "/store id={$this->id}&driver_id={$employee->id}",
                             ]
                         ];
                     }
-                    break;
-                case self::STATUS_DELIVERY:
+                } else {
                     $keyboard[] = [
                         [
                             "text" => "Выполнено",
-                            "callback_data" => "/driver id={$this->id}"
+                            "callback_data" => "/store id={$this->id}",
                         ]
                     ];
-                    break;
-            }
+                }
+                break;
+            case self::STATUS_DELIVERY:
+                $keyboard[] = [
+                    [
+                        "text" => "Выполнено",
+                        "callback_data" => "/driver id={$this->id}"
+                    ]
+                ];
+                break;
         }
         return $keyboard;
     }

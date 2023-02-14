@@ -44,13 +44,44 @@ class Employee extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'family', 'car', 'birth'], 'string'],
+            [['name', 'family', 'car', 'birth', 'phone'], 'string'],
             [['birthday', 'chat_id', 'last_message_at', 'level'], 'integer'],
             [['engine'], 'double'],
             [['user_id'], 'exist', 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             [['state_id'], 'exist', 'targetClass' => State::class, 'targetAttribute' => ['state_id' => 'id']],
         ];
     }
+
+	public function beforeSave($insert)
+	{
+		$valid = parent::beforeSave($insert);
+		if ($valid) {
+			$user = User::findOne(['username' => $this->phone]);
+			if (isset($user)) {
+				$this->user_id = $user->id;
+			} else {
+				$user = Yii::createObject([
+					'class' => User::className(),
+					'scenario' => 'register',
+					'username' => $this->phone,
+					'email' => "{$this->phone}@employee.com",
+					'password' => $this->phone,
+				]);
+				if ($user->save()) {
+					$auth = Yii::$app->authManager;
+					$role = $auth->getRole('employee');
+					$auth->assign($role, $user->id);
+					$user->profile->name = $this->name;
+					$user->profile->public_email = "{$this->phone}@employee.com";
+					$this->user_id = $user->id;
+					return $valid && $user->profile->save();
+				} else {
+					Yii::error($user->getErrorSummary(true));
+				}
+			}
+		}
+		return $valid;
+	}
 
     public function load($data, $formName = null)
     {
@@ -68,6 +99,7 @@ class Employee extends ActiveRecord
     {
         return $this->hasOne(User::class, ["id" => "user_id"]);
     }
+
 
     public function getState()
     {
