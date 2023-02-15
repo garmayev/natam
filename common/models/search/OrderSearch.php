@@ -134,7 +134,7 @@ class OrderSearch extends Model
 			$query->andFilterWhere(["<", "order.delivery_date", \Yii::$app->formatter->asTimestamp($this->delivery_finish)]);
 		}
 
-		\Yii::error($query->createCommand()->getRawSql());
+//		\Yii::error($query->createCommand()->getRawSql());
 
 		return $dataProvider;
 	}
