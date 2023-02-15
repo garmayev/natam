@@ -71,11 +71,11 @@ echo Html::endForm();
         $total_messages = (clone $query)
             ->all();
         $completed_messages = (clone $query)
-            ->andWhere(['<', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)])
-            ->all();
+            ->andWhere(['<', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)]);
         $uncompleted_messages = (clone $query)
             ->andWhere(['>', '`updated_at` - `created_at`', Settings::getInterval($model->state_id - 1)])
             ->all();
+        $completed_messages = $completed_messages->all();
         echo Html::tag('td', $model->getFullname());
         echo Html::tag('td', ($completed_messages) ?
             Html::a(count($completed_messages),
