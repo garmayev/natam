@@ -233,3 +233,5 @@ class User extends Dispatcher {
         console.log(response);
     }
 }
+
+export {User};
