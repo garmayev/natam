@@ -216,9 +216,8 @@ class User extends Dispatcher {
             }), {
                 class: ["form-group", "col-12"]
             }),
-            submit_container = Helper.createElement("div", Helper.createElement("button", undefined, {
+            submit_container = Helper.createElement("div", Helper.createElement("button", "Авторизоваться", {
                 class: ["btn", "btn-success"],
-                value: "Авторизоваться",
             }), {
                 class: ["form-group", "text-center", "col-12"]
             })
