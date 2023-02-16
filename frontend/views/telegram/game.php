@@ -14,8 +14,9 @@ use yii\web\View;
 <head>
     <script src="//telegram.org/js/telegram-web-app.js"></script>
     <script src="//kit.fontawesome.com/aa23fe1476.js"></script>
-    <script src="https://api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU"
+    <script src="//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU"
             type="text/javascript"></script>
+    <script src="//code.jquery.com/jquery-3.6.3.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             let tg = window.Telegram.WebApp;
