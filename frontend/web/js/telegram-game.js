@@ -159,14 +159,14 @@ class User extends Dispatcher {
     static EVENT_FAILED = 'failed';
 
     isLogged = false;
-    #chat_id = null;
-    #token;
-    #csrf_param;
-    #csrf_token;
+    _chat_id = null;
+    _token;
+    _csrf_param;
+    _csrf_token;
 
     constructor(container, chat_id) {
         super();
-        this.#chat_id = chat_id;
+        this._chat_id = chat_id;
         let preflight = Helper.ajax(
             "/api/default/options", {
                 chat_id: chat_id
@@ -174,9 +174,9 @@ class User extends Dispatcher {
                 method: "GET",
             })
         if (preflight.ok) {
-            this.#csrf_param = preflight.param;
-            this.#csrf_token = preflight.token;
-            this.#token = preflight.access_token;
+            this._csrf_param = preflight.param;
+            this._csrf_token = preflight.token;
+            this._token = preflight.access_token;
             this.dispatch(User.EVENT_LOGGED, {detail: preflight});
         } else {
             container.append(this.buildForm());
@@ -192,13 +192,13 @@ class User extends Dispatcher {
             }),
             csrf = Helper.createElement("input", undefined, {
                 type: "hidden",
-                name: this.#csrf_param,
-                value: this.#csrf_token
+                name: this._csrf_param,
+                value: this._csrf_token
             }),
             chat_id = Helper.createElement("input", undefined, {
                 type: "hidden",
                 name: "chat_id",
-                value: this.#chat_id
+                value: this._chat_id
             }),
             login_container = Helper.createElement("div", Helper.createElement("input", undefined, {
                 class: ["form-control", "col-12"],
