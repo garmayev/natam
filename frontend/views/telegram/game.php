@@ -31,8 +31,8 @@ use yii\web\View;
         let user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "443353023");
 
         user.on(User.EVENT_LOGGED, function (e) {
-            console.log(e);
             let orders = Order.get(this);
+            Order.buildTable(document.querySelector("body > .container-fluid"), orders);
             console.log(orders);
         }.bind(user))
 

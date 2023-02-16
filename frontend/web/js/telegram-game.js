@@ -93,6 +93,20 @@ window.Helper = {
         } catch (err) {
             alert("Запрос не удался");
         }
+    },
+
+    get(object, property) {
+        let keys = property.split(".");
+        if (keys.length > 1) {
+            let prop = keys.shift();
+            return Helper.get(object[prop], keys.join("."));
+        } else {
+            if (object) {
+                return object[property];
+            } else {
+                return "";
+            }
+        }
     }
 }
 
@@ -232,6 +246,10 @@ class User extends Dispatcher {
         return container;
     }
 
+    destroyForm() {
+        this._container.innerHTML = '';
+    }
+
     submit(e) {
         const formSerialize = formElement => {
             const values = {};
@@ -254,17 +272,53 @@ class User extends Dispatcher {
             response = Helper.ajax("/api/default/login", data, {method: "POST", async: false});
         if (response.ok) {
             this._token = response.access_token;
+            this.destroyForm();
             this.dispatch(User.EVENT_LOGGED, {detail: response});
         }
     }
 }
 
 class Order extends Dispatcher {
-    _id;
-    _client;
-    
+    id;
+    client;
+    location;
+
     constructor(data) {
         super();
+        this.id = data.id;
+        this.client = data.client;
+        this.location = data.location;
+    }
+
+    static buildTable(container, array, columns = []) {
+        if (columns.length === 0) {
+            columns = ["id", "client.name", "location.title"];
+        }
+        if (array.length) {
+            let table = Helper.createElement("table", undefined, {class: ['table', 'table-striped']}),
+                // thead = Helper.createElement("thead"),
+                tbody = Helper.createElement("tbody");
+            // let trow = Helper.createElement("tr");
+            // for (const key of columns) {
+            //     trow.append(Helper.createElement("td", key));
+            // }
+            // thead.append(trow);
+            table.append(
+                // thead,
+                tbody);
+            for (const element of array) {
+                let row = Helper.createElement("tr", undefined, {"data-key": element.id});
+                console.log(element);
+                for (const key in columns) {
+                    console.log(Helper.get(element, columns[key]));
+                    row.append(Helper.createElement("td", Helper.get(element, columns[key])));
+                }
+                tbody.append(row);
+            }
+            container.append(table);
+        } else {
+
+        }
     }
 
     static get(user) {
@@ -275,11 +329,11 @@ class Order extends Dispatcher {
             }),
             result = [];
         for (const key of orders) {
-            console.log(key);
             result.push(new Order(key));
         }
         return result;
     }
+
 }
 
 export {User, Order};
