@@ -295,7 +295,7 @@ class Order extends Dispatcher {
             columns = ["id", "client.name", "location.title"];
         }
         if (array.length) {
-            let table = Helper.createElement("table", undefined, {class: ['table', 'table-striped']}),
+            let table = Helper.createElement("table", undefined, {class: ['table', 'table-striped', 'bg-white']}),
                 // thead = Helper.createElement("thead"),
                 tbody = Helper.createElement("tbody");
             // let trow = Helper.createElement("tr");
@@ -308,9 +308,7 @@ class Order extends Dispatcher {
                 tbody);
             for (const element of array) {
                 let row = Helper.createElement("tr", undefined, {"data-key": element.id});
-                console.log(element);
                 for (const key in columns) {
-                    console.log(Helper.get(element, columns[key]));
                     row.append(Helper.createElement("td", Helper.get(element, columns[key])));
                 }
                 tbody.append(row);
