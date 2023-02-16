@@ -3,6 +3,7 @@
 namespace common\models;
 
 use common\models\staff\Employee;
+use dektrium\user\models\Token;
 use Yii;
 use yii\helpers\Html;
 
@@ -51,6 +52,7 @@ use yii\helpers\Html;
  * @property string $plugin [char(64)]
  * @property string $authentication_string
  * @property string $password_expired [enum('N', 'Y')]
+ * @property Token $token
  *
  * @property Client $client
  * @property Employee $employee
@@ -90,6 +92,11 @@ class User extends \dektrium\user\models\User
 		}
 	}
 
+	public function getToken()
+	{
+		return $this->hasOne(Token::class, ['user_id' => 'id']);
+	}
+
 	public function isClient()
 	{
 		return Client::findOne(["user_id" => $this->id]) !== null;
@@ -111,6 +118,7 @@ class User extends \dektrium\user\models\User
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        return User::findOne(1);
+        $token = Token::findOne($token);
+	return User::findOne($token->user_id);
     }
 }

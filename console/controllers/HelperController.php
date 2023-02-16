@@ -5,8 +5,11 @@ namespace console\controllers;
 use common\models\Client;
 use common\models\Company;
 use common\models\Order;
+use common\models\User;
 use dektrium\user\models\Profile;
+use dektrium\user\models\Token;
 use Faker\Factory;
+use Yii;
 
 class HelperController extends \yii\console\Controller
 {
@@ -86,4 +89,18 @@ class HelperController extends \yii\console\Controller
         }
 //        $this->stdout(count($orders));
     }
+
+    public function actionGenerateToken()
+    {
+        $users = User::find()->all();
+        foreach ($users as $user) {
+            $token = Token::findOne($user->id);
+            if (empty($token)) {
+                $this->stdout($user->id . "\n");
+                $token = Yii::createObject(['class' => Token::className(), 'type' => Token::TYPE_CONFIRMATION, 'code' => Yii::$app->security->generateRandomString()]);
+                $token->link('user', $user);
+            }
+        }
+    }
+
 }

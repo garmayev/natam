@@ -25,6 +25,7 @@ use yii\web\View;
             crossorigin="anonymous"></script>
 
     <script>
+	let token = "";
         document.addEventListener("DOMContentLoaded", () => {
             let tg = window.Telegram.WebApp;
             $.ajax({
@@ -37,7 +38,13 @@ use yii\web\View;
                 tg.expand();
 		if ( response.ok ) {
 		    console.log(response);
+		    token = response.access_token;
+		    $.ajax({
+			url: "/api/default/login", 
+			data: {access_token: token},
+		    }).then(response => console.log(response));
 		} else {
+		    document.querySelector(".login").setAttribute("style", "display: block;");
 		    console.log("Unknown user");
 		}
             }).catch(error => {
@@ -54,7 +61,7 @@ use yii\web\View;
     <div class="row logger" style="color: white">
 
     </div>
-    <div class="row p-3">
+    <div class="row p-3 login" style="display: none;">
         <form action="/api/default/login" class="container-fluid">
             <div class="form-group col-12">
                 <input class="form-control col-12" type="text" name="User[login]"
