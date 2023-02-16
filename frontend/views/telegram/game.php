@@ -44,7 +44,7 @@ use yii\web\View;
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/webapp.css">
 </head>
-<body style="overflow: auto">
+<body style="overflow: auto" class="bg-white">
 <div class="container-fluid">
 </div>
 <div class="log"></div>

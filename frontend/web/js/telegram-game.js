@@ -295,7 +295,7 @@ class Order extends Dispatcher {
             columns = ["id", "client.name", "location.title"];
         }
         if (array.length) {
-            let table = Helper.createElement("table", undefined, {class: ['table', 'table-striped', 'bg-white']}),
+            let table = Helper.createElement("table", undefined, {class: ['table', 'table-striped']}),
                 // thead = Helper.createElement("thead"),
                 tbody = Helper.createElement("tbody");
             // let trow = Helper.createElement("tr");
