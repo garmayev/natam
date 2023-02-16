@@ -28,13 +28,20 @@ use yii\web\View;
         document.addEventListener("DOMContentLoaded", () => {
             let tg = window.Telegram.WebApp;
             $.ajax({
-                url: "/api/default/option"
+                url: "/api/default/option",
+		method: "GET",
+		data: {
+			chat_id: tg.initDataUnsafe.user.id
+		},
             }).then(response => {
                 tg.expand();
-                document.querySelector(".logger").innerHTML += tg.initData ? tg.initData.user.id : tg.initDataUnsafe.user.id;
-                document.querySelector(".login-form").addEventListener("")
+		if ( response.ok ) {
+		    console.log(response);
+		} else {
+		    console.log("Unknown user");
+		}
             }).catch(error => {
-                tg.close();
+                // tg.close();
             })
         })
     </script>
@@ -47,17 +54,17 @@ use yii\web\View;
     <div class="row logger" style="color: white">
 
     </div>
-    <div class="row">
-        <form action="/api/default/login">
-            <div class="form-group">
-                <input class="form-control" type="text" name="User[login]"
+    <div class="row p-3">
+        <form action="/api/default/login" class="container-fluid">
+            <div class="form-group col-12">
+                <input class="form-control col-12" type="text" name="User[login]"
                        placeholder="<?= Yii::t('user', 'Login') ?>"/>
             </div>
-            <div class="form-group">
-                <input class="form-control" type="password" name="User[password]"
+            <div class="form-group col-12">
+                <input class="form-control col-12" type="password" name="User[password]"
                        placeholder="<?= Yii::t('user', 'Password') ?>"/>
             </div>
-            <div class="form-group text-center">
+            <div class="form-group text-center col-12">
                 <button class="btn btn-success"><?= Yii::t('user', 'Sign in') ?></button>
             </div>
         </form>
