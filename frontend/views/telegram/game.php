@@ -28,6 +28,8 @@ use yii\web\View;
 
         let tg = window.Telegram.WebApp,
             user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.id);
+
+        console.log(user);
     </script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
@@ -36,26 +38,6 @@ use yii\web\View;
 </head>
 <body>
 <div class="container-fluid">
-    <div class="row logger" style="color: white">
-
-    </div>
-    <div class="row p-3 login" style="display: none;">
-        <form action="/user/login" class="container-fluid login-form" autocomplete="off">
-            <input type="hidden" id="csrf">
-            <input type="hidden" id="chat_id">
-            <div class="form-group col-12">
-                <input class="form-control col-12" type="text" name="login-form[login]"
-                       placeholder="<?= Yii::t('user', 'Login') ?>" autocomplete="new-login"/>
-            </div>
-            <div class="form-group col-12">
-                <input class="form-control col-12" type="password" name="login-form[password]"
-                       placeholder="<?= Yii::t('user', 'Password') ?>" autocomplete="new-password"/>
-            </div>
-            <div class="form-group text-center col-12">
-                <button class="btn btn-success"><?= Yii::t('user', 'Sign in') ?></button>
-            </div>
-        </form>
-    </div>
 </div>
 <div class="log"></div>
 </body>
