@@ -68,7 +68,7 @@ window.Helper = {
      * @param options
      * @returns {any}
      */
-    ajax(url, data = {}, options = {method: "GET"}) {
+    ajax(url, data = {}, options = {method: "GET", async: false}) {
         let xhr = new XMLHttpRequest();
         switch (options.method.toUpperCase()) {
             case "GET":
@@ -172,7 +172,8 @@ class User extends Dispatcher {
                 chat_id: chat_id
             }, {
                 method: "GET",
-            })
+            });
+        console.log(preflight);
         if (preflight.ok) {
             this._csrf_param = preflight.param;
             this._csrf_token = preflight.token;
