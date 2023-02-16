@@ -282,17 +282,19 @@ class Order extends Dispatcher {
     id;
     client;
     location;
+    statusName;
 
     constructor(data) {
         super();
         this.id = data.id;
         this.client = data.client;
         this.location = data.location;
+        this.statusName = data.statusName;
     }
 
     static buildTable(container, array, columns = []) {
         if (columns.length === 0) {
-            columns = ["id", "client.name", "location.title"];
+            columns = ["id", "client.name", "location.title", "statusName"];
         }
         if (array.length) {
             let table = Helper.createElement("table", undefined, {class: ['table', 'table-striped']}),
@@ -326,6 +328,7 @@ class Order extends Dispatcher {
                 headers: {Authorization: `Bearer ${user._token}`}
             }),
             result = [];
+        console.log(orders);
         for (const key of orders) {
             result.push(new Order(key));
         }
