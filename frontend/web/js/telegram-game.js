@@ -184,7 +184,7 @@ class User extends Dispatcher {
     }
 
     buildForm() {
-        let container = Helper.createElement("div", undefined, {style: "display: none", class: ["row", "p-3"]}),
+        let container = Helper.createElement("div", undefined, {class: ["row", "p-3"]}),
             form = Helper.createElement("form", undefined, {
                 class: ["container-fluid", "login-form"]
             }, {
