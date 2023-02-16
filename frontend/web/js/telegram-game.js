@@ -173,10 +173,9 @@ class User extends Dispatcher {
             }, {
                 method: "GET",
             });
-        console.log(preflight);
+        this._csrf_param = preflight.param;
+        this._csrf_token = preflight.token;
         if (preflight.ok) {
-            this._csrf_param = preflight.param;
-            this._csrf_token = preflight.token;
             this._token = preflight.access_token;
             this.dispatch(User.EVENT_LOGGED, {detail: preflight});
         } else {
