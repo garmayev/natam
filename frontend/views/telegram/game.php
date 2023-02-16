@@ -25,7 +25,7 @@ use yii\web\View;
             crossorigin="anonymous"></script>
 
     <script>
-	let token = "";
+	window.token = "";
         document.addEventListener("DOMContentLoaded", () => {
             let tg = window.Telegram.WebApp;
             $.ajax({
@@ -37,14 +37,15 @@ use yii\web\View;
             }).then(response => {
                 tg.expand();
 		if ( response.ok ) {
-		    console.log(response);
-		    token = response.access_token;
+		    window.token = response.access_token;
+		    console.log(window.token);
 		    $.ajax({
 			url: "/api/order/index", 
+			mathod: "GET",
 			beforeSend: (xhr) => {
-			    xhr.setRequestHeader("Authorization", "Bearer "+token);
+			    xhr.setRequestHeader("Authorization", "Bearer " + window.token);
 			}
-		    }).then(response => console.log(response));
+		    }).then(response => console.log(window.token));
 		} else {
 		    $(".login").attr("style", "display: block;");
 		    $("#csrf").attr({"name": response.param, "value": response.token});
@@ -52,16 +53,16 @@ use yii\web\View;
 		    $(".login-form").on("submit", (e) => {
 			e.preventDefault();
 			let data = $(e.currentTarget).serialize();
-			console.log(data);
+			console.log(token);
 			$.ajax({
 			    url: "/api/default/login",
 			    data: data,
 			    method: "POST",
+			    beforeSend: (xhr) => {
+				xhr.setRequestHeader("Authorization", "Bearer "+window.token);
+			    }
 			}).then(response => {
 			    console.log(response);
-			    if ( response.ok ) {
-				token = response.access_token
-			    }
 			})
 		    })
 		}
