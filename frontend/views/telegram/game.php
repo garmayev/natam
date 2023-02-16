@@ -23,8 +23,8 @@ use yii\web\View;
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous"></script>
-    <script src="/js/telegram-game.js" type="module">
-        import {User} from "/js/telegram-game";
+    <script type="module">
+        import {User} from "../../web/js/telegram-game";
 
         let tg = window.Telegram.WebApp,
             user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.id);
