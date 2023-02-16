@@ -29,7 +29,7 @@ use yii\web\View;
         document.addEventListener("DOMContentLoaded", () => {
             let tg = window.Telegram.WebApp;
             $.ajax({
-                url: "/api/default/option",
+                url: "/api/default/options",
 		method: "GET",
 		data: {
 			chat_id: tg.initDataUnsafe.user.id
@@ -40,15 +40,34 @@ use yii\web\View;
 		    console.log(response);
 		    token = response.access_token;
 		    $.ajax({
-			url: "/api/default/login", 
-			data: {access_token: token},
+			url: "/api/order/index", 
+			beforeSend: (xhr) => {
+			    xhr.setRequestHeader("Authorization", "Bearer "+token);
+			}
 		    }).then(response => console.log(response));
 		} else {
-		    document.querySelector(".login").setAttribute("style", "display: block;");
-		    console.log("Unknown user");
+		    $(".login").attr("style", "display: block;");
+		    $("#csrf").attr({"name": response.param, "value": response.token});
+		    $("#chat_id").attr({"name": "chat_id", "value": tg.initDataUnsafe.user.id});
+		    $(".login-form").on("submit", (e) => {
+			e.preventDefault();
+			let data = $(e.currentTarget).serialize();
+			console.log(data);
+			$.ajax({
+			    url: "/api/default/login",
+			    data: data,
+			    method: "POST",
+			}).then(response => {
+			    console.log(response);
+			    if ( response.ok ) {
+				token = response.access_token
+			    }
+			})
+		    })
 		}
             }).catch(error => {
-                // tg.close();
+		console.error(error);
+                tg.close();
             })
         })
     </script>
@@ -62,14 +81,16 @@ use yii\web\View;
 
     </div>
     <div class="row p-3 login" style="display: none;">
-        <form action="/api/default/login" class="container-fluid">
+        <form action="/user/login" class="container-fluid login-form" autocomplete="off">
+	    <input type="hidden" id="csrf">
+	    <input type="hidden" id="chat_id">
             <div class="form-group col-12">
-                <input class="form-control col-12" type="text" name="User[login]"
-                       placeholder="<?= Yii::t('user', 'Login') ?>"/>
+                <input class="form-control col-12" type="text" name="login-form[login]"
+                       placeholder="<?= Yii::t('user', 'Login') ?>" autocomplete="new-login"/>
             </div>
             <div class="form-group col-12">
-                <input class="form-control col-12" type="password" name="User[password]"
-                       placeholder="<?= Yii::t('user', 'Password') ?>"/>
+                <input class="form-control col-12" type="password" name="login-form[password]"
+                       placeholder="<?= Yii::t('user', 'Password') ?>" autocomplete="new-password"/>
             </div>
             <div class="form-group text-center col-12">
                 <button class="btn btn-success"><?= Yii::t('user', 'Sign in') ?></button>
