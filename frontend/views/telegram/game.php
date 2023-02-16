@@ -17,13 +17,15 @@ use yii\web\View;
     <script src="https://api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU"
             type="text/javascript"></script>
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        if (tg.initData) {
-            $(".log").append($(`<p>${tg.initData.user.id}</p>`));
-        } else {
-            $(".log").append($(`<p>${tg.initDataUnsafe.user.id}</p>`));
-        }
+        document.addEventListener("DOMContentLoaded", () => {
+            let tg = window.Telegram.WebApp;
+            tg.expand();
+            if (tg.initData) {
+                $(".log").append($(`<p>${tg.initData.user.id}</p>`));
+            } else {
+                $(".log").append($(`<p>${tg.initDataUnsafe.user.id}</p>`));
+            }
+        })
     </script>
     <link rel="stylesheet" href="/css/webapp.css">
 </head>
