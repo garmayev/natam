@@ -423,7 +423,9 @@ class Order extends ActiveRecord
 
     public function getStatusName()
     {
+	if ( $this->status ) {
         return Order::getStatusList()[$this->status];
+	}
     }
 
     public static function getStatusList()
