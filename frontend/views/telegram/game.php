@@ -25,12 +25,19 @@ use yii\web\View;
             crossorigin="anonymous"></script>
     <script type="module" src="/js/telegram-game.js"></script>
     <script type="module">
-        import {User} from "/js/telegram-game.js";
+        import {Order, User} from "/js/telegram-game.js";
 
-        let tg = window.Telegram.WebApp,
-            user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.user.id);
+        let tg = window.Telegram.WebApp;
+        let user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "443353023");
 
-        console.log(user);
+        user.on(User.EVENT_LOGGED, function (e) {
+            console.log(e);
+            let orders = Order.get(this);
+            console.log(orders);
+        }.bind(user))
+
+        user.init();
+        // console.log(user);
     </script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"

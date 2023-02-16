@@ -76,10 +76,10 @@ window.Helper = {
                 data = null;
                 break;
             case "POST":
-                data = JSON.stringify(data);
+                // data = JSON.stringify(data);
                 break;
         }
-        xhr.open(options.method, url, false);
+        xhr.open(options.method, url, options.async);
         for (const key in options.headers) {
             xhr.setRequestHeader(key, options.headers[key]);
         }
@@ -163,15 +163,21 @@ class User extends Dispatcher {
     _token;
     _csrf_param;
     _csrf_token;
+    _container;
 
     constructor(container, chat_id) {
         super();
         this._chat_id = chat_id;
+        this._container = container;
+    }
+
+    init() {
         let preflight = Helper.ajax(
             "/api/default/options", {
-                chat_id: chat_id
+                chat_id: this._chat_id
             }, {
                 method: "GET",
+                async: false,
             });
         this._csrf_param = preflight.param;
         this._csrf_token = preflight.token;
@@ -179,7 +185,7 @@ class User extends Dispatcher {
             this._token = preflight.access_token;
             this.dispatch(User.EVENT_LOGGED, {detail: preflight});
         } else {
-            container.append(this.buildForm());
+            this._container.append(this.buildForm());
         }
     }
 
@@ -227,11 +233,53 @@ class User extends Dispatcher {
     }
 
     submit(e) {
+        const formSerialize = formElement => {
+            const values = {};
+            const inputs = formElement.elements;
+
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].name.length) {
+                    values[inputs[i].name] = inputs[i].value;
+                }
+            }
+            return values;
+        }
+
+        const dumpValues = form => () => {
+            return formSerialize(form);
+        }
+
         e.preventDefault();
         let data = new FormData(e.currentTarget),
-            response = Helper.ajax("/api/default/login", data, {method: "POST"});
-        console.log(response);
+            response = Helper.ajax("/api/default/login", data, {method: "POST", async: false});
+        if (response.ok) {
+            this._token = response.access_token;
+            this.dispatch(User.EVENT_LOGGED, {detail: response});
+        }
     }
 }
 
-export {User};
+class Order extends Dispatcher {
+    _id;
+    _client;
+    
+    constructor(data) {
+        super();
+    }
+
+    static get(user) {
+        let orders = Helper.ajax("/api/order/index", undefined, {
+                method: "GET",
+                async: false,
+                headers: {Authorization: `Bearer ${user._token}`}
+            }),
+            result = [];
+        for (const key of orders) {
+            console.log(key);
+            result.push(new Order(key));
+        }
+        return result;
+    }
+}
+
+export {User, Order};
