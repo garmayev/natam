@@ -28,7 +28,7 @@ use yii\web\View;
         import {User} from "/js/telegram-game.js";
 
         let tg = window.Telegram.WebApp,
-            user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.id);
+            user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.user.id);
 
         console.log(user);
     </script>
