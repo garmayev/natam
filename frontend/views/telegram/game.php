@@ -26,17 +26,15 @@ use yii\web\View;
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            let tg = window.Telegram.WebApp;
             $.ajax({
                 url: "/api/default/option"
             }).then(response => {
-                console.log(response);
-                let tg = window.Telegram.WebApp;
                 tg.expand();
-                if (tg.initData) {
-                    document.querySelector(".log").textContent += `<p>${tg.initData.user.id}</p>`;
-                } else {
-                    document.querySelector(".log").textContent += `<p>${tg.initDataUnsafe.user.id}</p>`;
-                }
+                document.querySelector(".logger").innerHTML += tg.initData ? tg.initData.user.id : tg.initDataUnsafe.user.id;
+                document.querySelector(".login-form").addEventListener("")
+            }).catch(error => {
+                tg.close();
             })
         })
     </script>
@@ -46,10 +44,23 @@ use yii\web\View;
 </head>
 <body>
 <div class="container-fluid">
+    <div class="row logger" style="color: white">
+
+    </div>
     <div class="row">
-        <input class="form-control" type="text" name="User[login]" placeholder="<?= Yii::t('user', 'Login') ?>"/>
-        <input class="form-control" type="password" name="User[password]"
-               placeholder="<?= Yii::t('user', 'Password') ?>"/>
+        <form action="/api/default/login">
+            <div class="form-group">
+                <input class="form-control" type="text" name="User[login]"
+                       placeholder="<?= Yii::t('user', 'Login') ?>"/>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="password" name="User[password]"
+                       placeholder="<?= Yii::t('user', 'Password') ?>"/>
+            </div>
+            <div class="form-group text-center">
+                <button class="btn btn-success"><?= Yii::t('user', 'Sign in') ?></button>
+            </div>
+        </form>
     </div>
 </div>
 <div class="log"></div>

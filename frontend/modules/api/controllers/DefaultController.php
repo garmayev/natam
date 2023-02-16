@@ -18,4 +18,9 @@ class DefaultController extends Controller
     {
         return [Yii::$app->getRequest()->csrfParam => Yii::$app->getRequest()->getCsrfToken()];
     }
+
+    public function actionLogin()
+    {
+
+    }
 }
