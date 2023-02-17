@@ -26,7 +26,7 @@ use yii\web\View;
 <div class="main">
 </div>
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-     aria-hidden="true">
+     aria-hidden="true" style="overflow: auto">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -74,7 +74,7 @@ use yii\web\View;
     </div>
 </div>
 <div class="modal fade" id="append-product" tabindex="-1" role="dialog" aria-labelledby="appendProductLabel"
-     aria-hidden="true">
+     aria-hidden="true" style="overflow: auto">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -103,7 +103,7 @@ use yii\web\View;
     </div>
 </div>
 <div class="modal fade" id="clone-order" tabindex="-1" role="dialog" aria-labelledby="cloneOrderLabel"
-     aria-hidden="true">
+     aria-hidden="true" style="overflow: auto">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -202,6 +202,8 @@ use yii\web\View;
                 $("#order-location-field").show();
             }
         })
+
+        $('.modal').css("overflow", "auto");
 
         $('#exampleModal').on('show.bs.modal', () => {
             if (map === undefined && !$("#order-delivery_type").is(":checked")) {
