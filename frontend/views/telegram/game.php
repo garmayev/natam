@@ -58,7 +58,7 @@ use yii\web\View;
                 </button>
             </div>
             <div class="modal-body">
-
+                <input type="datetime-local" class="form-control">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"
