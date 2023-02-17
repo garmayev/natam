@@ -37,24 +37,29 @@ use yii\web\View;
             </div>
             <div class="modal-body">
                 <p>
-                    <input type="datetime-local" class="form-control" name="Order[delivery_at]">
+                    <input type="datetime-local" class="form-control" id="delivery_date" name="Order[delivery_date]">
                 </p>
                 <p>
+                    <input type="checkbox" id="order-delivery_type">
+                    <label for="order-delivery_type">Самовывоз</label>
+                </p>
+                <div id="order-location-field">
                     <input type="text" class="form-control" name="Order[location][title]" id="location-title">
                     <input type="hidden" name="Order[location][latitude]" id="location-latitude">
                     <input type="hidden" name="Order[location][longitude]" id="location-longitude">
-                </p>
-                <div id="map" style="min-height: 200px"></div>
+                    <div id="map" style="min-height: 200px" class="mt-2"></div>
+                </div>
                 <p class="pt-2">
                     <span class="btn btn-primary append"
                           data-target="#append-product"
                           data-toggle="modal"><?= Yii::t("app", "Append Product") ?></span>
                 </p>
+                <div class="cart_table" id="cart_table"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"
                         data-dismiss="modal"><?= Yii::t("app", "Cancel") ?></button>
-                <button type="button" class="btn btn-primary create-order"><?= Yii::t("app", "Save") ?></button>
+                <button type="button" class="btn btn-primary" id="create-order"><?= Yii::t("app", "Save") ?></button>
             </div>
         </div>
     </div>
@@ -71,13 +76,13 @@ use yii\web\View;
             </div>
             <div class="modal-body">
                 <p>
-                    <?= Html::dropDownList("category_id", null, ArrayHelper::map(Category::find()->all(), 'id', 'title'), ['class' => 'form-control']) ?>
+                    <?= Html::dropDownList("category_id", null, ArrayHelper::map(Category::find()->all(), 'id', 'title'), ['class' => 'form-control', 'id' => 'category_id']) ?>
                 </p>
                 <p>
-                    <?= Html::dropDownList("category_id", null, ArrayHelper::map(Product::find()->where(['category_id' => 1])->all(), 'id', 'title'), ['class' => 'form-control']) ?>
+                    <?= Html::dropDownList("category_id", null, ArrayHelper::map(Product::find()->where(['category_id' => 1])->all(), 'id', 'title'), ['class' => 'form-control', 'id' => 'product_id']) ?>
                 </p>
                 <p>
-                    <input type="number" class="form-control">
+                    <input type="number" class="form-control" name="product_count" id="product_count">
                 </p>
             </div>
             <div class="modal-footer">
@@ -101,10 +106,11 @@ use yii\web\View;
         crossorigin="anonymous"></script>
 <script type="module" src="/js/telegram-game.js"></script>
 <script type="module">
-    import {Order, User} from "/js/telegram-game.js";
+    import {Order, User, Cart} from "/js/telegram-game.js";
 
     document.addEventListener("DOMContentLoaded", () => {
         let tg = window.Telegram.WebApp, map = undefined, placemark = undefined,
+            cart = new Cart(document.querySelector("#cart_table")),
             user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "443353023");
 
         tg.expand();
@@ -112,11 +118,81 @@ use yii\web\View;
         user.on(User.EVENT_LOGGED, function (e) {
             let orders = Order.get(this);
             Order.buildTable(document.querySelector("body > .main"), orders);
-            // console.log(orders);
         }.bind(user));
 
-        $(".append-product").on('click', () => {
-            
+        $("#category_id").on("change", (e) => {
+            $.ajax("/api/product/by-category?category_id=" + $(e.currentTarget).val()).then(response => {
+                let target = $("#product_id");
+                target.html("");
+                for (const element of response) {
+                    target.append(`<option value='${element.id}'>${element.title}</option>`);
+                }
+            })
+        })
+
+        $(".append-product").on('click', (e) => {
+            if (cart.append({
+                category_id: $("#category_id").val(),
+                product_id: $("#product_id").val(),
+                product_count: $("#product_count").val()
+            })) {
+                $("#append-product").modal("hide");
+            }
+            console.log(cart.selected);
+        })
+
+        $("#order-delivery_type").on("change", (e) => {
+            if ($(e.currentTarget).is(":checked")) {
+                map.destroy();
+                map = undefined;
+                placemark = undefined;
+
+                $("#location-title").val("");
+                $("#location-latitude").val("");
+                $("#location-longitude").val("");
+                $("#order-location-field").hide();
+            } else {
+                init();
+                $("#order-location-field").show();
+            }
+        })
+
+        $('#exampleModal').on('show.bs.modal', () => {
+            if (map === undefined) {
+                init();
+            }
+        })
+
+        $("#create-order").on("click", (e) => {
+            let order = {
+                Order: {
+                    client_id: undefined,
+                    chat_id: tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "443353023",
+                    delivery_date: $("#delivery_date").val(),
+                    delivery_type: $("#order-delivery_type").is(":checked") ? 1 : 0,
+                    location: {
+                        title: $("#location-title").val(),
+                        latitude: $("#location-latitude").val(),
+                        longitude: $("#location-longitude").val(),
+                    },
+                    products: cart.selected,
+                    telegram: 1,
+                }
+            }
+            $.ajax({
+                url: "/api/order/create",
+                data: order,
+                method: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer " + user._token);
+                },
+            }).then(response => {
+                if (response.ok) {
+                    $("#exampleModal").modal("hide");
+                    let orders = Order.get(user);
+                    Order.buildTable(document.querySelector("body > .main"), orders);
+                }
+            })
         })
 
         function getAddress(coords) {
@@ -137,26 +213,23 @@ use yii\web\View;
             });
         }
 
-        $('#exampleModal').on('show.bs.modal', () => {
-            if (map === undefined) {
-                map = new ymaps.Map("map", {
-                    center: [51.835501, 107.683123],
-                    zoom: 17,
-                    controls: [],
-                });
-                map.events.add("click", (e) => {
-                    let coords = e.get("coords")
-                    if (placemark) {
-                        placemark.geometry.setCoordinates(coords)
-                    } else {
-                        placemark = new ymaps.Placemark(coords);
-                        map.geoObjects.add(placemark);
-                    }
-                    getAddress(coords);
-                })
-            }
-            console.log("Modal open");
-        })
+        function init() {
+            map = new ymaps.Map("map", {
+                center: [51.835501, 107.683123],
+                zoom: 17,
+                controls: [],
+            });
+            map.events.add("click", (e) => {
+                let coords = e.get("coords")
+                if (placemark) {
+                    placemark.geometry.setCoordinates(coords)
+                } else {
+                    placemark = new ymaps.Placemark(coords);
+                    map.geoObjects.add(placemark);
+                }
+                getAddress(coords);
+            })
+        }
 
         user.init();
     })

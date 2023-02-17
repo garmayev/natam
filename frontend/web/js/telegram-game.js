@@ -288,8 +288,53 @@ class User extends Dispatcher {
     }
 }
 
-class Modal {
-    constructor(container, title, body) {
+class Cart {
+    selected = [];
+    #table = undefined;
+
+    constructor(container) {
+        this.container = container;
+        this.rebuild();
+    }
+
+    rebuild() {
+        if (this.#table === undefined) {
+            this.#table = Helper.createElement("table", undefined, {class: ["table", "table-striped"]});
+            this.container.append(this.#table);
+        } else {
+            this.#table.innerHTML = "";
+        }
+        let thead = Helper.createElement("thead"),
+            thRow = Helper.createElement("tr"),
+            tbody = Helper.createElement("tbody");
+        thRow.append(Helper.createElement("th", "Продукт"), Helper.createElement("th", "Количество"), Helper.createElement("Действия"));
+        for (const element of this.selected) {
+            let tr = Helper.createElement("tr"),
+                product = Helper.ajax("/api/product/view?id=" + element.product_id),
+                td_product = Helper.createElement("td", product.title),
+                td_count = Helper.createElement("td", element.product_count);
+            tr.append(td_product, td_count);
+            tbody.append(tr);
+        }
+        this.#table.append(thead, tbody);
+    }
+
+    append(object) {
+        for (const element of this.selected) {
+            if (element.product_id === object.product_id && element.category_id === object.category_id) {
+                element.product_count = object.product_count;
+                return true;
+            }
+        }
+        this.selected.push(object);
+        this.rebuild();
+        return true;
+    }
+
+    remove(product_id) {
+        this.selected = this.selected.filter(element => element.product_id !== product_id);
+        this.rebuild();
+        return this.selected;
     }
 }
 
@@ -310,6 +355,7 @@ class Order extends Dispatcher {
     }
 
     static buildTable(container, array, columns = []) {
+        container.innerHTML = '';
         if (columns.length === 0) {
             columns = [
                 {"key": "id", "title": "Номер заказа", "class": "Order", "href": "/api/{{class}}/view?id={{id}}"},
@@ -376,4 +422,4 @@ class Order extends Dispatcher {
 
 }
 
-export {User, Order};
+export {User, Order, Cart};
