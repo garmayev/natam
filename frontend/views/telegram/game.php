@@ -32,7 +32,7 @@ use yii\web\View;
 
         user.on(User.EVENT_LOGGED, function (e) {
             let orders = Order.get(this);
-            Order.buildTable(document.querySelector("body > .container-fluid"), orders);
+            Order.buildTable(document.querySelector("body > .main"), orders);
             console.log(orders);
         }.bind(user))
 
@@ -45,8 +45,28 @@ use yii\web\View;
     <link rel="stylesheet" href="/css/webapp.css">
 </head>
 <body style="overflow: auto" class="bg-white">
-<div class="container-fluid">
+<div class="main">
 </div>
-<div class="log"></div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><?= Yii::t("app", "Create Order") ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="<?= Yii::t("app", "Close") ?>">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal"><?= Yii::t("app", "Cancel") ?></button>
+                <button type="button" class="btn btn-primary"><?= Yii::t("app", "Save") ?></button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -96,6 +96,7 @@ window.Helper = {
     },
 
     get(object, property) {
+        console.log(object, property)
         let keys = property.split(".");
         if (keys.length > 1) {
             let prop = keys.shift();
@@ -105,6 +106,15 @@ window.Helper = {
                 return object[property];
             } else {
                 return "";
+            }
+        }
+    },
+
+    generateLink(object, config) {
+        if (config.href) {
+            let a = [...config.href.matchAll(/\{\{(\w+)\}\}/g)], href;
+            for (let i = 0; i < a.length; i++) {
+                config.href = config.href.replace(a[i][0], Helper.get(object, a[i][1]));
             }
         }
     }
@@ -283,9 +293,11 @@ class Order extends Dispatcher {
     client;
     location;
     statusName;
+    class;
 
     constructor(data) {
         super();
+        this.class = "order";
         this.id = data.id;
         this.client = data.client;
         this.location = data.location;
@@ -294,30 +306,49 @@ class Order extends Dispatcher {
 
     static buildTable(container, array, columns = []) {
         if (columns.length === 0) {
-            columns = ["id", "client.name", "location.title", "statusName"];
+            columns = [
+                {"key": "id", "title": "Номер заказа", "class": "Order", "href": "/api/{{class}}/view?id={{id}}"},
+                {
+                    "key": "location.title",
+                    "title": "Адрес доставки",
+                    "class": "Location",
+                    "href": "/api/{{class}}/view?id={{id}}"
+                },
+                {
+                    "key": "statusName",
+                    "title": "Статус",
+                },
+            ]
+            // columns = {"id": "Номер заказа", "location.title": "Адрес доставки", "statusName": "Статус"};
         }
         if (array.length) {
             let table = Helper.createElement("table", undefined, {class: ['table', 'table-striped']}),
-                // thead = Helper.createElement("thead"),
-                tbody = Helper.createElement("tbody");
-            // let trow = Helper.createElement("tr");
-            // for (const key of columns) {
-            //     trow.append(Helper.createElement("td", key));
-            // }
-            // thead.append(trow);
+                thead = Helper.createElement("thead"),
+                tbody = Helper.createElement("tbody"),
+                trow = Helper.createElement("tr"),
+                createBtn = Helper.createElement("span", "Создать заказ", {
+                    class: ["btn", "btn-success", "m-2"],
+                    "data-toggle": "modal",
+                    "data-target": "#exampleModal"
+                }, {
+                    click: Order.create
+                });
+            for (const column of columns) {
+                trow.append(Helper.createElement("th", column.title));
+            }
+            thead.append(trow);
             table.append(
-                // thead,
+                thead,
                 tbody);
             for (const element of array) {
                 let row = Helper.createElement("tr", undefined, {"data-key": element.id});
-                for (const key in columns) {
-                    row.append(Helper.createElement("td", Helper.get(element, columns[key])));
+                for (const column of columns) {
+                    row.append(Helper.createElement("td", Helper.get(element, column.key)));
                 }
                 tbody.append(row);
             }
-            container.append(table);
-        } else {
-
+            container.append(createBtn, table);
+            this.table = table;
         }
     }
 
@@ -328,11 +359,14 @@ class Order extends Dispatcher {
                 headers: {Authorization: `Bearer ${user._token}`}
             }),
             result = [];
-        console.log(orders);
         for (const key of orders) {
             result.push(new Order(key));
         }
         return result;
+    }
+
+    static create(e) {
+        console.log(this);
     }
 
 }
