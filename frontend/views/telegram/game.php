@@ -33,12 +33,15 @@ use yii\web\View;
             </div>
             <div class="modal-body">
                 <p>
-                    <input type="datetime-local" class="form-control">
+                    <input type="datetime-local" class="form-control" name="Order[delivery_at]">
                 </p>
                 <p>
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" name="Order[location][title]" id="location-title">
+                    <input type="hidden" name="Order[location][latitude]" id="location-latitude">
+                    <input type="hidden" name="Order[location][longitude]" id="location-longitude">
                 </p>
-                <div id="map" style="min-height: 300px"></div>
+                <div id="map" style="min-height: 200px"></div>
+                <span class="btn btn-primary append"><?= Yii::t("app", "Append Product") ?></span>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"
@@ -64,7 +67,7 @@ use yii\web\View;
     import {Order, User} from "/js/telegram-game.js";
 
     document.addEventListener("DOMContentLoaded", () => {
-        let tg = window.Telegram.WebApp, map = undefined,
+        let tg = window.Telegram.WebApp, map = undefined, placemark = undefined,
             user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "443353023");
 
         tg.expand();
@@ -74,12 +77,41 @@ use yii\web\View;
             Order.buildTable(document.querySelector("body > .main"), orders);
             // console.log(orders);
         }.bind(user));
+
+        function getAddress(coords) {
+            placemark.properties.set('iconCaption', 'поиск...');
+            ymaps.geocode(coords).then(function (res) {
+                let firstGeoObject = res.geoObjects.get(0),
+                    address = firstGeoObject.getAddressLine();
+                $("#location-title").val(address);
+                $("#location-latitude").val(coords[0]);
+                $("#location-longitude").val(coords[1]);
+                placemark.properties
+                    .set({
+                        // Формируем строку с данными об объекте.
+                        iconCaption: address,
+                        // В качестве контента балуна задаем строку с адресом объекта.
+                        // balloonContent: firstGeoObject.getAddressLine()
+                    });
+            });
+        }
+
         $('#exampleModal').on('show.bs.modal', () => {
             if (map === undefined) {
                 map = new ymaps.Map("map", {
                     center: [51.835501, 107.683123],
-                    zoom: 12,
+                    zoom: 17,
                     controls: [],
+                });
+                map.events.add("click", (e) => {
+                    let coords = e.get("coords")
+                    if (placemark) {
+                        placemark.geometry.setCoordinates(coords)
+                    } else {
+                        placemark = new ymaps.Placemark(coords);
+                        map.geoObjects.add(placemark);
+                    }
+                    getAddress(coords);
                 })
             }
             console.log("Modal open");
