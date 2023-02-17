@@ -96,7 +96,6 @@ window.Helper = {
     },
 
     get(object, property) {
-        console.log(object, property)
         let keys = property.split(".");
         if (keys.length > 1) {
             let prop = keys.shift();
@@ -312,8 +311,9 @@ class Cart {
             let tr = Helper.createElement("tr"),
                 product = Helper.ajax("/api/product/view?id=" + element.product_id),
                 td_product = Helper.createElement("td", product.title),
+                td_action = Helper.createElement("td", Helper.createElement("span", undefined, {class: ["fas", "fa-trash"]}, {click: this.remove.bind(this, element.product_id)}), {class: "text-right"}),
                 td_count = Helper.createElement("td", element.product_count);
-            tr.append(td_product, td_count);
+            tr.append(td_product, td_count, td_action);
             tbody.append(tr);
         }
         this.#table.append(thead, tbody);
@@ -369,6 +369,10 @@ class Order extends Dispatcher {
                     "key": "statusName",
                     "title": "Статус",
                 },
+                {
+                    "key": "action",
+                    "title": "",
+                }
             ]
             // columns = {"id": "Номер заказа", "location.title": "Адрес доставки", "statusName": "Статус"};
         }
@@ -396,6 +400,31 @@ class Order extends Dispatcher {
                 for (const column of columns) {
                     row.append(Helper.createElement("td", Helper.get(element, column.key)));
                 }
+                let btn = Helper.createElement("button", undefined, {
+                        class: ["btn", "btn-secondary", "dropdown-toggle"],
+                        type: "button",
+                        id: `dropdown_${element.id}`,
+                        "data-toggle": "dropdown",
+                        "aria-haspopup": "true",
+                        "aria-expanded": "Dropdown",
+                    }),
+                    itemClone = Helper.createElement("a", "Повторить заказ", {
+                        class: "dropdown-item",
+                        href: "#",
+                        "data-toggle": "modal",
+                        "data-target": "#clone-order",
+                        "data-key": element.id,
+                    }, {click: Order.clone}),
+                    btnMenu = Helper.createElement("div", [itemClone], {
+                        class: ["dropdown-menu", "dropdown-menu-right"],
+                        "aria-labelledby": `dropdown_${element.id}`
+                    }),
+                    btnGroup = Helper.createElement("div", [btn, btnMenu], {
+                        class: "btn-group",
+                        role: "group",
+                    }),
+                    tdAction = Helper.createElement("td", btnGroup);
+                row.append(tdAction);
                 tbody.append(row);
             }
             container.append(createBtn, table);
@@ -420,6 +449,9 @@ class Order extends Dispatcher {
         console.log(this);
     }
 
+    static clone(e) {
+        console.log(e.target);
+    }
 }
 
 export {User, Order, Cart};

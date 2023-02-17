@@ -44,10 +44,18 @@ use yii\web\View;
                     <label for="order-delivery_type">Самовывоз</label>
                 </p>
                 <div id="order-location-field">
-                    <input type="text" class="form-control" name="Order[location][title]" id="location-title">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="Order[location][title]" id="location-title">
+                        <div class="input-group-append">
+                            <button class="input-group-text" id="btnGroupAddon">
+                                <span class="fas fa-map-marker-alt"></span>
+                            </button>
+                        </div>
+                    </div>
+
                     <input type="hidden" name="Order[location][latitude]" id="location-latitude">
                     <input type="hidden" name="Order[location][longitude]" id="location-longitude">
-                    <div id="map" style="min-height: 200px" class="mt-2"></div>
+                    <div id="map" style="min-height: 200px; display: none;" class="mt-2"></div>
                 </div>
                 <p class="pt-2">
                     <span class="btn btn-primary append"
@@ -59,12 +67,13 @@ use yii\web\View;
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"
                         data-dismiss="modal"><?= Yii::t("app", "Cancel") ?></button>
-                <button type="button" class="btn btn-primary" id="create-order"><?= Yii::t("app", "Save") ?></button>
+                <button type="button" class="btn btn-primary"
+                        id="create-order"><?= Yii::t("app", "Save") ?></button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade" id="append-product" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+<div class="modal fade" id="append-product" tabindex="-1" role="dialog" aria-labelledby="appendProductLabel"
      aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -93,6 +102,29 @@ use yii\web\View;
         </div>
     </div>
 </div>
+<div class="modal fade" id="clone-order" tabindex="-1" role="dialog" aria-labelledby="cloneOrderLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><?= Yii::t("app", "Clone Order") ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="<?= Yii::t("app", "Close") ?>">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <input type="datetime-local" class="form-control">
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal"><?= Yii::t("app", "Cancel") ?></button>
+                <button type="button" class="btn btn-primary clone-order"><?= Yii::t("app", "Save") ?></button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="//telegram.org/js/telegram-web-app.js"></script>
 <script src="//kit.fontawesome.com/aa23fe1476.js"></script>
 <script src="//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU"
@@ -108,12 +140,26 @@ use yii\web\View;
 <script type="module">
     import {Order, User, Cart} from "/js/telegram-game.js";
 
-    document.addEventListener("DOMContentLoaded", () => {
+    ymaps.ready(() => {
         let tg = window.Telegram.WebApp, map = undefined, placemark = undefined,
             cart = new Cart(document.querySelector("#cart_table")),
-            user = new User(document.querySelector("body > .container-fluid"), tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "443353023");
+            suggestView = new ymaps.SuggestView("location-title", {
+                boundedBy: [[29, 100], [31, 120]],
+            }),
+            user = new User(document.querySelector("body > .main"), tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "443353023");
 
         tg.expand();
+
+        suggestView.events.add("select", (e) => {
+            ymaps.geocode(e.originalEvent.item.value, {
+                results: 1,
+            }).then((response) => {
+                let firstGeoObject = response.geoObjects.get(0),
+                    coords = firstGeoObject.geometry.getCoordinates();
+                $("#location-latitude").val(coords[0]);
+                $("#location-longitude").val(coords[1]);
+            })
+        })
 
         user.on(User.EVENT_LOGGED, function (e) {
             let orders = Order.get(this);
@@ -158,7 +204,7 @@ use yii\web\View;
         })
 
         $('#exampleModal').on('show.bs.modal', () => {
-            if (map === undefined) {
+            if (map === undefined && !$("#order-delivery_type").is(":checked")) {
                 init();
             }
         })
@@ -193,6 +239,19 @@ use yii\web\View;
                     Order.buildTable(document.querySelector("body > .main"), orders);
                 }
             })
+        })
+
+        $("#clone-order").on("click", (e) => {
+
+        })
+
+        $("#btnGroupAddon").on("click", (e) => {
+            let mapContainer = $("#map");
+            if (mapContainer.is(":visible")) {
+                mapContainer.hide();
+            } else {
+                mapContainer.show();
+            }
         })
 
         function getAddress(coords) {
