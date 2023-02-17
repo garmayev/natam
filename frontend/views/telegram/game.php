@@ -1,6 +1,10 @@
 <?php
 
+use common\models\Category;
+use common\models\Product;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\View;
 
 
@@ -41,12 +45,45 @@ use yii\web\View;
                     <input type="hidden" name="Order[location][longitude]" id="location-longitude">
                 </p>
                 <div id="map" style="min-height: 200px"></div>
-                <span class="btn btn-primary append"><?= Yii::t("app", "Append Product") ?></span>
+                <p class="pt-2">
+                    <span class="btn btn-primary append"
+                          data-target="#append-product"
+                          data-toggle="modal"><?= Yii::t("app", "Append Product") ?></span>
+                </p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary"
                         data-dismiss="modal"><?= Yii::t("app", "Cancel") ?></button>
-                <button type="button" class="btn btn-primary"><?= Yii::t("app", "Save") ?></button>
+                <button type="button" class="btn btn-primary create-order"><?= Yii::t("app", "Save") ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="append-product" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"><?= Yii::t("app", "Append Product") ?></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="<?= Yii::t("app", "Close") ?>">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <?= Html::dropDownList("category_id", null, ArrayHelper::map(Category::find()->all(), 'id', 'title'), ['class' => 'form-control']) ?>
+                </p>
+                <p>
+                    <?= Html::dropDownList("category_id", null, ArrayHelper::map(Product::find()->where(['category_id' => 1])->all(), 'id', 'title'), ['class' => 'form-control']) ?>
+                </p>
+                <p>
+                    <input type="number" class="form-control">
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal"><?= Yii::t("app", "Cancel") ?></button>
+                <button type="button" class="btn btn-primary append-product"><?= Yii::t("app", "Save") ?></button>
             </div>
         </div>
     </div>
@@ -77,6 +114,10 @@ use yii\web\View;
             Order.buildTable(document.querySelector("body > .main"), orders);
             // console.log(orders);
         }.bind(user));
+
+        $(".append-product").on('click', () => {
+            
+        })
 
         function getAddress(coords) {
             placemark.properties.set('iconCaption', 'поиск...');

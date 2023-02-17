@@ -288,6 +288,11 @@ class User extends Dispatcher {
     }
 }
 
+class Modal {
+    constructor(container, title, body) {
+    }
+}
+
 class Order extends Dispatcher {
     id;
     client;
