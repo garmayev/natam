@@ -70,8 +70,8 @@ class User extends \dektrium\user\models\User
 
     public static function findIdentityByAccessToken($code, $type = null)
     {
-        $token = Token::findOne(['code' => $code]);
-        return User::findOne($token->user_id);
+        $user = User::findOne(['auth_key' => $code]);
+        return User::findOne($user->id);
     }
 
     public function getClient()

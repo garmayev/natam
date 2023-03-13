@@ -104,7 +104,7 @@ window.Helper = {
             if (object) {
                 return object[property];
             } else {
-                return "";
+                return Helper.createElement("span", "Не задано", {style: "font-style: italic; color: red;"});
             }
         }
     },
@@ -352,6 +352,100 @@ class Order extends Dispatcher {
         this.client = data.client;
         this.location = data.location;
         this.statusName = data.statusName;
+        this.delivery_at = data.delivery_at;
+        this.delivery_type = data.delivery_type;
+        this.comment = data.comment;
+        this.store = data.store;
+        this.delivery_distance = data.delivery_distance;
+        this.products = data.products;
+        console.log(data);
+        console.log(this);
+    }
+
+    static view(container, element) {
+        console.log(element);
+        container.innerHTML = '';
+        let clientCardContainer = Helper.createElement('div', undefined, {class: 'card', style: 'margin-bottom: 10px'}),
+            clientCardHeader = Helper.createElement('div', 'Информация о клиенте', {class: 'card-header'}),
+            clientCardBody = Helper.createElement('div', undefined, {class: 'card-body'}),
+            deliveryCardContainer = Helper.createElement('div', undefined, {
+                class: 'card',
+                style: 'margin-bottom: 10px'
+            }),
+            deliveryCardHeader = Helper.createElement('div', 'Информация о доставке', {class: 'card-header'}),
+            deliveryCardBody = Helper.createElement('div', undefined, {class: 'card-body'}),
+            productsCardContainer = Helper.createElement('div', undefined, {
+                class: 'card',
+                style: 'margin-bottom: 10px'
+            }),
+            productsCardHeader = Helper.createElement('div', 'Содержимое заказа', {class: 'card-header'}),
+            productsCardBody = Helper.createElement('div', undefined, {class: 'card-body'}),
+            productsCardFooter = Helper.createElement('div', undefined, {class: 'card-footer'}),
+            backBtn = Helper.createElement('span', 'Назад', {class: ['btn', 'btn-success', 'm-2']}, {
+                click: () => {
+                    let orders = Order.get(user);
+                    Order.buildTable(document.querySelector("body > .main"), orders);
+                }
+            }),
+            totalPrice = 0, date = new Date(element.delivery_at * 1000);
+        container.append(backBtn, Helper.createElement("span", `Заказ #${element.id}`, {style: 'font-weight: bolder'}));
+        clientCardBody.append(
+            Helper.createElement('p', [
+                Helper.createElement('b', 'Имя клиента: '),
+                Helper.createElement('span', element.client.name)
+            ]),
+            Helper.createElement('p', [
+                Helper.createElement('b', 'Номер телефона: '),
+                Helper.createElement('span', element.client.phone)
+            ]),
+            Helper.createElement('p', [
+                Helper.createElement('b', 'E-mail: '),
+                Helper.createElement('span', element.client.email ?? '')
+            ]),
+            Helper.createElement('p', [
+                Helper.createElement('b', 'Компания: '),
+                Helper.createElement('span', element.client.company.title ?? '')
+            ])
+        );
+        clientCardContainer.append(clientCardHeader, clientCardBody);
+        deliveryCardBody.append(
+            Helper.createElement('p', [
+                Helper.createElement('b', 'Адрес доставки: '),
+                Helper.createElement('span', element.location.title)
+            ]),
+            Helper.createElement('p', [
+                Helper.createElement('b', 'Дата доставки: '),
+                Helper.createElement('span', element.delivery_at)
+            ]),
+            Helper.createElement('p', [
+                Helper.createElement('b', 'Расстояние: '),
+                Helper.createElement('span', new Intl.NumberFormat('ru-RU').format(element.delivery_distance / 1000) + " километров")
+            ])
+        );
+        deliveryCardContainer.append(deliveryCardHeader, deliveryCardBody);
+        let table = Helper.createElement('table', undefined, {class: ['table', 'table-stripped']}),
+            thead = Helper.createElement('thead'),
+            tbody = Helper.createElement('tbody');
+        thead.append(
+            Helper.createElement('th', 'Категория'),
+            Helper.createElement('th', 'Продукт'),
+            Helper.createElement('th', 'Количество'),
+        );
+        for (const item of element.products) {
+            totalPrice += item.product.price * item.count;
+            tbody.append(
+                Helper.createElement("tr", [
+                    Helper.createElement("td", item.product.category.title),
+                    Helper.createElement("td", item.product.title),
+                    Helper.createElement("td", item.count),
+                ])
+            );
+        }
+        table.append(thead, tbody);
+        productsCardBody.append(table);
+        productsCardFooter.append(`Общая стоимость заказа: ${totalPrice}`);
+        productsCardContainer.append(productsCardHeader, productsCardBody, productsCardFooter);
+        container.append(clientCardContainer, deliveryCardContainer, productsCardContainer);
     }
 
     static buildTable(container, array, columns = []) {
@@ -366,42 +460,50 @@ class Order extends Dispatcher {
                     "href": "/api/{{class}}/view?id={{id}}"
                 },
                 {
-                    "key": "statusName",
-                    "title": "Статус",
-                },
-                {
-                    "key": "action",
-                    "title": "",
+                    "key": "delivery_at",
+                    "title": "Дата доставки"
+                    // },
+                    // {
+                    //     "key": "statusName",
+                    //     "title": "Статус",
+                    // },
+                    // {
+                    //     "key": "action",
+                    //     "title": "",
                 }
             ]
             // columns = {"id": "Номер заказа", "location.title": "Адрес доставки", "statusName": "Статус"};
         }
+        let table = Helper.createElement("table", undefined, {class: ['table', 'table-striped']}),
+            thead = Helper.createElement("thead"),
+            tbody = Helper.createElement("tbody"),
+            trow = Helper.createElement("tr"),
+            createBtn = Helper.createElement("span", "Создать заказ", {
+                class: ["btn", "btn-success", "m-2"],
+                "data-toggle": "modal",
+                "data-target": "#exampleModal"
+            }, {
+                click: Order.create
+            });
+        for (const column of columns) {
+            trow.append(Helper.createElement("th", column.title));
+        }
+        thead.append(trow);
+        table.append(
+            thead,
+            tbody);
         if (array.length) {
-            let table = Helper.createElement("table", undefined, {class: ['table', 'table-striped']}),
-                thead = Helper.createElement("thead"),
-                tbody = Helper.createElement("tbody"),
-                trow = Helper.createElement("tr"),
-                createBtn = Helper.createElement("span", "Создать заказ", {
-                    class: ["btn", "btn-success", "m-2"],
-                    "data-toggle": "modal",
-                    "data-target": "#exampleModal"
-                }, {
-                    click: Order.create
-                });
-            for (const column of columns) {
-                trow.append(Helper.createElement("th", column.title));
-            }
-            thead.append(trow);
-            table.append(
-                thead,
-                tbody);
             for (const element of array) {
                 let row = Helper.createElement("tr", undefined, {"data-key": element.id});
                 for (const column of columns) {
-                    row.append(Helper.createElement("td", Helper.get(element, column.key)));
+                    if (column.key !== 'id') {
+                        row.append(Helper.createElement("td", Helper.createElement("p", Helper.get(element, column.key)), {'data-key': element.id}, {'click': Order.view.bind(this, container, element)}));
+                    } else {
+                        row.append(Helper.createElement("td", Helper.createElement("p", Helper.get(element, column.key))));
+                    }
                 }
                 let btn = Helper.createElement("button", undefined, {
-                        class: ["btn", "btn-secondary", "dropdown-toggle"],
+                        class: ["btn", "btn-success", "fas", "fa-plus"],
                         type: "button",
                         id: `dropdown_${element.id}`,
                         "data-toggle": "dropdown",
@@ -419,17 +521,23 @@ class Order extends Dispatcher {
                         class: ["dropdown-menu", "dropdown-menu-right"],
                         "aria-labelledby": `dropdown_${element.id}`
                     }),
-                    btnGroup = Helper.createElement("div", [btn, btnMenu], {
+                    btnGroup = Helper.createElement("p", [btn, btnMenu], {
                         class: "btn-group",
                         role: "group",
                     }),
                     tdAction = Helper.createElement("td", btnGroup);
-                row.append(tdAction);
+                // row.append(tdAction);
+                row.querySelector("td:first-child").append(btnGroup);
                 tbody.append(row);
             }
-            container.append(createBtn, table);
-            this.table = table;
+        } else {
+            let row = Helper.createElement('tr'),
+                column = Helper.createElement('td', "Ничего не найдено", {colspan: columns.length});
+            row.append(column);
+            tbody.append(row);
         }
+        container.append(createBtn, table);
+        this.table = table;
     }
 
     static get(user) {
@@ -439,6 +547,7 @@ class Order extends Dispatcher {
                 headers: {Authorization: `Bearer ${user._token}`}
             }),
             result = [];
+
         for (const key of orders) {
             result.push(new Order(key));
         }
@@ -450,7 +559,7 @@ class Order extends Dispatcher {
     }
 
     static clone(e) {
-        console.log(e.target);
+        document.querySelector("#clone-delivery_at").setAttribute("data-key", e.target.getAttribute("data-key"))
     }
 }
 

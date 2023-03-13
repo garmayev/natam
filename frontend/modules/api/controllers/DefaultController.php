@@ -49,10 +49,10 @@ class DefaultController extends Controller
                 if (!$client) {
                     return ["ok" => false, "role" => "guest", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
                 } else {
-                    return ["ok" => true, "access_token" => $client->user->token->code, "role" => "person", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
+                    return ["ok" => true, "access_token" => $client->user->getAuthKey(), "role" => "person", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
                 }
             } else {
-                return ["ok" => true, "access_token" => $employee->user->token->code, "role" => "employee", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
+                return ["ok" => true, "access_token" => $employee->user->getAuthKey(), "role" => "employee", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
             }
         } else {
             return ["ok" => false, "role" => "guest", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
@@ -71,12 +71,12 @@ class DefaultController extends Controller
                     $employee = $user->employee;
                     $employee->chat_id = $data["chat_id"];
                     $employee->save();
-                    return ["ok" => true, "access_token" => $user->token->code, "role" => "employee", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
+                    return ["ok" => true, "access_token" => $user->getAuthKey(), "role" => "employee", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
                 } else {
                     $client = $user->client;
                     $client->chat_id = $data["chat_id"];
                     $client->save();
-                    return ["ok" => true, "access_token" => $user->token->code, "role" => "person", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
+                    return ["ok" => true, "access_token" => $user->getAuthKey(), "role" => "person", "param" => Yii::$app->getRequest()->csrfParam, "token" => Yii::$app->getRequest()->getCsrfToken()];
                 }
             }
             return ["ok" => false, "message" => $loginForm->getErrorSummary(true)];

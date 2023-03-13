@@ -182,6 +182,7 @@ class Order extends ActiveRecord
             'delivery_at' => function () {
                 return Yii::$app->formatter->asDatetime($this->delivery_date);
             },
+            'delivery_distance',
             'store' => function () {
                 if (isset($this->store_id)) {
                     return $this->store;
@@ -423,9 +424,9 @@ class Order extends ActiveRecord
 
     public function getStatusName()
     {
-	if ( $this->status ) {
-        return Order::getStatusList()[$this->status];
-	}
+        if ($this->status) {
+            return Order::getStatusList()[$this->status];
+        }
     }
 
     public static function getStatusList()

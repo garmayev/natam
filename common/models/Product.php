@@ -61,7 +61,9 @@ class Product extends ActiveRecord
     {
         return [
             "id",
-            "title",
+            "title" => function ($model) {
+                return "$model->title ($model->value)";
+            },
             "description",
             "price",
             "thumbs",
