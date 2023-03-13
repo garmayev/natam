@@ -406,6 +406,9 @@ class Order extends ActiveRecord
             $result .= "<b>Стоимость доставки</b>: {$delivery_price}\n";
         }
         $result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>+{$this->client->phone}</a>\n";
+	if ($this->client->company) {
+	    $result .= "<b>Организация</b>: ".($this->company->title ?? "");
+	}
         $result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
         $result .= "<b>Комментарий</b>: " . $this->comment . "\n";
         $price = $this->getPrice() + $delivery_price;

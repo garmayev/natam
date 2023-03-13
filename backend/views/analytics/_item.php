@@ -52,7 +52,11 @@ if ($model->messages) {
                     } else if (isset($telegram_message->created_by)) {
                         if ($telegram_message->order_status === Order::STATUS_DELIVERY) {
                             $e = Employee::findOne(['chat_id' => $telegram_message->chat_id]);
-                            echo "<p>Заявка отправлена: {$e->getFullname()}</p>";
+			    if ( $e ) {
+                        	echo "<p>Заявка отправлена: {$e->getFullname()}</p>";
+			    } else {
+				echo  "";
+			    }
                         } else {
                             $employee = $telegram_message->createdBy->employee;
                             if (isset($employee))

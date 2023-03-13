@@ -75,7 +75,7 @@ class NotifyController extends Controller
             if ($lastMessage->type === TelegramMessage::TYPE_NOTIFY || $lastMessage->type === null) {
                 return true;
             } else {
-                if ($lastMessage->type === TelegramMessage::TYPE_ALERT && $lastMessage->level) {
+                if ($lastMessage->type === TelegramMessage::TYPE_ALERT && $lastMessage->level >= 0) {
                     return false;
                 } else {
                     return ((time() - ($lastMessage->created_at + 900)) > 0);
@@ -193,5 +193,18 @@ class NotifyController extends Controller
             $this->stdout($employee->chat_id);
         }
         return true;
+    }
+
+    public function actionDelete( $order_id ) 
+    {
+	$model = Order::findOne( $order_id );
+	if ( $model ) {
+	    $messages = TelegramMessage::find()->where(["order_id" => $model->id])->all();
+	    foreach ( $messages as $message ) {
+		$message->delete();
+	    }
+	} else {
+	    $this->stdout("Missing order #{$order_id}");
+	}
     }
 }

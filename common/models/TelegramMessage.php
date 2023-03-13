@@ -100,7 +100,7 @@ class TelegramMessage extends ActiveRecord
                             'reply_markup' => json_encode([
                                 'inline_keyboard' => [
                                     [
-                                        "text" => "Принято",
+                                        ["text" => "Принято", "callback_data" => "/alert level=$level"],
                                     ]
                                 ]
                             ]),
