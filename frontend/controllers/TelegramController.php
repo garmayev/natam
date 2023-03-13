@@ -83,15 +83,15 @@ class TelegramController extends Controller
 
     protected static function checkPermission($telegram, $permission)
     {
-        if (!Yii::$app->user->can($permission)) {
-            $chat_id = isset($telegram->input->message) ? $telegram->input->message->chat->id : $telegram->input->callback_query->from["id"];
-	    Yii::error($chat_id);
-            //$result = $telegram->sendMessage([
-            //    'chat_id' => $chat_id,
-            //    "text" => Yii::t("telegram", "You don`t have permissions for this action")
-            //]);
-            return false;
-        }
+//        if (!Yii::$app->user->can($permission) && Yii::$app->controller->action->id !== "game") {
+//            $chat_id = isset($telegram->input->message) ? $telegram->input->message->chat->id : $telegram->input->callback_query->from["id"];
+        //Yii::error($chat_id);
+        //$result = $telegram->sendMessage([
+        //    'chat_id' => $chat_id,
+        //    "text" => Yii::t("telegram", "You don`t have permissions for this action")
+        //]);
+//            return false;
+//        }
         return true;
     }
 
@@ -225,16 +225,16 @@ class TelegramController extends Controller
 
     public static function empty($telegram, $args = null)
     {
-	Yii::error($args);
-	if (self::checkPermission($telegram, "employee")) {
-	    if (isset($args)) {
-		$order = Order::findOne($args["id"]);
-		$messages = $order->getMessages()->where(['type' => 1])->all();
-		foreach ($messages as $message) {
-		    $message->hide();
-		}
-	    }
-	}
+        Yii::error($args);
+        if (self::checkPermission($telegram, "employee")) {
+            if (isset($args)) {
+                $order = Order::findOne($args["id"]);
+                $messages = $order->getMessages()->where(['type' => 1])->all();
+                foreach ($messages as $message) {
+                    $message->hide();
+                }
+            }
+        }
     }
 
     public static function store($telegram, $args = null)
@@ -322,7 +322,6 @@ class TelegramController extends Controller
 
     public static function game($telegram, $args = [])
     {
-        Yii::error("send game url?");
         $telegram->sendGame([
             "chat_id" => $telegram->input->callback_query->message["chat"]["id"],
             "game_short_name" => "personal",
@@ -649,7 +648,7 @@ class TelegramController extends Controller
         Command::run("/startgame", [$this, "startgame"]);
         Command::run("game=personal", [$this, "game"]);
         Command::run("/alert", [$this, "alert"]);
-	Command::run("/empty", [$this, "empty"]);
+        Command::run("/empty", [$this, "empty"]);
 //		Command::run("/status_store", [$this, "status_store"]);
     }
 

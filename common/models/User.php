@@ -3,8 +3,7 @@
 namespace common\models;
 
 use common\models\staff\Employee;
-use Yii;
-use yii\helpers\Html;
+use dektrium\user\models\Token;
 
 /**
  * @property string $Host [char(60)]
@@ -51,6 +50,7 @@ use yii\helpers\Html;
  * @property string $plugin [char(64)]
  * @property string $authentication_string
  * @property string $password_expired [enum('N', 'Y')]
+ * @property Token $token
  *
  * @property Client $client
  * @property Employee $employee
@@ -59,58 +59,63 @@ use yii\helpers\Html;
  * @property int $password_lifetime [smallint(5) unsigned]
  * @property string $account_locked [enum('N', 'Y')]
  */
-
 class User extends \dektrium\user\models\User
 {
-	public $password = '';
+    public $password = '';
 
-	public static function tableName()
-	{
-		return '{{%user}}';
-	}
-
-	public function getClient()
-	{
-		return $this->hasOne(Client::class, ["user_id" => "id"]);
-	}
-
-	public function getEmployee()
-	{
-		return $this->hasOne(Employee::class, ['user_id' => 'id']);
-	}
-
-	public function getType()
-	{
-		if ( isset($this->client) ) {
-			return $this->client;
-		} else if (isset($this->employee)) {
-			return $this->employee;
-		} else {
-			return null;
-		}
-	}
-
-	public function isClient()
-	{
-		return Client::findOne(["user_id" => $this->id]) !== null;
-	}
-
-	public function getName()
-	{
-		if ( !empty($this->profile->name) ) {
-			return $this->profile->name;
-		}
-		if ( $this->isClient() ) {
-			return $this->client->name;
-		}
-		if ( $this->employee ) {
-			return $this->employee->getFullname();
-		}
-		return $this->username;
-	}
-
-    public static function findIdentityByAccessToken($token, $type = null)
+    public static function tableName()
     {
-        return User::findOne(1);
+        return '{{%user}}';
+    }
+
+    public static function findIdentityByAccessToken($code, $type = null)
+    {
+        $user = User::findOne(['auth_key' => $code]);
+        return User::findOne($user->id);
+    }
+
+    public function getClient()
+    {
+        return $this->hasOne(Client::class, ["user_id" => "id"]);
+    }
+
+    public function getEmployee()
+    {
+        return $this->hasOne(Employee::class, ['user_id' => 'id']);
+    }
+
+    public function getType()
+    {
+        if (isset($this->client)) {
+            return $this->client;
+        } else if (isset($this->employee)) {
+            return $this->employee;
+        } else {
+            return null;
+        }
+    }
+
+    public function getToken()
+    {
+        return $this->hasOne(Token::class, ['user_id' => 'id']);
+    }
+
+    public function getName()
+    {
+        if (!empty($this->profile->name)) {
+            return $this->profile->name;
+        }
+        if ($this->isClient()) {
+            return $this->client->name;
+        }
+        if ($this->employee) {
+            return $this->employee->getFullname();
+        }
+        return $this->username;
+    }
+
+    public function isClient()
+    {
+        return Client::findOne(["user_id" => $this->id]) !== null;
     }
 }

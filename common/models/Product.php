@@ -24,87 +24,92 @@ use yii\db\ActiveRecord;
  */
 class Product extends ActiveRecord
 {
-	public $file;
+    public $file;
 
-	public static function tableName()
-	{
-		return "{{%product}}";
-	}
+    public static function tableName()
+    {
+        return "{{%product}}";
+    }
 
-	public function rules()
-	{
-		return [
-			[["title", "price", "value"], "required"],
-			[["title", "description", "thumbs", "article"], "string"],
-			[["price", "isset", "visible"], "integer"],
-			[["price"], "double"],
-			[["isset"], "default", "value" => 0],
-			[["visible"], "default", "value" => 1],
-			[["category_id"], "exist", "targetClass" => Category::class, "targetAttribute" => "id"],
-		];
-	}
+    public function rules()
+    {
+        return [
+            [["title", "price", "value"], "required"],
+            [["title", "description", "thumbs", "article"], "string"],
+            [["price", "isset", "visible"], "integer"],
+            [["price"], "double"],
+            [["isset"], "default", "value" => 0],
+            [["visible"], "default", "value" => 1],
+            [["category_id"], "exist", "targetClass" => Category::class, "targetAttribute" => "id"],
+        ];
+    }
 
-	public function attributeLabels()
-	{
-		return [
-			"title" => Yii::t("app", "Title"),
-			"description" => Yii::t("app", "Description"),
-			"price" => Yii::t("app", "Price"),
-			"value" => Yii::t("app", "Value"),
-			"thumbs" => Yii::t("app", "Picture"),
-			"isset" => Yii::t("app", "Isset"),
-			"visible" => Yii::t("app", "Visible"),
-		];
-	}
+    public function attributeLabels()
+    {
+        return [
+            "title" => Yii::t("app", "Title"),
+            "description" => Yii::t("app", "Description"),
+            "price" => Yii::t("app", "Price"),
+            "value" => Yii::t("app", "Value"),
+            "thumbs" => Yii::t("app", "Picture"),
+            "isset" => Yii::t("app", "Isset"),
+            "visible" => Yii::t("app", "Visible"),
+        ];
+    }
 
-	public function fields()
-	{
-		return [
-			"title",
-			"description",
-			"price",
-			"thumbs",
-			"value",
-			"isset",
-			"visible",
-			"category" => function ($model) { return $model->category; }
-		];
-	}
+    public function fields()
+    {
+        return [
+            "id",
+            "title" => function ($model) {
+                return "$model->title ($model->value)";
+            },
+            "description",
+            "price",
+            "thumbs",
+            "value",
+            "isset",
+            "visible",
+            "category" => function ($model) {
+                return $model->category;
+            }
+        ];
+    }
 
-	public function upload()
-	{
-		if ( $this->validate() ) {
-			if ( isset($this->file->baseName) ) {
-				$path = "/img/uploads/{$this->file->baseName}.{$this->file->extension}";
+    public function upload()
+    {
+        if ($this->validate()) {
+            if (isset($this->file->baseName)) {
+                $path = "/img/uploads/{$this->file->baseName}.{$this->file->extension}";
 //				Yii::error($path);
-				$this->file->saveAs(Yii::getAlias("@frontend") . '/web' . $path);
-				Yii::error(Yii::getAlias("@frontend") . '/web' . $path);
-				$this->thumbs = $path;
-			}
-		}
-		return true;
-	}
+                $this->file->saveAs(Yii::getAlias("@frontend") . '/web' . $path);
+                Yii::error(Yii::getAlias("@frontend") . '/web' . $path);
+                $this->thumbs = $path;
+            }
+        }
+        return true;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getPrice() : int
-	{
-		return $this->price;
-	}
+    /**
+     * @return int
+     */
+    public function getPrice(): int
+    {
+        return $this->price;
+    }
 
-	public function getLabel()
-	{
-		return $this->title;
-	}
+    public function getLabel()
+    {
+        return $this->title;
+    }
 
-	public function getUniqueId()
-	{
-		return $this->id;
-	}
+    public function getUniqueId()
+    {
+        return $this->id;
+    }
 
-	public function getCategory()
-	{
-		return $this->hasOne(Category::class, ['id' => 'category_id']);
-	}
+    public function getCategory()
+    {
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
+    }
 }

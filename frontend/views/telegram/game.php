@@ -1,6 +1,10 @@
 <?php
 
+use common\models\Category;
+use common\models\Product;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 use yii\web\View;
 
 
@@ -9,296 +13,409 @@ use yii\web\View;
  * @var $models ActiveDataProvider
  */
 
+/**
+ * @param $category_id
+ * @return array
+ */
+function products($category_id)
+{
+    $result = [];
+    $products = Product::find()->where(['category_id' => $category_id])->all();
+    foreach ($products as $product) $result[$product->id] = "$product->title ($product->value)";
+    return $result;
+}
+
 ?>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="https://natam03.ru/favicon.png"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/webapp.css">
+    <style>
+
+    </style>
+</head>
+<body style="overflow: auto" class="bg-white">
+<div class="main">
+</div>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true" style="overflow: auto">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Создать заказ</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <label for="delivery_date">Выберите дату и время доставки</label>
+                    <input type="date" class="form-control" id="delivery_date" name="Order[delivery_date]">
+                </p>
+                <p>
+                    <input type="checkbox" id="order-delivery_type">
+                    <label for="order-delivery_type">Самовывоз</label>
+                </p>
+                <div id="order-location-field">
+                    <label for="location-title">Введите адрес доставки или выберите точку на карте</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="Order[location][title]" id="location-title">
+                        <div class="input-group-append">
+                            <button class="input-group-text" id="btnGroupAddon">
+                                <span class="fas fa-map-marker-alt"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="Order[location][latitude]" id="location-latitude">
+                    <input type="hidden" name="Order[location][longitude]" id="location-longitude">
+                    <input type="hidden" name="Order[point_id]" id="point_id">
+                    <input type="hidden" name="Order[distance]" id="distance">
+                    <div id="map" style="min-height: 200px; display: none;" class="mt-2"></div>
+                </div>
+                <p class="pt-2">
+                    <span class="btn btn-primary append"
+                          data-target="#append-product"
+                          data-toggle="modal">Добавить продукт</span>
+                </p>
+                <div class="cart_table" id="cart_table"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">Отмена
+                </button>
+                <button type="button" class="btn btn-primary"
+                        id="create-order">Заказать
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="append-product" tabindex="-1" role="dialog" aria-labelledby="appendProductLabel"
+     aria-hidden="true" style="overflow: auto">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Добавить продукт</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="<?= Yii::t("app", "Close") ?>">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <label for="category_id">Выберите категорию</label>
+                    <?= Html::dropDownList("category_id", null, ArrayHelper::map(Category::find()->all(), 'id', 'title'), ['class' => 'form-control', 'id' => 'category_id']) ?>
+                </p>
+                <p>
+                    <label for="product_id">Выберите продукт</label>
+                    <?= Html::dropDownList("product_id", null, products(1), ['class' => 'form-control', 'id' => 'product_id']) ?>
+                </p>
+                <p>
+                    <label for="product_count">Введите количество</label>
+                    <input type="number" class="form-control" name="product_count" id="product_count">
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">Отмена
+                </button>
+                <button type="button" class="btn btn-primary append-product">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="clone-order" tabindex="-1" role="dialog" aria-labelledby="cloneOrderLabel"
+     aria-hidden="true" style="overflow: auto">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Повторить заказ</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="<?= Yii::t("app", "Close") ?>">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <label for="clone-delivery_at">Выберите дату и время доставки</label>
+                    <input type="date" class="form-control" id="clone-delivery_at">
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">Отмена
+                </button>
+                <button type="button" class="btn btn-primary clone-order">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="//telegram.org/js/telegram-web-app.js"></script>
 <script src="//kit.fontawesome.com/aa23fe1476.js"></script>
-<script src="https://api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU" type="text/javascript">
+<script src="//api-maps.yandex.ru/2.1/?apikey=886ddc0b-177a-47eb-8b68-2e3a58cf27d9&lang=ru_RU"
+        type="text/javascript"></script>
+<script src="//code.jquery.com/jquery-3.6.3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+<script type="module" src="/js/telegram-game.js"></script>
 <script type="module">
-    class Order {
-        _client;
-        _location;
-        _delivery_date;
-        _products;
+    import {Order, User, Cart} from "/js/telegram-game.js";
 
-        get client() {
-            return this._client;
-        }
+    ymaps.ready(() => {
 
-        set client(value) {
-            this._client = value;
-        }
-
-        get location() {
-            return this._location;
-        }
-
-        set location(value) {
-            this._location = value;
-        }
-
-        get products() {
-            return this._products;
-        }
-
-        set products(value) {
-            this._products = value;
-        }
-    }
-
-    class Category {
-        _id;
-        _title;
-        _thumbs;
-        _html;
-
-        get id() {
-            return this._id;
-        }
-
-        set id(value) {
-            this._id = value;
-        }
-
-        get title() {
-            return this._title;
-        }
-
-        set title(value) {
-            this._title = value;
-        }
-
-        get thumbs() {
-            return this._thumbs;
-        }
-
-        set thumbs(value) {
-            this._thumbs = value;
-        }
-
-        get link() {
-            return `/api/product/by-category?category_id=${this.id}`;
-        }
-
-        constructor(options) {
-            this.id = options.id;
-            this.title = options.title;
-            this.thumbs = options.thumbs;
-            this._html = Helper.createElement('div', undefined, {
-                class: 'item',
-                'data-key': this.id,
-                style: 'background: --tg-theme-bg-color'
+        let tg = window.Telegram.WebApp, map = undefined, placemark = undefined, stores = undefined,
+            closest = undefined, multiRoute = undefined,
+            cart = new Cart(document.querySelector("#cart_table")),
+            suggestView = new ymaps.SuggestView("location-title", {
+                boundedBy: [[29, 100], [31, 120]],
             });
-            let thumbs = Helper.createElement('img', undefined, {src: this.thumbs}),
-                title = Helper.createElement('p', this.title),
-                link = Helper.createElement('a', 'Подробнее', {href: this.link}, {click: this.select.bind(this)});
-            this._html.append(thumbs, title, link);
-        }
 
-        select(e) {
-            e.preventDefault();
-            fetch(e.currentTarget.getAttribute('href'))
-                .then(response => response.json())
-                .then((response) => {
-                    let grid = document.querySelector('.grid');
-                    grid.innerHTML = '';
-                    let container = Helper.createElement('div', undefined, {class: 'item'}),
-                        thumbs = Helper.createElement('img', undefined, {src: 'data:image/png;base64,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'}),
-                        title = Helper.createElement('a', 'Назад', {href: '#'}, {click: init});
-                    container.append(thumbs, title);
-                    grid.append(container);
+        window.user = new User(document.querySelector("body > .main"), tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "443353023")
+        tg.expand();
 
-                    response.forEach((element) => {
-                        let product = new Product(element);
-                        products.push(product);
-                        grid.append(product._html);
+        suggestView.events.add("select", (e) => {
+            ymaps.geocode(e.originalEvent.item.value, {
+                results: 1,
+            }).then((response) => {
+                let firstGeoObject = response.geoObjects.get(0),
+                    coords = firstGeoObject.geometry.getCoordinates();
+                if (map) {
+                    if (placemark) {
+                        placemark.geometry.setCoordinates(coords)
+                    } else {
+                        placemark = new ymaps.Placemark(coords);
+                        map.geoObjects.add(placemark);
+                    }
+                    map.setCenter(coords);
+                }
+                getAddress(coords);
+            })
+        })
+
+        window.user.on(User.EVENT_LOGGED, function (e) {
+            let orders = Order.get(this);
+            Order.buildTable(document.querySelector("body > .main"), orders);
+        }.bind(window.user));
+
+        $("#category_id").on("change", (e) => {
+            $.ajax("/api/product/by-category?category_id=" + $(e.currentTarget).val()).then(response => {
+                let target = $("#product_id");
+                target.html("");
+                for (const element of response) {
+                    target.append(`<option value='${element.id}'>${element.title} (${element.value})</option>`);
+                }
+            })
+        })
+
+        $(".append-product").on('click', (e) => {
+            if (cart.append({
+                category_id: $("#category_id").val(),
+                product_id: $("#product_id").val(),
+                product_count: $("#product_count").val(),
+                product_balloon: $("#product_balloon").val()
+            })) {
+                $("#append-product").modal("hide");
+            }
+        })
+
+        $("#order-delivery_type").on("change", (e) => {
+            if ($(e.currentTarget).is(":checked")) {
+                map.destroy();
+                map = undefined;
+                placemark = undefined;
+
+                $("#location-title").val("");
+                $("#location-latitude").val("");
+                $("#location-longitude").val("");
+                $("#order-location-field").hide();
+            } else {
+                init();
+                $("#order-location-field").show();
+            }
+        })
+
+        $('.modal').css("overflow", "auto");
+
+        $('#exampleModal').on('show.bs.modal', () => {
+            if (map === undefined && !$("#order-delivery_type").is(":checked")) {
+                init();
+            }
+        })
+
+        $("#create-order").on("click", (e) => {
+
+            let order = {
+                Order: {
+                    client_id: undefined,
+                    chat_id: tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : "443353023",
+                    delivery_date: $("#delivery_date").val(),
+                    delivery_type: $("#order-delivery_type").is(":checked") ? 0 : 1,
+                    location: {
+                        title: $("#location-title").val(),
+                        latitude: $("#location-latitude").val(),
+                        longitude: $("#location-longitude").val(),
+                    },
+                    point_id: $("#point_id").val(),
+                    delivery_distance: $("#distance").val(),
+                    products: cart.selected,
+                    telegram: 1,
+                }
+            }
+            console.log(order);
+            $.ajax({
+                url: "/api/order/create",
+                data: order,
+                method: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer " + user._token);
+                },
+            }).then(response => {
+                if (response.ok) {
+                    $("#exampleModal").modal("hide");
+                    let orders = Order.get(user);
+                    Order.buildTable(document.querySelector("body > .main"), orders);
+                }
+            })
+        })
+
+        $(".clone-order").on("click", (e) => {
+            let delivery_at = "#clone-delivery_at",
+                order_id = $(delivery_at).attr("data-key");
+            $.ajax({
+                url: `/api/order/clone?id=${order_id}`,
+                data: {"delivery_date": $(delivery_at).val()},
+                method: "POST",
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("Authorization", "Bearer " + user._token);
+                },
+            }).then(response => {
+                if (response.ok) {
+                    $("#clone-order").modal("hide");
+                    let orders = Order.get(user);
+                    Order.buildTable(document.querySelector("body > .main"), orders);
+                }
+            })
+        })
+
+        $("#btnGroupAddon").on("click", (e) => {
+            let mapContainer = $("#map");
+            if (mapContainer.is(":visible")) {
+                mapContainer.hide();
+            } else {
+                mapContainer.show();
+            }
+        })
+
+        function getAddress(coords) {
+            placemark.properties.set('iconCaption', 'поиск...');
+            closest = stores.getClosestTo(coords);
+            ymaps.geocode(coords).then(function (res) {
+                let firstGeoObject = res.geoObjects.get(0),
+                    address = firstGeoObject.getAddressLine();
+                if (multiRoute !== undefined) {
+                    map.geoObjects.remove(map.multiRoute);
+
+                }
+                multiRoute = new ymaps.multiRouter.MultiRoute({
+                    referencePoints: [
+                        coords,
+                        stores.getClosestTo(coords)
+                    ],
+                    params: {
+                        results: 1
+                    }
+                }, {
+                    boundsAutoApply: true
+                });
+                multiRoute.model.events.add('requestsuccess', function () {
+                    let routes = multiRoute.getRoutes(), distance = undefined, shortest = undefined;
+                    routes.each((route) => {
+                        if (typeof shortest === "undefined") {
+                            shortest = route;
+                        } else {
+                            if (shortest.properties.get("distance").value > route.properties.get("distance").value) {
+                                shortest = route;
+                            }
+                        }
                     })
+                    if (typeof shortest !== "undefined") {
+                        multiRoute.setActiveRoute(shortest);
+                    }
+                    distance = parseInt(shortest.properties.get("distance").value);
+
+                    $("#location-title").val(address);
+                    $("#location-latitude").val(coords[0]);
+                    $("#location-longitude").val(coords[1]);
+                    $("#point_id").val(closest.properties._data["data-key"]);
+                    $("#distance").val(distance);
+                    placemark.properties
+                        .set({
+                            iconCaption: address,
+                        });
+                });
+            });
+        }
+
+        function init() {
+            map = new ymaps.Map("map", {
+                center: [51.835501, 107.683123],
+                zoom: 17,
+                controls: [],
+            });
+            let features = [], points = [{
+                id: 1, title: "Натам-Трейд", location: {
+                    latitude: 51.835501,
+                    longitude: 107.683123
+                }
+            }];
+            for (let i = 0; i < points.length; i++) {
+                let point = points[i];
+                features.push({
+                    type: 'Feature',
+                    options: {
+                        iconLayout: 'default#image',
+                        iconImageHref: '/img/icons/placemark.svg',
+                        iconImageSize: [260, 205],
+                        iconImageOffset: [-25, -155],
+                        hideIconOnBalloonOpen: false,
+                        balloonOffset: [270, -110],
+                    },
+                    properties: {
+                        'data-key': point.id,
+                        city: point.city,
+                        balloonContent: `<div class="map-ballon" style="overflow-wrap: break-word;"><p class="text-ballon">${point.title}</p><p class="number-ballon"><span class="number-span-ballon">8${point.code}</span> ${point.phone}</p></div>`,
+                    },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [point.location.latitude, point.location.longitude]
+                    }
                 })
-        }
-    }
-
-    class Product {
-        _id;
-        _title;
-        _value;
-        _price;
-        _thumbs;
-        _html;
-        _state = 0;
-
-        get id() {
-            return this._id;
-        }
-
-        set id(value) {
-            this._id = value;
-        }
-
-        get title() {
-            return this._title;
-        }
-
-        set title(value) {
-            this._title = value;
-        }
-
-        get value() {
-            return this._value;
-        }
-
-        set value(value) {
-            this._value = value;
-        }
-
-        get price() {
-            return this._price;
-        }
-
-        set price(value) {
-            this._price = value;
-        }
-
-        get thumbs() {
-            return this._thumbs;
-        }
-
-        set thumbs(value) {
-            this._thumbs = value;
-        }
-
-        get link() {
-            return `/api/product/view?id=${this.id}`;
-        }
-
-        constructor(options) {
-            this.id = options.id;
-            this.title = options.title;
-            this.value = options.value;
-            this.price = options.price;
-            this.thumbs = options.thumbs;
-            this._html = Helper.createElement('div', undefined, {class: 'item', 'data-key': this.id});
-            let thumbs,
-                title = Helper.createElement('p', `${this.title} (${this.value})`),
-                price = Helper.createElement('p', this.price),
-                link = Helper.createElement('a', 'Заказать', {href: this.link}, {click: this.select.bind(this)});
-            if (this.thumbs) {
-                thumbs = Helper.createElement('img', undefined, {src: this.thumbs});
-            } else {
-                thumbs = '';
             }
-            this._html.append(thumbs, title, price, link);
-        }
-
-        select(e) {
-            e.preventDefault();
-            if (this._state) {
-
-            } else {
-                let thumbs,
-                    title = Helper.createElement('p', `${this.title} (${this.value})`),
-                    price = Helper.createElement('p', this.price),
-                    counter = new Counter({id: this.id}),
-                    link = counter._html;
-                if (this.thumbs) {
-                    thumbs = Helper.createElement('img', undefined, {src: this.thumbs});
+            stores = ymaps.geoQuery({
+                type: 'FeatureCollection',
+                features: features
+            }).addToMap(map);
+            map.events.add("click", (e) => {
+                let coords = e.get("coords")
+                if (placemark) {
+                    placemark.geometry.setCoordinates(coords)
                 } else {
-                    thumbs = '';
+                    placemark = new ymaps.Placemark(coords);
+                    map.geoObjects.add(placemark);
                 }
-                this._html.innerHTML = '';
-                this._html.append(thumbs, title, price, link);
-            }
-        }
-    }
-
-    class Counter {
-        _id;
-        _html;
-        _value = 1;
-
-        constructor(data) {
-            this._html = Helper.createElement('div', undefined, {class: 'counter'});
-            let minus = Helper.createElement('span', '-', {class: 'btn dec'}, {click: this.count.bind(this)}),
-                value = Helper.createElement('span', this._value, {class: 'value'}),
-                plus = Helper.createElement('span', '+', {class: 'btn inc'}, {click: this.count.bind(this)});
-            this._html.append(minus, value, plus);
-        }
-
-        count(e) {
-            if (e.currentTarget.classList.contains('inc')) {
-                this._value += 1;
-                this._html.querySelector('.value').innerHTML = this._value;
-            } else {
-                if (this._value > 1) {
-                    this._value -= 1;
-                    this._html.querySelector('.value').innerHTML = this._value;
-                }
-            }
-        }
-    }
-
-    function init() {
-        fetch(`/api/category/index`)
-            .then((response) => {
-                return response.json()
+                getAddress(coords);
             })
-            .then((response) => {
-                let grid = document.querySelector(".grid");
-                grid.innerHTML = '';
-                response.forEach((element) => {
-                    let category = new Category(element);
-                    categories.push(category);
-                    grid.append(category._html);
-                })
-            })
-    }
+        }
 
-    let categories = [],
-        products = [],
-        History = [],
-        Helper = {
-            createElement: function (tagName, content = undefined, attributes = {}, events = {}) {
-                let el = document.createElement(tagName);
-                if (content) {
-                    el.innerHTML = content;
-                }
-                for (let property in attributes) {
-                    el.setAttribute(property, attributes[property]);
-                }
-                for (let property in events) {
-                    el.addEventListener(property, events[property]);
-                }
-                return el;
-            }
-        };
-
-    let tg = window.Telegram.WebApp;
-    // tg.showPopup({title: 'Check', message: 'Some text'});
-
-    document.addEventListener("DOMContentLoaded", () => {
-        // customElements.define('custom-product', Product);
-        // customElements.define('custom-category', Category);
-        // init();
+        window.user.init();
     })
+</script>
 
-    document.querySelector('.username').innerText = `${tg.initDataUnsafe.user.first_name} ${tg.initDataUnsafe.user.last_name} (${tg.initDataUnsafe.user.username})`;
-</script>
-<script>
-    ymaps.ready(init);
-    function init(){
-        // Создание карты.
-        var myMap = new ymaps.Map("map", {
-            // Координаты центра карты.
-            // Порядок по умолчанию: «широта, долгота».
-            // Чтобы не определять координаты центра карты вручную,
-            // воспользуйтесь инструментом Определение координат.
-            center: [55.76, 37.64],
-            // Уровень масштабирования. Допустимые значения:
-            // от 0 (весь мир) до 19.
-            zoom: 7
-        });
-    }
-</script>
-<link rel="stylesheet" href="/css/webapp.css">
-<div class="cart">
-    <h1>Приложение находится на стадии разработки. Приносим свои извинения!</h1>
-    <div id="map" style="width: 100vw; height: 300px;"></div>
-</div>
+</body>
+</html>
