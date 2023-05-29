@@ -166,7 +166,7 @@ $columns = [
     ], [
         'class' => \yii\grid\ActionColumn::className(),
         'headerOptions' => ["width" => '80'],
-        'template' => '{view} {update} {delete}'
+        'template' => \Yii::$app->user->can('employee') ? '{view} {update} {delete}' : '{view} {update}'
     ]
 ];
 

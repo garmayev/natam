@@ -46,9 +46,9 @@ class OrderController extends ActiveController
     public function actionIndex()
     {
         if (Yii::$app->user->can("employee")) {
-            return $this->modelClass::find()->where(['<', 'status', Order::STATUS_COMPLETE])->all();
+            return $this->modelClass::find()->where(['<', 'status', Order::STATUS_COMPLETE])->orderBy(['id' => SORT_DESC])->all();
         } else {
-            return $this->modelClass::find()->where(['client_id' => Yii::$app->user->identity->client->id])->all();
+            return $this->modelClass::find()->where(['client_id' => Yii::$app->user->identity->client->id])->orderBy(['id' => SORT_DESC])->all();
         }
     }
 
@@ -71,5 +71,31 @@ class OrderController extends ActiveController
             }
         }
         return ['ok' => false];
+    }
+
+    public function actionClone($id)
+    {
+        $data = Yii::$app->request->post();
+        if ( Yii::$app->request->isPost ) {
+            $original = Order::findOne($id);
+            $model = new Order();
+            $model->setAttributes($original->attributes);
+            $date = preg_replace("/(T)/", " ", $data["delivery_date"]);
+            $model->delivery_at = Yii::$app->formatter->asTimestamp($date) + 28800;
+            $model->point_id = $original->point_id;
+	    $model->status = Order::STATUS_NEW;
+            $model->save(false);
+            foreach ($original->productOrders as $productOrder) {
+                $pOrder = new ProductOrder();
+                $pOrder->attributes = $productOrder->attributes;
+                $pOrder->order_id = $model->id;
+                $pOrder->save();
+            }
+            if ( $model->save() ) {
+                return ["ok" => true];
+            } else {
+                return ["ok" => false];
+            }
+        }
     }
 }

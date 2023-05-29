@@ -83,15 +83,15 @@ class TelegramController extends Controller
 
     protected static function checkPermission($telegram, $permission)
     {
-//        if (!Yii::$app->user->can($permission) && Yii::$app->controller->action->id !== "game") {
-//            $chat_id = isset($telegram->input->message) ? $telegram->input->message->chat->id : $telegram->input->callback_query->from["id"];
-        //Yii::error($chat_id);
+        if (!Yii::$app->user->can($permission) && Yii::$app->controller->action->id !== "game") {
+            $chat_id = isset($telegram->input->message) ? $telegram->input->message->chat->id : $telegram->input->callback_query->from["id"];
+            Yii::error($chat_id);
         //$result = $telegram->sendMessage([
         //    'chat_id' => $chat_id,
         //    "text" => Yii::t("telegram", "You don`t have permissions for this action")
         //]);
-//            return false;
-//        }
+            return false;
+        }
         return true;
     }
 
@@ -268,7 +268,7 @@ class TelegramController extends Controller
                         ->all();
                     foreach ($messages as $message) $message->hide();
                     $order->status = Order::STATUS_COMPLETE;
-                    Yii::error($order->save());
+                    // Yii::error($order->save());
                 }
             } else {
                 Yii::error("Unknown order");

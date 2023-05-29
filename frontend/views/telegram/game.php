@@ -154,7 +154,7 @@ function products($category_id)
 </div>
 <script src="//telegram.org/js/telegram-web-app.js"></script>
 <script src="//kit.fontawesome.com/aa23fe1476.js"></script>
-<script src="//api-maps.yandex.ru/2.1/?apikey=886ddc0b-177a-47eb-8b68-2e3a58cf27d9&lang=ru_RU"
+<script src="//api-maps.yandex.ru/2.1/?apikey=0bb42c7c-0a9c-4df9-956a-20d4e56e2b6b&lang=ru_RU"
         type="text/javascript"></script>
 <script src="//code.jquery.com/jquery-3.6.3.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
@@ -194,8 +194,11 @@ function products($category_id)
                     }
                     map.setCenter(coords);
                 }
+		document.querySelector("#location-title").blur();
                 getAddress(coords);
             })
+	    console.log();
+	    // e.originalEvent.target.blur();
         })
 
         window.user.on(User.EVENT_LOGGED, function (e) {
@@ -317,10 +320,10 @@ function products($category_id)
             closest = stores.getClosestTo(coords);
             ymaps.geocode(coords).then(function (res) {
                 let firstGeoObject = res.geoObjects.get(0),
-                    address = firstGeoObject.getAddressLine();
+                    address = firstGeoObject.getAddressLine(),
+		    delivery_city = (firstGeoObject.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName !== "Улан-Удэ") ? 0 : 1;
                 if (multiRoute !== undefined) {
                     map.geoObjects.remove(map.multiRoute);
-
                 }
                 multiRoute = new ymaps.multiRouter.MultiRoute({
                     referencePoints: [
@@ -353,11 +356,13 @@ function products($category_id)
                     $("#location-latitude").val(coords[0]);
                     $("#location-longitude").val(coords[1]);
                     $("#point_id").val(closest.properties._data["data-key"]);
-                    $("#distance").val(distance);
+                    $("#distance").val(distance / 1000);
+		    $("#delivery_city").val(delivery_city);
                     placemark.properties
                         .set({
                             iconCaption: address,
                         });
+		    $("#location-title").blur();
                 });
             });
         }

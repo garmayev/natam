@@ -101,6 +101,7 @@ class SiteController extends Controller
 		$categories = Category::find()->where(['main' => 0])->all();
 		$productProvider = new ActiveDataProvider([
 			'query' => Product::find()->where(['category_id' => ArrayHelper::map($categories, 'id', 'id')]),
+			'pagination' => false,
 		]);
 		return $this->render('addition', [
 			'productProvider' => $productProvider

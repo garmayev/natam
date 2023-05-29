@@ -402,13 +402,17 @@ class Order extends ActiveRecord
         }
         $result .= "<b>Статус</b>: " . $this->getStatusName() . "\n";
         $delivery_price = 0;
-        if ($this->delivery_city !== 1) {
+        if ($this->delivery_type === Order::DELIVERY_STORE) {
             $delivery_price = intval($this->delivery_distance) * Settings::getDeliveryCost();
             $result .= "<b>Стоимость доставки</b>: {$delivery_price}\n";
         }
         $result .= "<b>ФИО клиента</b>: {$this->client->name}\n<b>Номер телефона</b>: <a href='tel:+{$this->client->phone}'>+{$this->client->phone}</a>\n";
-	if ($this->client->company) {
-	    $result .= "<b>Организация</b>: ".($this->company->title ?? "");
+	if ($this->client->company_id) {
+	    if ( isset($this->client->company) && isset($this->client->company->title) ) {
+		$result .= "<b>Организация</b>: ".($this->client->company->title."\n" ?? "");
+	    }
+	} else if ( isset($this->client->company) ) {
+	    $result .= "<b>Организация</b>: ".($this->client->company."\n" ?? "");
 	}
         $result .= "<b>Дата доставки</b>: " . Yii::$app->formatter->asDatetime($this->delivery_date) . "\n";
         $result .= "<b>Комментарий</b>: " . $this->comment . "\n";

@@ -122,7 +122,7 @@ class AnalyticsController extends BaseController
                 $row++;
             }
         }
-        return IOFactory::createWriter($spreadsheet, 'xls');
+        return IOFactory::createWriter($spreadsheet, 'Xls');
     }
 
     protected function getDataByOrder($models)
