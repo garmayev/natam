@@ -358,12 +358,9 @@ class Order extends Dispatcher {
         this.store = data.store;
         this.delivery_distance = data.delivery_distance;
         this.products = data.products;
-        console.log(data);
-        console.log(this);
     }
 
     static view(container, element) {
-        console.log(element);
         container.innerHTML = '';
         let clientCardContainer = Helper.createElement('div', undefined, {class: 'card', style: 'margin-bottom: 10px'}),
             clientCardHeader = Helper.createElement('div', 'Информация о клиенте', {class: 'card-header'}),
@@ -388,7 +385,22 @@ class Order extends Dispatcher {
                 }
             }),
             totalPrice = 0, date = new Date(element.delivery_at * 1000);
-        container.append(backBtn, Helper.createElement("span", `Заказ #${element.id}`, {style: 'font-weight: bolder'}));
+        container.append(
+            backBtn,
+            Helper.createElement("span", `Заказ #${element.id}`, {style: 'font-weight: bolder'}),
+            Helper.createElement(
+                "span",
+                `Повторить заказ`,
+                {
+                    class: ['btn', 'btn-primary', 'ml-3'],
+                    "data-toggle": "modal",
+                    "data-target": "#clone-order"
+                }, {
+                    "click": (e) => {
+                        document.getElementById("clone-delivery_at").setAttribute("data-key", element.id);
+                    }
+                })
+        );
         clientCardBody.append(
             Helper.createElement('p', [
                 Helper.createElement('b', 'Имя клиента: '),
