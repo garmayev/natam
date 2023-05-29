@@ -1002,7 +1002,8 @@ main {
 }
 
 .product_inner .product_img img {
-  height: 176px;
+  max-height: 176px;
+  max-width: 250px;
   -o-object-fit: contain;
   object-fit: contain;
 }

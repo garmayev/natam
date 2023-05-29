@@ -43,4 +43,9 @@ class CategoryController extends ActiveController
     {
         return $this->modelClass::find()->where(['main' => 1])->all();
     }
+
+    public function actionSearch($id)
+    {
+	return $this->modelClass::findOne($id);
+    }
 }

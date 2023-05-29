@@ -46,9 +46,9 @@ class OrderController extends ActiveController
     public function actionIndex()
     {
         if (Yii::$app->user->can("employee")) {
-            return $this->modelClass::find()->where(['<', 'status', Order::STATUS_COMPLETE])->all();
+            return $this->modelClass::find()->where(['<', 'status', Order::STATUS_COMPLETE])->orderBy(['id' => SORT_DESC])->all();
         } else {
-            return $this->modelClass::find()->where(['client_id' => Yii::$app->user->identity->client->id])->all();
+            return $this->modelClass::find()->where(['client_id' => Yii::$app->user->identity->client->id])->orderBy(['id' => SORT_DESC])->all();
         }
     }
 
