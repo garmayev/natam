@@ -4,7 +4,6 @@ namespace frontend\modules\api\controllers;
 
 use common\models\Client;
 use common\models\Order;
-use common\models\OrderProduct;
 use Yii;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBasicAuth;
@@ -77,19 +76,7 @@ class OrderController extends ActiveController
     public function actionClone($id)
     {
         $order = Order::findOne($id);
-        $newOrder = new Order();
-        $newOrder->attributes = $order->attributes;
-        $newOrder->status = Order::STATUS_NEW;
-        $newOrder->delivery_date = Yii::$app->formatter->asTimestamp($_POST["delivery_date"]);
-        if ($newOrder->save()) {
-            foreach ($newOrder->orderProducts as $orderProduct) {
-                $op = new OrderProduct();
-                $op->attributes = $orderProduct->attributes;
-                $op->order_id = $newOrder->id;
-                $op->save();
-            }
-            return ["ok" => true];
-        }
-        return ["ok" => false];
+        $newOrder = $order->deepClone($_POST["delivery_date"]);
+        return ["ok" => true];
     }
 }
