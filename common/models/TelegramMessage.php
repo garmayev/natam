@@ -89,7 +89,7 @@ class TelegramMessage extends ActiveRecord
                     Yii::error($response->result);
                 }
             } else {
-                $employees = Employee::find()->where(['state_id' => 0])->andWhere(['level' => $level])->all();
+                $employees = Employee::find()->where(['state_id' => 0])->andWhere(['level' => $level ? 1 : 0])->all();
                 // Yii::error(count($employees));
                 foreach ($employees as $employee) {
                     if ($employee->chat_id) {
@@ -97,13 +97,13 @@ class TelegramMessage extends ActiveRecord
                             'chat_id' => $employee->chat_id,
                             'text' => "Заказ #{$order->id} не был никем обработан",
                             "parse_mode" => "HTML",
-                            'reply_markup' => json_encode([
-                                'inline_keyboard' => [
-                                    [
-                                        "text" => "Принято",
-                                    ]
-                                ]
-                            ]),
+//                            'reply_markup' => json_encode([
+//                                'inline_keyboard' => [
+//                                    [
+//                                        "text" => "Принято",
+//                                    ]
+//                                ]
+//                            ]),
                         ]);
                         if ($response->ok) {
                             $message = new TelegramMessage([
@@ -118,7 +118,7 @@ class TelegramMessage extends ActiveRecord
                                 'level' => $level,
                             ]);
                             if (!$message->save()) {
-                                Yii::error($message->getErrorSummary(true));
+                                // Yii::error($message->getErrorSummary(true));
                             }
                         }
                     }
@@ -237,7 +237,7 @@ class TelegramMessage extends ActiveRecord
                 $this->save();
             }
         } catch (ClientException $e) {
-            Yii::error($this->attributes);
+//            Yii::error($this->attributes);
         }
     }
 

@@ -215,7 +215,7 @@ class TelegramController extends Controller
                 $order->boss_chat_id = null;
                 if (!$order->save()) {
                     Yii::error($order->getErrorSummary(true));
-                }
+		}
             }
         } else {
             $text = Yii::t("telegram", "You don`t have permissions for this action");
@@ -299,7 +299,7 @@ class TelegramController extends Controller
                 $order->boss_chat_id = null;
                 if (!$order->save()) {
                     Yii::error($order->getErrorSummary(true));
-                }
+		}
             }
         } else {
             $text = Yii::t("telegram", "You don`t have permissions for this action");

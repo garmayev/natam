@@ -102,17 +102,7 @@ window.Helper = {
             return Helper.get(object[prop], keys.join("."));
         } else {
             if (object) {
-                if (property === "delivery_at") {
-                    return new Date(parseInt(object[property]) * 1000).toLocaleString("ru", {
-                        year: "numeric",
-                        month: "numeric",
-                        day: "numeric",
-                        hour: 'numeric',
-                        minute: 'numeric'
-                    });
-                } else {
                     return object[property];
-                }
             } else {
                 return "";
             }

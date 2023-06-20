@@ -14,7 +14,7 @@ return [
 	'name' => Yii::t('app', 'Natam Trade'),
     'bootstrap' => ['log'],
 	'language' => 'ru',
-	'timezone' => 'Asia/Irkutsk',
+	'timeZone' => 'Asia/Irkutsk',
 	'defaultRoute' => "default/index",
     'components' => [
 	    'i18n' => [

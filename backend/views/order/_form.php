@@ -232,6 +232,7 @@ $this->registerCss("
             echo Html::tag("div", "", ["id" => "map", "style" => "height: 400px; width: 100%;"]);
             echo $form->field($model, "status")->dropDownList(Order::getStatusList());
             echo DateTimePicker::widget([
+		'convertFormat' => true,
                 'name' => 'Order[delivery_date]',
                 'value' => ($model->delivery_date > 0) ? Yii::$app->formatter->asDatetime($model->delivery_date, 'php:Y-m-d H:i') : "",
                 'options' => [
