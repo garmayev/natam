@@ -150,12 +150,13 @@ $(() => {
         for (const index in response) {
             let item = response[index];
             if (item.order.status < 4) {
-                // console.log(item);
                 if (orderCollection[item.id] === undefined) {
                     if (item.location) {
+                        let dateString = item.order.created_at;
+//                        console.log(dateString);
                         orderCollection[item.id] = {
                             Placemark: new ymaps.Placemark([item.location.latitude, item.location.longitude], {
-                                balloonContentHeader: `<h4>Заказ #${item.id}</h4>`,
+                                balloonContentHeader: `<h4>Заказ #${item.id}</h4><span>`+dateString+`</span>`,
                                 balloonContentBody: getClientInfo(item.client) + getStatus(item.order) + getContentBody(item.cart) + getAddress(item),
                                 balloonContentFooter: `<h5>Общая стоимость заказа: ${item.cost}</h5>`,
                             }, {
@@ -192,7 +193,11 @@ $(() => {
                 url: "/admin/cars/login",
                 async: false,
                 success: (response) => {
-                    app.login = response;
+                    if (response) {
+                        app.login = response;
+                    } else {
+                        app.login = {SessionId: ''}
+                    }
                 },
                 error: (e) => {
                     console.error(e);
@@ -208,8 +213,11 @@ $(() => {
                 async: false,
                 data: {token: app.login.SessionId},
                 success: (response) => {
-		    console.log(response);
-                    app.allUnits = response.Units;
+                    if (response) {
+                        app.allUnits = response.Units;
+                    } else {
+                        app.allUnits = [];
+                    }
                 },
                 error: (e) => {
                     console.error(e);
@@ -230,7 +238,13 @@ $(() => {
                 async: false,
                 data: {token: app.login.SessionId, ids: JSON.stringify(ids)},
                 success: (response) => {
-                    app.subscribe = response;
+                    if (response) {
+                        app.subscribe = response;
+                    } else {
+                        app.subscribe = {
+                            SessionId: {Id: undefined}
+                        };
+                    }
                 },
                 error: (e) => {
                     console.error(e);
@@ -258,36 +272,38 @@ $(() => {
                 spik.online();
             }
             let units = [];
-            for (const index in app.collection.OnlineDataCollection.DataCollection) {
-                let collectionItem = app.collection.OnlineDataCollection.DataCollection[index];
-                let unitItem = app.allUnits[index];
-                if (carPoints[index]) {
-                    carPoints[index].geometry.setCoordinates([collectionItem.Navigation.Location.Latitude, collectionItem.Navigation.Location.Longitude]);
-                } else {
-                    let driver_name = "";
-                    if ( (typeof(carUnits[unitItem.UnitId]) !== "undefined") && carUnits[unitItem.UnitId].driver !== null ) {
-                        driver_name = `${carUnits[unitItem.UnitId].driver.family} ${carUnits[unitItem.UnitId].driver.name}`;
+            if (app.collection) {
+                for (const index in app.collection.OnlineDataCollection.DataCollection) {
+                    let collectionItem = app.collection.OnlineDataCollection.DataCollection[index];
+                    let unitItem = app.allUnits[index];
+                    if (carPoints[index]) {
+                        carPoints[index].geometry.setCoordinates([collectionItem.Navigation.Location.Latitude, collectionItem.Navigation.Location.Longitude]);
+                    } else {
+                        let driver_name = "";
+                        if ( (typeof(carUnits[unitItem.UnitId]) !== "undefined") && carUnits[unitItem.UnitId].driver !== null ) {
+                            driver_name = `${carUnits[unitItem.UnitId].driver.family} ${carUnits[unitItem.UnitId].driver.name}`;
+                        }
+                        let placemark = new ymaps.Placemark([collectionItem.Navigation.Location.Latitude, collectionItem.Navigation.Location.Longitude], {
+                            balloonContentHeader: `<h4 data-key="${index}">Автомобиль #${unitItem.Name}</h4>`,
+                            balloonContentBody: `<p><b>Водитель</b>: ${driver_name}</p><p><b>Текущий адрес</b>: ${(collectionItem.Address !== '') ? collectionItem.Address : 'Unknown'}</p><p><b>Текущая скорость</b>: ${collectionItem.Navigation.Speed}</p>`,
+                        }, {
+                            iconLayout: 'default#image',
+                            iconImageHref: '/img/track_icon.png',
+                            iconImageSize: [50, 50],
+                            iconImageOffset: [-25, -50],
+                        });
+                        placemark.events.add("balloonopen", openBalloon)
+                        carPoints.push(placemark);
+                        units.push({
+                            Name: unitItem.Name,
+                            UnitId: unitItem.UnitId,
+                            CompanyId: unitItem.CompanyId,
+                            ConnectionDateTime: collectionItem.ConnectionDateTime,
+                            LastMessageTime: collectionItem.LastMessageTime,
+                            DeviceId: collectionItem.DeviceId,
+                            Navigation: collectionItem.Navigation,
+                        });
                     }
-                    let placemark = new ymaps.Placemark([collectionItem.Navigation.Location.Latitude, collectionItem.Navigation.Location.Longitude], {
-                        balloonContentHeader: `<h4 data-key="${index}">Автомобиль #${unitItem.Name}</h4>`,
-                        balloonContentBody: `<p><b>Водитель</b>: ${driver_name}</p><p><b>Текущий адрес</b>: ${(collectionItem.Address !== '') ? collectionItem.Address : 'Unknown'}</p><p><b>Текущая скорость</b>: ${collectionItem.Navigation.Speed}</p>`,
-                    }, {
-                        iconLayout: 'default#image',
-                        iconImageHref: '/img/track_icon.png',
-                        iconImageSize: [50, 50],
-                        iconImageOffset: [-25, -50],
-                    });
-                    placemark.events.add("balloonopen", openBalloon)
-                    carPoints.push(placemark);
-                    units.push({
-                        Name: unitItem.Name,
-                        UnitId: unitItem.UnitId,
-                        CompanyId: unitItem.CompanyId,
-                        ConnectionDateTime: collectionItem.ConnectionDateTime,
-                        LastMessageTime: collectionItem.LastMessageTime,
-                        DeviceId: collectionItem.DeviceId,
-                        Navigation: collectionItem.Navigation,
-                    });
                 }
             }
             return units;

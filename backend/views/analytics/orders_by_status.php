@@ -19,7 +19,7 @@ foreach ($messages as $message) {
 				isset($_GET["expired"]) ? "panel-danger" : "panel-success"
 			]
 		]);
-		echo Html::tag("div", Html::a("Заказ #{$message->order_id}", ["order/view", "id" => $message->order_id]), ["class" => "panel-heading"]);
+		echo Html::tag("div", Html::a("Заказ #{$message->order_id} (".Yii::$app->formatter->asDatetime($message->order->created_at).")", ["order/view", "id" => $message->order_id]), ["class" => "panel-heading"]);
 		echo Html::beginTag("div", ["class" => "panel-body"]);
 		echo Html::tag("p", "Прошло времени: " . Yii::$app->formatter->asDuration($message->updated_at - $message->created_at));
 		echo Html::endTag("div");

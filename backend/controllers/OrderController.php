@@ -123,6 +123,8 @@ class OrderController extends BaseController
 				Yii::$app->session->setFlash("error", Yii::t("app", "Failed! Order #{n} is not deleted!", ["n" => $id]));
 			}
 			return $this->redirect("/admin/order/index");
+		} else {
+			return $this->redirect("/admin/order/index");
 		}
 	}
 

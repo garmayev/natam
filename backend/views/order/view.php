@@ -132,11 +132,16 @@ $totalCost = 0;
             foreach ($messages as $message) {
 		$employee = Employee::findOne(["user_id" => $message->updatedBy]);
 		$name = isset($employee) ? $employee->fullname : "";
+		$duration = $message->updated_at - $message->created_at;
                 echo "
 <tr>
 <td>".Order::getStatusList()[$message->order_status + 1]."</td>
 <td>".$name."</td>
-<td>".Yii::$app->formatter->asDuration($message->updated_at - $message->created_at)."</td>
+<td>";
+	    if ($duration > 0) {
+		echo Yii::$app->formatter->asDuration($duration);
+	    }
+echo "</td>
 </tr>";
 				}
 				?>
