@@ -127,5 +127,6 @@ return [
     "Fuel consumption" => "Расход топлива",
     "Export" => "Экспорт",
     "Filter" => "Фильтр",
-    "Delivery" => "Доставка"
+    "Delivery" => "Доставка",
+    "Count balloons" => "Посчитать количество баллонов",
 ];

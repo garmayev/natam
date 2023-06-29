@@ -3,6 +3,7 @@
 use common\models\Order;
 use common\models\search\OrderSearch;
 use kartik\date\DatePicker;
+
 // use kartik\export\ExportMenu;
 
 //use kartik\grid\GridView;
@@ -18,9 +19,13 @@ use yii\helpers\Html;
  */
 
 $this->title = Yii::t("app", "Orders");
+?>
+    <p>
+        <?= Html::a(Yii::t("app", "New Order"), ["order/create"], ["class" => ["btn", "btn-success", "mr-1"]]); ?>
+        <?= Html::a(Yii::t("app", "Count balloons"), ["order/count"], ["class" => ["btn", "btn-primary", "order-count"]]) ?>
+    </p>
 
-echo Html::a(Yii::t("app", "New Order"), ["order/create"], ["class" => ["btn", "btn-success"], "style" => "margin-right: 10px;"]);
-
+<?php
 $gridColumns = [
     'client.name',
     'client.phone',
@@ -183,6 +188,7 @@ echo yii\grid\GridView::widget([
 //    "perfectScrollbar" => true,
 ]);
 
+$this->registerJsVar("get_array", $_GET);
 $this->registerJs("
 $('.order-comment').on('blur', function (e) {
 	$.ajax({
@@ -205,5 +211,28 @@ $('.status').on('change', function (e) {
 				}
 			}
 		});
+});
+$('.order-count').on('click', function (e) {
+    e.preventDefault();
+    let created_start = get_array.OrderSearch.created_start,
+        created_finish = get_array.OrderSearch.created_finish,
+        delivery_start = get_array.OrderSearch.delivery_start,
+        delivery_finish = get_array.OrderSearch.delivery_finish,
+        data = {};
+    
+    for ( let i = 0; i < $('#w2-filters input').length; i++ ) {
+        let item = $('#w2-filters input')[i];
+        data[$(item).attr('name')] = $(item).val();
+    }
+    $.ajax({
+        url: '/admin/order/count',
+        method: 'post',
+        data: data,
+        success: function (response) {
+            if (response.ok) {
+                alert(`Количество баллонов в выбранных заказах: \${response.count} штук`);
+            }
+        }
+    });
 });
 ", View::POS_LOAD);

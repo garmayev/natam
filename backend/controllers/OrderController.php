@@ -177,4 +177,21 @@ class OrderController extends BaseController
 		}
 		return $locations;
 	}
+
+    public function actionCount()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $searchModel = new OrderSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->post());
+        $ballons = 0;
+        /**
+         * @var $model Order
+         */
+        foreach ($dataProvider->getModels() as $model) {
+            foreach ($model->orderProducts as $orderProduct) {
+                $ballons += $orderProduct->product_count;
+            }
+        }
+        return ["ok" => true, "count" => $ballons];
+    }
 }
