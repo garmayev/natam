@@ -42,6 +42,7 @@ class DefaultController extends Controller
 
     public function actionOptions($chat_id = null)
     {
+        Yii::$app->response->format = Response::FORMAT_JSON;
         if ($_GET['chat_id']) {
             $employee = Employee::findOne(["chat_id" => $_GET['chat_id']]);
             if (empty($employee)) {

@@ -319,10 +319,10 @@ JS
                             }
                             myMap.geoObjects.add(multiRoute);
                             if (target.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName !== "Улан-Удэ") {
-                                // console.log(target);
-                        	let delivery_price = 0;
-                        	let meters = parseInt(shortest.properties.get("distance").value);
-                        	$("[name='Order\[delivery_distance\]']").val(meters / 1000);
+                                console.log(target.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName);
+                        	    let delivery_price = 0;
+                        	    let meters = parseInt(shortest.properties.get("distance").value);
+                        	    $("[name='Order\[delivery_distance\]']").val(meters / 1000);
                                 $("#delivery_city").val(0);
                                 delivery_price = parseInt(meters / 1000) * delivery_cost;
                                 // console.log(delivery_price);

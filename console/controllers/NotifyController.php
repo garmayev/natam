@@ -32,7 +32,7 @@ class NotifyController extends Controller
                 $this->stdout("Заказ #{$model->id}\n", Console::BOLD);
                 if ($this->isNeedAlert($model)) {
                     $level = $this->findAlertLevel($model);
-                    TelegramMessage::send(null, $model, $level);
+                    // TelegramMessage::send(null, $model, $level);
                     $this->stdout("\tТребуется отправка сообщения начальнику\n");
                 } else {
                     $this->stdout("\tУведомление начальству не требуется\n");

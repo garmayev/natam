@@ -1,6 +1,6 @@
 window.Helper = {
     /**
-     * Create bew DOMElement in Native JavaScript
+     * Create new DOMElement in Native JavaScript
      *
      * @param tagName String - is for
      * @param content Array|DOMElement|string
@@ -102,7 +102,7 @@ window.Helper = {
             return Helper.get(object[prop], keys.join("."));
         } else {
             if (object) {
-                    return object[property];
+                return object[property];
             } else {
                 return "";
             }
@@ -111,13 +111,13 @@ window.Helper = {
 
     generateLink(object, config) {
         if (config.href) {
-            let a = [...config.href.matchAll(/\{\{(\w+)\}\}/g)], href;
+            let a = [...config.href.matchAll(/{{(\w+)}}/g)], href;
             for (let i = 0; i < a.length; i++) {
                 config.href = config.href.replace(a[i][0], Helper.get(object, a[i][1]));
             }
         }
     }
-}
+};
 
 class DispatcherEvent {
     constructor(eventName) {
@@ -249,7 +249,7 @@ class User extends Dispatcher {
                 class: ["btn", "btn-success"],
             }), {
                 class: ["form-group", "text-center", "col-12"]
-            })
+            });
         form.append(csrf, chat_id, login_container, password_container, submit_container);
         container.append(form);
         return container;
@@ -270,11 +270,11 @@ class User extends Dispatcher {
                 }
             }
             return values;
-        }
+        };
 
         const dumpValues = form => () => {
             return formSerialize(form);
-        }
+        };
 
         e.preventDefault();
         let data = new FormData(e.currentTarget),
@@ -290,7 +290,7 @@ class User extends Dispatcher {
 class Cart {
     selected = [];
     totalPrice = 0;
-    #table = undefined;
+    table = undefined;
 
     constructor(container) {
         this.container = container;
@@ -298,33 +298,34 @@ class Cart {
     }
 
     rebuild() {
-        if (this.#table === undefined) {
-            this.#table = Helper.createElement("table", undefined, {class: ["table", "table-striped"]});
-            this.container.append(this.#table);
+        if (this.table === undefined) {
+            this.table = Helper.createElement("table", undefined, {class: ["table", "table-striped"]});
+            this.container.append(this.table);
         } else {
-            this.#table.innerHTML = "";
+            this.table.innerHTML = "";
         }
         let thead = Helper.createElement("thead"),
             thRow = Helper.createElement("tr"),
             tbody = Helper.createElement("tbody");
         thRow.append(Helper.createElement("th", "Продукт"), Helper.createElement("th", "Количество"), Helper.createElement("Действия"));
-	this.totalPrice = 0;
+        this.totalPrice = 0;
         for (const element of this.selected) {
             let tr = Helper.createElement("tr"),
                 product = Helper.ajax("/api/product/view?id=" + element.product_id),
-		// category = Helper.ajax("/api/category/search?id=" + product.category_id),
                 td_product = Helper.createElement("td", [Helper.createElement("div", product.category.title), Helper.createElement("div", `${product.title}`)], {style: "vertical-align: middle"}),
-                td_action = Helper.createElement("td", Helper.createElement("span", undefined, {class: ["fas", "fa-trash"]}, {click: this.remove.bind(this, element.product_id)}), {class: "text-right", style: "vertical-align: middle"}),
+                td_action = Helper.createElement("td", Helper.createElement("span", undefined, {class: ["fas", "fa-trash"]}, {click: this.remove.bind(this, element.product_id)}), {
+                    class: "text-right",
+                    style: "vertical-align: middle"
+                }),
                 td_count = Helper.createElement("td", `${element.product_count} шт`, {style: "vertical-align: middle"});
             tr.append(td_product, td_count, td_action);
-	    this.totalPrice += (Number.parseInt(product.price) * Number.parseInt(element.product_count));
-	    // console.log(product.price);
+            this.totalPrice += (Number.parseInt(product.price) * Number.parseInt(element.product_count));
             tbody.append(tr);
         }
-        this.#table.append(thead, tbody);
-	if (this.totalPrice > 0) {
-	    this.#table.append(Helper.createElement('p', ['Общая стоимость: ', Helper.createElement('b', `${this.totalPrice} руб`), ' (Без учета доставки)'], {class: 'mt-3'}))
-	}
+        this.table.append(thead, tbody);
+        if (this.totalPrice > 0) {
+            this.table.append(Helper.createElement('p', ['Общая стоимость: ', Helper.createElement('b', `${this.totalPrice} руб`), ' (Без учета доставки)'], {class: 'mt-3'}));
+        }
     }
 
     append(object) {
@@ -347,19 +348,59 @@ class Cart {
 }
 
 class Order extends Dispatcher {
-    id;
-    client;
-    location;
-    statusName;
-    class;
+    _id;
+    _client;
+    _location;
+    _statusName;
+    _class;
+
+    get class() {
+        return this._class;
+    }
+
+    set class(value) {
+        this._class = value;
+    }
+
+    get id() {
+        return this._id;
+    }
+
+    set id(value) {
+        this._id = value;
+    }
+
+    get client() {
+        return this._client;
+    }
+
+    set client(value) {
+        this._client = value;
+    }
+
+    get location() {
+        return this._location;
+    }
+
+    set location(value) {
+        this._location = value;
+    }
+
+    get statusName() {
+        return this._statusName;
+    }
+
+    set statusName(value) {
+        this._statusName = value;
+    }
 
     constructor(data) {
         super();
-        this.class = "order";
-        this.id = data.id;
-        this.client = data.client;
-        this.location = data.location;
-        this.statusName = data.statusName;
+        this._class = "order";
+        this._id = data._id;
+        this._client = data._client;
+        this._location = data._location;
+        this._statusName = data._statusName;
         this.delivery_at = data.delivery_at;
         this.delivery_type = data.delivery_type;
         this.comment = data.comment;
@@ -395,7 +436,7 @@ class Order extends Dispatcher {
             totalPrice = 0, date = new Date(element.delivery_at * 1000);
         container.append(
             backBtn,
-            Helper.createElement("span", `Заказ #${element.id}`, {style: 'font-weight: bolder'}),
+            Helper.createElement("span", `Заказ #${element._id}`, {style: 'font-weight: bolder'}),
             Helper.createElement(
                 "span",
                 `Повторить заказ`,
@@ -405,33 +446,33 @@ class Order extends Dispatcher {
                     "data-target": "#clone-order"
                 }, {
                     "click": (e) => {
-                        document.getElementById("clone-delivery_at").setAttribute("data-key", element.id);
+                        document.getElementById("clone-delivery_at").setAttribute("data-key", element._id);
                     }
                 })
         );
         clientCardBody.append(
             Helper.createElement('p', [
                 Helper.createElement('b', 'Имя клиента: '),
-                Helper.createElement('span', element.client.name)
+                Helper.createElement('span', element._client.name)
             ]),
             Helper.createElement('p', [
                 Helper.createElement('b', 'Номер телефона: '),
-                Helper.createElement('span', element.client.phone)
+                Helper.createElement('span', element._client.phone)
             ]),
             Helper.createElement('p', [
                 Helper.createElement('b', 'E-mail: '),
-                Helper.createElement('span', element.client.email ?? '')
+                Helper.createElement('span', element._client.email ?? '')
             ]),
             Helper.createElement('p', [
                 Helper.createElement('b', 'Компания: '),
-                Helper.createElement('span', element.client.company.title ?? '')
+                Helper.createElement('span', element._client.company.title ?? '')
             ])
         );
         clientCardContainer.append(clientCardHeader, clientCardBody);
         deliveryCardBody.append(
             Helper.createElement('p', [
                 Helper.createElement('b', 'Адрес доставки: '),
-                Helper.createElement('span', element.location.title)
+                Helper.createElement('span', element._location.title)
             ]),
             Helper.createElement('p', [
                 Helper.createElement('b', 'Дата доставки: '),
@@ -445,7 +486,7 @@ class Order extends Dispatcher {
                 Helper.createElement('b', 'Расстояние: '),
                 Helper.createElement('span', new Intl.NumberFormat('ru-RU').format(element.distance / 1000) + " километров")
             ]),
-	    Helper.createElement('input', undefined, {type: 'hidden', id: 'delivery_city'})
+            Helper.createElement('input', undefined, {type: 'hidden', id: 'delivery_city'})
         );
         deliveryCardContainer.append(deliveryCardHeader, deliveryCardBody);
         let table = Helper.createElement('table', undefined, {class: ['table', 'table-stripped']}),
@@ -519,10 +560,10 @@ class Order extends Dispatcher {
             tbody);
         if (array.length) {
             for (const element of array) {
-                let row = Helper.createElement("tr", undefined, {"data-key": element.id});
+                let row = Helper.createElement("tr", undefined, {"data-key": element._id});
                 for (const column of columns) {
                     if (column.key !== 'id') {
-                        row.append(Helper.createElement("td", Helper.createElement("p", Helper.get(element, column.key)), {'data-key': element.id}, {'click': Order.view.bind(this, container, element)}));
+                        row.append(Helper.createElement("td", Helper.createElement("p", Helper.get(element, column.key)), {'data-key': element._id}, {'click': Order.view.bind(this, container, element)}));
                     } else {
                         row.append(Helper.createElement("td", Helper.createElement("p", Helper.get(element, column.key))));
                     }
@@ -530,7 +571,7 @@ class Order extends Dispatcher {
                 let btn = Helper.createElement("button", undefined, {
                         class: ["btn", "btn-success", "fas", "fa-plus"],
                         type: "button",
-                        id: `dropdown_${element.id}`,
+                        id: `dropdown_${element._id}`,
                         "data-toggle": "dropdown",
                         "aria-haspopup": "true",
                         "aria-expanded": "Dropdown",
@@ -540,11 +581,11 @@ class Order extends Dispatcher {
                         href: "#",
                         "data-toggle": "modal",
                         "data-target": "#clone-order",
-                        "data-key": element.id,
+                        "data-key": element._id,
                     }, {click: Order.clone}),
                     btnMenu = Helper.createElement("div", [itemClone], {
                         class: ["dropdown-menu", "dropdown-menu-right"],
-                        "aria-labelledby": `dropdown_${element.id}`
+                        "aria-labelledby": `dropdown_${element._id}`
                     }),
                     btnGroup = Helper.createElement("p", [btn, btnMenu], {
                         class: "btn-group",

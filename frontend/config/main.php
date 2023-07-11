@@ -135,7 +135,10 @@ return [
 			'user_class' => '\common\models\User',
 			'urlPrefix' => 'staff',
 			'layout' => '@app/modules/admin/views/layouts/main',
-		]
+		],
+        'api' => [
+            'class' => \frontend\modules\api\Module::class,
+        ]
 	],
 	'params' => $params,
 ];

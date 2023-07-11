@@ -37,15 +37,16 @@ foreach ( $products as $product ) {
 	        }
             echo Html::tag("p", "{$model->products[0]->price}".Html::tag("span", " руб."), ["class" => "product_price"]);
         } else {
+            echo Html::dropDownList("Cart[product_id]", 0, $items, ["style" => "width: 92%; padding: 5px; margin: 10px 0;", "class" => "cart_product_id", "disabled" => "disabled"]);
             echo Html::tag("span", \Yii::t("natam", "Empty"), ["class" => "product_info_empty"]);
         }
     ?>
     <div class="product_order">
         <div class="product_count">
-            <button class="minus" <?= (!$any) ? "disabled=disabled" : "" ?>>-</button>
-            <input type="text" value="1" name="Cart[product_count]" class="cart_product_count" <?= (!$any) ? "disabled=disabled" : "" ?>/>
-            <button class="plus" <?= (!$any) ? "disabled=disabled" : "" ?>>+</button>
+            <button class="minus">-</button>
+            <input type="text" value="1" name="Cart[product_count]" class="cart_product_count" />
+            <button class="plus">+</button>
         </div>
-        <?= Html::a("Заказать", "#", ["class" => ["btn", ($any) ? "blue" : "disabled"]]) ?>
+        <?= Html::a("Заказать", "#", ["class" => ["btn", "blue"]]) ?>
     </div>
 </div>
