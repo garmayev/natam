@@ -88,7 +88,7 @@ JS
                 ?>
                 <!-- </form> -->
                 <?= Html::endForm() ?>
-                <?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"], "novalidate" => true]) ?>
+                <?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"], "novalidate" => true, "autocomplete" => "1q2w3e4r5t6y7u8i9o0p"]) ?>
                 <div class="order-slide swiper-wrapper">
                     <!--                <form class="form_block form_order active">-->
                     <div class="form_content step swiper-slide" data-index="1">
@@ -101,17 +101,17 @@ JS
                     <div class="form_content step swiper-slide swiper-no-swiping" data-index="2">
                         <div class="form_item">
                             <input type="text" id="order-client-name" data-required="true" name="Order[client][name]"
-                                   placeholder="Ваше ФИО" value="<?= $client->name ?>">
+                                   placeholder="Ваше ФИО" value="<?= $client->name ?>" autocomplete="1q2w3e4r5t6y7u8i9o0p">
                             <input type="text" id="order-client-phone" data-required="true" name="Order[client][phone]"
                                    data-inputmask="'mask': '+7(999)999 9999'" placeholder="Ваш номер телефона"
-                                   value="<?= $client->phone ?>">
+                                   value="<?= $client->phone ?>" autocomplete="1q2w3e4r5t6y7u8i9o0p">
                             <input type="email" id="order-client-company" data-required="false"
                                    name="Order[client][company]"
-                                   placeholder="Название организации" value="<?= $client->company ?>">
+                                   placeholder="Название организации" value="<?= $client->company ?>" autocomplete="1q2w3e4r5t6y7u8i9o0p">
                         </div>
                         <div class="form_item">
                             <textarea name="Order[comment]" data-required="false" placeholder="Комментарий" rows="5"
-                                      style="border-radius: 10px; padding: 18px;"></textarea>
+                                      style="border-radius: 10px; padding: 18px;" autocomplete="1q2w3e4r5t6y7u8i9o0p"></textarea>
                         </div>
                     </div>
                     <div class="form_content step swiper-slide swiper-no-swiping" data-index="3">
@@ -123,10 +123,10 @@ JS
                                     'type' => DateTimePicker::TYPE_INPUT,
                                     'options' => [
                                         'class' => ['form'],
-                                        // 'autocomplete' => true,
+                                        'autocomplete' => '1q2w3e4r5t6y7u8i9o0p',
                                         'id' => 'order-delivery_date',
                                         'placeholder' => Yii::t('app', 'Delivery Date'),
-                                        'data-required' => "true"
+                                        'data-required' => "true",
                                     ],
                                     'pluginOptions' => [
                                         'startDate' => date('Y-m-d H:00'),
@@ -170,7 +170,7 @@ JS
                             </div>
                             <div class="form_item">
                                 <input type="text" id="order-address" class="form" data-required="true"
-                                       name="Order[address]" value="" placeholder="Адрес доставки">
+                                       name="Order[address]" value="" placeholder="Адрес доставки" autocomplete="1q2w3e4r5t6y7u8i9o0p">
                                 <input type="hidden" name="Order[location][title]" id="location-title" "="">
                                 <input type="hidden" name="Order[location][latitude]" id="location-latitude">
                                 <input type="hidden" name="Order[location][longitude]" id="location-logintude">

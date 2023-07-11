@@ -289,6 +289,7 @@ function products($category_id)
         $(".clone-order").on("click", (e) => {
             let delivery_at = "#clone-delivery_at",
                 order_id = $(delivery_at).attr("data-key");
+	    $(e.currentTarget).attr("disabled", "disabled");
             $.ajax({
                 url: `/api/order/clone?id=${order_id}`,
                 data: {"delivery_date": $(delivery_at).val()},
@@ -301,6 +302,7 @@ function products($category_id)
                     $("#clone-order").modal("hide");
                     let orders = Order.get(user);
                     Order.buildTable(document.querySelector("body > .main"), orders);
+		    $(e.currentTarget).removeAttr("disabled");
                 }
             })
         })

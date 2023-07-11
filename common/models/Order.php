@@ -228,7 +228,7 @@ class Order extends ActiveRecord
     {
         parent::afterSave($insert, $changedAttributes);
         if (!$insert) {
-            $messages = TelegramMessage::find()->where(['order_id' => $this->id])->andWhere(['order_status' => $this->status - 1])->andWhere(['status' => TelegramMessage::STATUS_OPENED])->all();
+            $messages = TelegramMessage::find()->where(['order_id' => $this->id])->andWhere(['status' => TelegramMessage::STATUS_OPENED])->all();
             foreach ($messages as $message) {
                 $message->hide();
             }
