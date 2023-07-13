@@ -90,4 +90,9 @@ return [
 	'Create Client' => 'Создать нового клиента',
 	'Update Client' => 'Обновить информацию клиента',
 	'Sorry, You don`t have permission to this command' => 'Простите, у Вас нет разрешений для этой команды',
+	'New Order' => 'Новый заказ',
+	'Order Prepared' => 'Заказ подготовлен',
+	'Order Delivered' => 'Заказ в процессе доставки',
+	'Order Complete' => 'Заказ выполнен',
+	'Order Cancelled' => 'Заказ отменен',
 ];

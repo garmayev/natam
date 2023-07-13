@@ -101,4 +101,9 @@ class HelperController extends Controller
             }
         }
     }
+
+    public function actionCheckStatus($id = null) {
+		$order = Order::findOne($id);
+		echo $this->stdout($order->statusName . "\n");
+    }
 }

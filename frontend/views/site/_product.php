@@ -30,11 +30,11 @@ foreach ( $products as $product ) {
     <?= Html::tag("p", $model->title, ["class" => "product_item_title"]) ?>
     <?php
         if ( $any ) {
-	        if ( count($items) > 1 ) {
-		        echo Html::dropDownList("Cart[product_id]", 0, $items, ["style" => "width: 92%; padding: 5px; margin: 10px 0;", "class" => "cart_product_id"]);
-	        } else {
-		        echo Html::dropDownList("Cart[product_id]", 0, $items, ["style" => "width: 92%; padding: 5px; margin: 10px 0;", "class" => "cart_product_id", "disabled" => "disabled"]);
-	        }
+            if ( count($items) > 1 ) {
+	        echo Html::dropDownList("Cart[product_id]", 0, $items, ["style" => "width: 92%; padding: 5px; margin: 10px 0;", "class" => "cart_product_id"]);
+            } else {
+	        echo Html::dropDownList("Cart[product_id]", 0, $items, ["style" => "width: 92%; padding: 5px; margin: 10px 0;", "class" => "cart_product_id", "disabled" => "disabled"]);
+            }
             echo Html::tag("p", "{$model->products[0]->price}".Html::tag("span", " руб."), ["class" => "product_price"]);
         } else {
             echo Html::dropDownList("Cart[product_id]", 0, $items, ["style" => "width: 92%; padding: 5px; margin: 10px 0;", "class" => "cart_product_id", "disabled" => "disabled"]);

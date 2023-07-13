@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use common\models\Category;
+use common\models\Order;
 use common\models\Post;
 use common\models\Product;
 use common\models\Service;
@@ -107,4 +108,12 @@ class SiteController extends Controller
 			'productProvider' => $productProvider
 		]);
 	}
+
+    public function actionChangeMode($date) {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $start = strtotime("midnight", $date / 1000);
+        $finish = strtotime("+1 day", $start);
+        Yii::error($start, $finish);
+        return ArrayHelper::map(Order::find()->where(['between', 'delivery_date', $start, $finish])->andWhere(['>', 'status', Order::STATUS_COMPLETE])->all(), 'id', 'client_id', 'delivery_date');
+    }
 }

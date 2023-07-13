@@ -24,22 +24,57 @@ $this->title = Yii::$app->name;
 $this->registerJsVar("picker", "");
 $this->registerJs(<<< JS
 $('.blue.recall').on('click', (e) => {
-	// e.preventDefault();
 	$('.form_tab button:first-child').trigger('click');
 });
 $('.main_inner > .blue').on('click', (e) => {
 	$('.form_tab button:last-child').trigger('click');
 })
+let onChangeMode = function (e) {
+    let picker = undefined;
+    for ( index in e.delegateTarget) {
+        if ((typeof e.delegateTarget[index] === "object") && (e.delegateTarget[index] !== null)) {
+            if (e.delegateTarget[index].hasOwnProperty("krajeeDatetimepicker")) {
+                picker = e.delegateTarget[index];
+                break;
+            }
+        }
+    }
+    $.ajax({
+        url: '/site/change-mode',
+        type: 'GET',
+        async: false,
+        data: {
+            date: e.date.getTime() - (3600 * 8)
+        },
+        success: function (response) {
+            let hours = [0, 1, 2, 3, 4, 5, 6, 7, 8, 18, 19, 20, 21, 22, 23, 24];
+            for ( let i in response) {
+                let d = new Date(i * 1000);
+                if (Object.keys(response[i]).length > 4) {
+                    hours.push(d.getHours());
+                }
+            }
+            if ( picker !== undefined ) {
+                let val = e.date.valueOf() / 1000;
+                val = (val - (val % 3600)) * 1000;
+                console.log(e.date.getDay());
+                if ( (e.newViewMode === 1) && (e.date.getDay() === 0) ) {
+                    for(var i = 0; i < 4; i++) {
+                        hours.push(14 + i);
+                    }
+                }
+                picker.datetimepicker.setHoursDisabled( hours.sort().join(",") );
+                picker.datetimepicker.setDate( new Date(val + (e.date.getTimezoneOffset() * 60000)) );
+            }
+        }
+    });
+}
 JS
 );
 $count = count(Yii::$app->cart->getItems());
 if (!empty($success = Yii::$app->session->getFlash("success"))) {
     echo \yii\bootstrap4\Html::tag("div", $success, ["class" => 'alert']);
 }
-$this->registerJs(<<< JS
-console.log(window.location.href);
-JS
-);
 ?>
 <main>
     <section class="form" id="form">
@@ -88,7 +123,7 @@ JS
                 ?>
                 <!-- </form> -->
                 <?= Html::endForm() ?>
-                <?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"], "novalidate" => true]) ?>
+                <?= Html::beginForm(["/order/create"], "post", ["class" => ["form_block", "form_order", "active"], "novalidate" => true, "autocomplete" => "1q2w3e4r5t6y7u8i9o0p"]) ?>
                 <div class="order-slide swiper-wrapper">
                     <!--                <form class="form_block form_order active">-->
                     <div class="form_content step swiper-slide" data-index="1">
@@ -101,17 +136,20 @@ JS
                     <div class="form_content step swiper-slide swiper-no-swiping" data-index="2">
                         <div class="form_item">
                             <input type="text" id="order-client-name" data-required="true" name="Order[client][name]"
-                                   placeholder="Ваше ФИО" value="<?= $client->name ?>">
+                                   placeholder="Ваше ФИО" value="<?= $client->name ?>"
+                                   autocomplete="1q2w3e4r5t6y7u8i9o0p">
                             <input type="text" id="order-client-phone" data-required="true" name="Order[client][phone]"
                                    data-inputmask="'mask': '+7(999)999 9999'" placeholder="Ваш номер телефона"
-                                   value="<?= $client->phone ?>">
+                                   value="<?= $client->phone ?>" autocomplete="1q2w3e4r5t6y7u8i9o0p">
                             <input type="email" id="order-client-company" data-required="false"
                                    name="Order[client][company]"
-                                   placeholder="Название организации" value="<?= $client->company ?>">
+                                   placeholder="Название организации" value="<?= $client->company ?>"
+                                   autocomplete="1q2w3e4r5t6y7u8i9o0p">
                         </div>
                         <div class="form_item">
                             <textarea name="Order[comment]" data-required="false" placeholder="Комментарий" rows="5"
-                                      style="border-radius: 10px; padding: 18px;"></textarea>
+                                      style="border-radius: 10px; padding: 18px;"
+                                      autocomplete="1q2w3e4r5t6y7u8i9o0p"></textarea>
                         </div>
                     </div>
                     <div class="form_content step swiper-slide swiper-no-swiping" data-index="3">
@@ -123,10 +161,10 @@ JS
                                     'type' => DateTimePicker::TYPE_INPUT,
                                     'options' => [
                                         'class' => ['form'],
-                                        // 'autocomplete' => true,
+                                        'autocomplete' => '1q2w3e4r5t6y7u8i9o0p',
                                         'id' => 'order-delivery_date',
                                         'placeholder' => Yii::t('app', 'Delivery Date'),
-                                        'data-required' => "true"
+                                        'data-required' => "true",
                                     ],
                                     'pluginOptions' => [
                                         'startDate' => date('Y-m-d H:00'),
@@ -137,32 +175,8 @@ JS
                                         'minView' => 1,
                                     ],
                                     'pluginEvents' => [
-                                        'changeMode' => "function (e) {
-                                        let picker = undefined;
-                                        for ( index in e.delegateTarget) {
-                                            if ((typeof e.delegateTarget[index] === \"object\") && (e.delegateTarget[index] !== null)) {
-                                                if (e.delegateTarget[index].hasOwnProperty(\"krajeeDatetimepicker\")) {
-                                                    picker = e.delegateTarget[index];
-                                                    // console.log(picker);
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        date = picker.datetimepicker.viewDate;
-                                        if ( picker !== undefined ) {
-                                            let val = date.valueOf() / 1000;
-                                            val = (val - (val % 3600)) * 1000;
-                                            if ( (e.newViewMode === 1) && (e.date.getDay() !== 6) ) {
-                                                picker.datetimepicker.setHoursDisabled('0,1,2,3,4,5,6,7,8,18,19,20,21,22,23,24');
-                                                picker.datetimepicker.setDate(new Date(val + (date.getTimezoneOffset() * 60000)));
-                                            } else if ( (e.newViewMode === 1) && (e.date.getDay() === 6) ) {
-                                                picker.datetimepicker.setHoursDisabled('0,1,2,3,4,5,6,7,8,14,15,16,17,18,19,20,21,22,23,24');
-                                                picker.datetimepicker.setDate(new Date(val + (date.getTimezoneOffset() * 60000)));
-                                            } else {
-                                                return false;
-                                            }
-                                        }
-                                    }",
+                                        'changeMode' => "onChangeMode",
+                                        'changeDate' => "onChangeMode",
                                     ]
                                 ]);
 
@@ -170,7 +184,8 @@ JS
                             </div>
                             <div class="form_item">
                                 <input type="text" id="order-address" class="form" data-required="true"
-                                       name="Order[address]" value="" placeholder="Адрес доставки">
+                                       name="Order[address]" value="" placeholder="Адрес доставки"
+                                       autocomplete="1q2w3e4r5t6y7u8i9o0p">
                                 <input type="hidden" name="Order[location][title]" id="location-title" "="">
                                 <input type="hidden" name="Order[location][latitude]" id="location-latitude">
                                 <input type="hidden" name="Order[location][longitude]" id="location-logintude">
@@ -320,9 +335,9 @@ JS
                             myMap.geoObjects.add(multiRoute);
                             if (target.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName !== "Улан-Удэ") {
                                 console.log(target.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName);
-                        	    let delivery_price = 0;
-                        	    let meters = parseInt(shortest.properties.get("distance").value);
-                        	    $("[name='Order\[delivery_distance\]']").val(meters / 1000);
+                                let delivery_price = 0;
+                                let meters = parseInt(shortest.properties.get("distance").value);
+                                $("[name='Order\[delivery_distance\]']").val(meters / 1000);
                                 $("#delivery_city").val(0);
                                 delivery_price = parseInt(meters / 1000) * delivery_cost;
                                 // console.log(delivery_price);

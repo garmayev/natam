@@ -302,6 +302,7 @@ function products($category_id)
                     $("#clone-order").modal("hide");
                     let orders = Order.get(user);
                     Order.buildTable(document.querySelector("body > .main"), orders);
+		    $(e.currentTarget).removeAttr("disabled");
                 }
             })
         })

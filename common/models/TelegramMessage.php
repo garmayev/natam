@@ -66,7 +66,7 @@ class TelegramMessage extends ActiveRecord
                 $response = Yii::$app->telegram->sendMessage([
                     'chat_id' => $employee->chat_id,
                     'text' => $order->generateTelegramText(),
-                    "parse_mode" => "HTML",
+                    'parse_mode' => 'HTML',
                     'reply_markup' => json_encode([
                         'inline_keyboard' => $order->generateTelegramKeyboard()
                     ]),
@@ -95,7 +95,7 @@ class TelegramMessage extends ActiveRecord
                     if ($employee->chat_id) {
                         $response = Yii::$app->telegram->sendMessage([
                             'chat_id' => $employee->chat_id,
-                            'text' => "Заказ #{$order->id} не был никем обработан",
+                            'text' => "Заказ #{$order->id} в статусе '".$order->getStatusName()."' не был никем обработан",
                             "parse_mode" => "HTML",
 //                            'reply_markup' => json_encode([
 //                                'inline_keyboard' => [
@@ -110,7 +110,7 @@ class TelegramMessage extends ActiveRecord
                                 'order_id' => $order->id,
                                 'order_status' => $order->status,
                                 'message_id' => 1,
-                                'content' => "Заказ #{$order->id} не был никем обработан",
+                                'content' => "Заказ #{$order->id} в статусе '".$order->getStatusName()."' не был никем обработан",
                                 'chat_id' => $employee->chat_id,
                                 'updated_at' => null,
                                 'updated_by' => null,

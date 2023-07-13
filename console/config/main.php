@@ -14,7 +14,9 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'console\controllers',
-	'timezone' => 'Asia/Irkutsk',
+	'language' => 'ru',
+	'timeZone' => 'Asia/Irkutsk',
+	'defaultRoute' => "default/index",
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -63,6 +65,17 @@ return [
 		'class' => 'aki\telegram\Telegram',
 		'botToken' => '1989845524:AAGaba1o5Koc8PTAKuSM6HKFOfdkjTvG8Sc',
 		'botUsername' => 'Natam_Trade_bot',
+	    ],
+	    'i18n' => [
+		    'translations' => [
+			    'app*' => [
+				    'class' => 'yii\i18n\PhpMessageSource',
+				    'basePath' => '@backend/messages',
+				    'fileMap' => [
+					    'app'       => 'app.php',
+				    ],
+			    ],
+		    ],
 	    ],
     ],
 	'modules' => [
