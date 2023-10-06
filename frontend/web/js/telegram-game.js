@@ -396,11 +396,12 @@ class Order extends Dispatcher {
 
     constructor(data) {
         super();
+	console.log(data);
         this._class = "order";
-        this._id = data._id;
-        this._client = data._client;
-        this._location = data._location;
-        this._statusName = data._statusName;
+        this._id = data.id;
+        this._client = data.client;
+        this._location = data.location;
+        this._statusName = data.statusName;
         this.delivery_at = data.delivery_at;
         this.delivery_type = data.delivery_type;
         this.comment = data.comment;

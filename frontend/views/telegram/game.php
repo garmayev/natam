@@ -322,10 +322,14 @@ function products($category_id)
             ymaps.geocode(coords).then(function (res) {
                 let firstGeoObject = res.geoObjects.get(0),
                     address = firstGeoObject.getAddressLine(),
-		    delivery_city = (firstGeoObject.GeocoderMetaData.AddressDetails.Country.AdministrativeArea.SubAdministrativeArea.Locality.LocalityName !== "Улан-Удэ") ? 0 : 1;
+		    delivery_city = 0;
+		if (address.match(/Улан-Удэ/g)) {
+		    delivery_city = 1;
+		}
                 if (multiRoute !== undefined) {
                     map.geoObjects.remove(map.multiRoute);
                 }
+		console.log("Test");
                 multiRoute = new ymaps.multiRouter.MultiRoute({
                     referencePoints: [
                         coords,
@@ -384,14 +388,14 @@ function products($category_id)
                 let point = points[i];
                 features.push({
                     type: 'Feature',
-                    options: {
-                        iconLayout: 'default#image',
-                        iconImageHref: '/img/icons/placemark.svg',
-                        iconImageSize: [260, 205],
-                        iconImageOffset: [-25, -155],
-                        hideIconOnBalloonOpen: false,
-                        balloonOffset: [270, -110],
-                    },
+//                    options: {
+//                        iconLayout: 'default#image',
+//                        iconImageHref: '/img/icons/placemark.svg',
+//                        iconImageSize: [260, 205],
+//                        iconImageOffset: [-25, -155],
+//                        hideIconOnBalloonOpen: false,
+//                        balloonOffset: [270, -110],
+//                    },
                     properties: {
                         'data-key': point.id,
                         city: point.city,

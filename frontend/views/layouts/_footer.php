@@ -80,7 +80,7 @@ use yii\widgets\Menu;
     </div>
 </footer>
 <div style="text-align: center; padding: 5px 0; background: #054670; color: #fff;">
-    <span class="copyright">Created by <a href="http://amgcompany.ru/">AMG Company</a></span>
+    <span class="copyright">Created by <a href="http://gasgo.pro/">AMG Company</a></span>
 </div>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript" >

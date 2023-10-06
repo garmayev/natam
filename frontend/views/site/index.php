@@ -39,6 +39,7 @@ let onChangeMode = function (e) {
             }
         }
     }
+    console.log(e.date.getTimezoneOffset());
     $.ajax({
         url: '/site/change-mode',
         type: 'GET',
@@ -57,14 +58,13 @@ let onChangeMode = function (e) {
             if ( picker !== undefined ) {
                 let val = e.date.valueOf() / 1000;
                 val = (val - (val % 3600)) * 1000;
-                console.log(e.date.getDay());
                 if ( (e.newViewMode === 1) && (e.date.getDay() === 0) ) {
                     for(var i = 0; i < 4; i++) {
                         hours.push(14 + i);
                     }
                 }
                 picker.datetimepicker.setHoursDisabled( hours.sort().join(",") );
-                picker.datetimepicker.setDate( new Date(val + (e.date.getTimezoneOffset() * 60000)) );
+                picker.datetimepicker.setDate( e.date - e.date.getTimezoneOffset() );
             }
         }
     });
