@@ -27,7 +27,7 @@ class OrderController extends \yii\web\Controller
 		$post = Yii::$app->request->post();
 
 		if (Yii::$app->request->isPost) {
-            $order->save(false);
+			$order->save(false);
 			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->cart->clear();
 				Yii::$app->session->setFlash("success", Yii::t("app", "Order was created! Manager was calling you"));
@@ -36,8 +36,8 @@ class OrderController extends \yii\web\Controller
 				Yii::error($order->getErrorSummary(true));
 			}
 		} else {
-            $order->loadDefaultValues();
-        }
+                        $order->loadDefaultValues();
+                }
 		return $this->redirect("/");
 	}
 }

@@ -113,7 +113,7 @@ class SiteController extends Controller
         Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $start = strtotime("midnight", $date / 1000);
         $finish = strtotime("+1 day", $start);
-        Yii::error($start, $finish);
+        // Yii::error($start, $finish);
         return ArrayHelper::map(Order::find()->where(['between', 'delivery_date', $start, $finish])->andWhere(['>', 'status', Order::STATUS_COMPLETE])->all(), 'id', 'client_id', 'delivery_date');
     }
 }

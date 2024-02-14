@@ -1,6 +1,7 @@
 <IfModule mod_rewrite.c>
     Options +FollowSymlinks
     RewriteEngine On
+    php_value memory_limit 512M
 </IfModule>
  
 <IfModule mod_rewrite.c>

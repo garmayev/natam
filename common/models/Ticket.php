@@ -56,6 +56,7 @@ class Ticket extends \yii\db\ActiveRecord
 			[["email"], "email"],
 			[["status", "service_id", "created_at"], "integer"],
 			[["status"], "default", "value" => self::STATUS_OPEN],
+			[["phone"], "match", "pattern" => '/^89|79/', "not" => false],
 			[["comment"], "match", "pattern" => '/http[s]*:\/\//', "not" => true],
 			[["comment"], "match", "pattern" => '/([a-z0-9]*@[a-z0-9\-]*\.[a-z]*)/', "not" => true],
 		];
@@ -90,7 +91,7 @@ class Ticket extends \yii\db\ActiveRecord
 	public function afterSave($insert, $changedAttributes)
 	{
 		parent::afterSave($insert, $changedAttributes);
-		$this->notifier();
+//		$this->notifier();
 	}
 
 	private function notifier()

@@ -38,7 +38,7 @@ $menu = [
     <?php
     $this->beginBody();
     ?>
-    <!-- <div class="date-popup">
+<!--    <div class="date-popup">
 	<div class="date-popup__container">
 	    <div class="date-popup__body">
 		<div class="date-popup__close">X</div>

@@ -76,10 +76,12 @@ class OrderController extends BaseController
 			Yii::$app->session->remove("ticket_id");
 		}
 		if (Yii::$app->request->isPost) {
+			$order->save(false);
 			if ($order->load(Yii::$app->request->post()) && $order->save()) {
 				Yii::$app->session->setFlash("success", "Order information successfully updated!");
 				return $this->redirect(["order/view", "id" => $order->id]);
 			} else {
+				$order->delete();
 				Yii::$app->session->setFlash("error", "Failed! Order information is not updated!");
 				Yii::error($order->getErrorSummary(true));
 			}

@@ -124,7 +124,7 @@ window.addEventListener("scroll", function () {
         }
 
     }
-    console.log('gaz ' + value)
+//    console.log('gaz ' + value)
 
 });
-
+

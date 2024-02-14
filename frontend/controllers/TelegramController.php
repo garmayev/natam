@@ -215,7 +215,9 @@ class TelegramController extends Controller
                 $order->boss_chat_id = null;
                 if (!$order->save()) {
                     Yii::error($order->getErrorSummary(true));
-		}
+                }
+            } else {
+                \Yii::error($args);
             }
         } else {
             $text = Yii::t("telegram", "You don`t have permissions for this action");
@@ -346,8 +348,9 @@ class TelegramController extends Controller
 
     public function beforeAction($action)
     {
+        $data = json_decode(file_get_contents("php://input"), true);
+        // \Yii::error($data);
         if ($action->id === "check") {
-            $data = json_decode(file_get_contents("php://input"), true);
             if (isset($data["callback_query"])) {
                 $user = $this->findUser($data["callback_query"]["from"]["id"]);
             } elseif (isset($data["message"])) {
@@ -636,6 +639,7 @@ class TelegramController extends Controller
 
     public function actionCheck()
     {
+//        \Yii::error("Test");
         $telegram = Yii::$app->telegram;
         Command::run("/start", [$this, "start"]);
         Command::run("/manager", [$this, "manager"]);

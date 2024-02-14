@@ -10,6 +10,7 @@ use yii\base\InvalidConfigException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  *
@@ -85,7 +86,7 @@ class Order extends ActiveRecord
                 'relations' => [
                     'client',
                     'location',
-                    'products',
+//                    'products',
                 ]
             ]
         ];
@@ -227,7 +228,7 @@ class Order extends ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-        if (!$insert) {
+/*        if (!$insert) {
             $messages = TelegramMessage::find()->where(['order_id' => $this->id])->andWhere(['status' => TelegramMessage::STATUS_OPENED])->all();
             foreach ($messages as $message) {
                 $message->hide();
@@ -236,12 +237,17 @@ class Order extends ActiveRecord
                 if ($this->status !== Order::STATUS_DELIVERY) {
                     $employees = Employee::find()->where(['state_id' => $this->status])->all();
                     foreach ($employees as $employee) {
-                        TelegramMessage::send($employee, $this);
+                        try {
+                            TelegramMessage::send($employee, $this);
+                        } catch (ClientException $e) {
+                            \Yii::error($employee);
+                            \Yii::error($e);
+                        }
                     }
                 }
                 $this->createFile();
             }
-        }
+        } */
     }
 
     public function createFile($path = null)
@@ -451,12 +457,12 @@ class Order extends ActiveRecord
                         "callback_data" => "/manager id={$this->id}"
                     ],
                 ];
-                $keyboard[] = [
-                    [
-                        "text" => "Отложить",
-                        "callback_data" => "/order_hold id={$this->id}"
-                    ]
-                ];
+//                $keyboard[] = [
+//                    [
+//                        "text" => "Отложить",
+//                        "callback_data" => "/order_hold id={$this->id}"
+//                    ]
+//                ];
                 break;
             case self::STATUS_PREPARED:
                 if ($this->delivery_type == self::DELIVERY_STORE) {
@@ -517,7 +523,9 @@ class Order extends ActiveRecord
         foreach ($this->orderProducts as $orderProduct) $orderProduct->delete();
         foreach ($data as $item) {
             $product = Product::findOne($item['product_id']);
-            $this->link('products', $product, ['product_count' => $item['product_count']]);
+            if ( !$this->isNewRecord && $product ) {
+                $this->link('products', $product, ['product_count' => $item['product_count']]);
+            }
         }
     }
 }

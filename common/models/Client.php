@@ -179,7 +179,7 @@ class Client extends \yii\db\ActiveRecord
 		if ( strlen($mixed["phone"]) > 4 ) {
 			$model = self::findOne(["phone" => preg_replace($regex, '', $mixed["phone"])]);
 		} else {
-			$model = self::findOne(['id' => preg_replace($regex, '', $mixed["phone"])]);
+			$model = self::findOne(['id' => preg_replace($regex, '', $mixed["name"])]);
 		}
 		if (!$model) {
 			$model = new Client();

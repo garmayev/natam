@@ -5,6 +5,7 @@ namespace common\models;
 use common\models\staff\Employee;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ConnectException;
 use lhs\Yii2SaveRelationsBehavior\SaveRelationsBehavior;
 use Yii;
 use yii\behaviors\BlameableBehavior;
@@ -62,6 +63,7 @@ class TelegramMessage extends ActiveRecord
     public static function send($employee, Order $order, $level = null)
     {
         try {
+            Yii::error($employee);
             if (isset($employee) && isset($employee->chat_id)) {
                 $response = Yii::$app->telegram->sendMessage([
                     'chat_id' => $employee->chat_id,
@@ -84,26 +86,15 @@ class TelegramMessage extends ActiveRecord
                     if (!$message->save()) {
                         Yii::error($message->getErrorSummary(true));
                     }
-                } else {
-                    Yii::error($employee->attributes);
-                    Yii::error($response->result);
                 }
             } else {
                 $employees = Employee::find()->where(['state_id' => 0])->andWhere(['level' => $level ? 1 : 0])->all();
-                // Yii::error(count($employees));
                 foreach ($employees as $employee) {
                     if ($employee->chat_id) {
                         $response = Yii::$app->telegram->sendMessage([
                             'chat_id' => $employee->chat_id,
                             'text' => "Заказ #{$order->id} в статусе '".$order->getStatusName()."' не был никем обработан",
-                            "parse_mode" => "HTML",
-//                            'reply_markup' => json_encode([
-//                                'inline_keyboard' => [
-//                                    [
-//                                        "text" => "Принято",
-//                                    ]
-//                                ]
-//                            ]),
+                            'parse_mode' => 'HTML',
                         ]);
                         if ($response->ok) {
                             $message = new TelegramMessage([
@@ -118,13 +109,14 @@ class TelegramMessage extends ActiveRecord
                                 'level' => $level,
                             ]);
                             if (!$message->save()) {
-                                // Yii::error($message->getErrorSummary(true));
+                                Yii::error($message->getErrorSummary(true));
                             }
                         }
                     }
                 }
             }
-        } catch (ClientException|RequestException $e) {
+        } catch (ClientException|RequestException|ConnectException $e) {
+//            Yii::error($employee);
             Yii::error($e);
         }
     }
@@ -225,20 +217,37 @@ class TelegramMessage extends ActiveRecord
     function hide()
     {
         try {
-            $response = Yii::$app->telegram->editMessageText([
-                'chat_id' => $this->chat_id,
-                'message_id' => $this->message_id,
-                'text' => Yii::t('app', 'Order #{n} is updated again', ['n' => $this->order_id]),
-            ]);
-            if ($response->ok) {
-                $this->status = self::STATUS_CLOSED;
-                $this->updated_by = Yii::$app->user->id;
-                $this->updated_at = time();
-                $this->save();
+            if (isset($this->order_id)) {
+                $response = Yii::$app->telegram->editMessageText([
+                    'chat_id' => $this->chat_id,
+                    'message_id' => $this->message_id,
+                    'text' => Yii::t('app', 'Order #{n} is updated again', ['n' => $this->order_id]),
+                ]);
+                if ($response->ok) {
+                    $this->status = self::STATUS_CLOSED;
+                    $this->updated_by = Yii::$app->user->id;
+                    $this->updated_at = time();
+                    $this->save();
+                }
             }
-        } catch (ClientException $e) {
-//            Yii::error($this->attributes);
+        } catch(\GuzzleHttp\Exception\ConnectException $e){
+            // you can catch here 400 response errors and 500 response errors
+            // You can either use logs here use Illuminate\Support\Facades\Log;
+            $error['error'] = $e->getMessage();
+            $error['request'] = $e->getRequest();
+            if($e->hasResponse()){
+                if ($e->getResponse()->getStatusCode() == '400'){
+                    $error['response'] = $e->getResponse(); 
+                }
+            } else {
+                Yii::error("Order with error #".$this->order_id);
+            }
+            // Log::error('Error occurred in get request.', ['error' => $error]);
+        }catch(Exception $e){
         }
+//        } catch (ClientException $e) {
+//            Yii::error($this->attributes);
+//        }
     }
 
     public

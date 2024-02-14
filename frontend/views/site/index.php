@@ -148,7 +148,7 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
                         </div>
                         <div class="form_item">
                             <textarea name="Order[comment]" data-required="false" placeholder="Комментарий" rows="5"
-                                      style="border-radius: 10px; padding: 18px;"
+                                      id="order-comment" style="border-radius: 10px; padding: 18px;"
                                       autocomplete="1q2w3e4r5t6y7u8i9o0p"></textarea>
                         </div>
                     </div>
@@ -188,7 +188,7 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
                                        autocomplete="1q2w3e4r5t6y7u8i9o0p">
                                 <input type="hidden" name="Order[location][title]" id="location-title" "="">
                                 <input type="hidden" name="Order[location][latitude]" id="location-latitude">
-                                <input type="hidden" name="Order[location][longitude]" id="location-logintude">
+                                <input type="hidden" name="Order[location][longitude]" id="location-longintude">
                                 <input type="hidden" name="Order[delivery_city]" id="delivery_city" value="1">
                             </div>
                         </div>
@@ -236,7 +236,9 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
                                 let checked = checkForm(e.slides[e.previousIndex]);
                                 if (!checked) {
                                     e.slideTo(e.previousIndex);
+                                    e.allowSlideNext = false;
                                 }
+                                console.log(e);
                                 if (current === 2) {
                                     $(".swiper-button-next")
                                         .removeClass("swiper-button-disabled ")
@@ -257,7 +259,9 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
                         let fields = $(dom).find("[data-required=true]");
                         let result = true;
                         for (let i = 0; i < fields.length; i++) {
-                            if ($(fields[i]).val() !== "") {
+                            if ( $(".product_id").length === 0 ) {
+                                return false;
+                            } else if ($(fields[i]).val() !== "") {
                                 $(fields[i]).addClass("has-success")
                             } else {
                                 if ($("#delivery_type").is(":checked")) {
@@ -346,12 +350,14 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
                                 url: '/cart/get-cart',
                                 success: (response) => {
                                     let price = 0;
-                                    console.log(response);
+                                    // console.log(response);
                                     for (const [key, value] in response) {
                                         price += response[key].price * parseInt(response[key].quantity);
                                     }
-                                    price += delivery_price;
-                                    $(".form-group .delivery_cost").text(`Общая стоимость заказа с доставкой составит: ${price}`);
+                                    if (delivery_price) {
+                                        price += delivery_price;
+                                        $(".form-group .delivery_cost").text(`Общая стоимость заказа с доставкой составит: ${price}`);
+                                    }
                                 }
                             })
                         });
@@ -416,16 +422,63 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
                     $("#order-delivery_date").removeClass("form-control")
                     $("div.swiper-button-next").on('click', (e) => {
                         index++;
-                        if ($('.form_item > .form_select').length) {
+                        let formData = new FormData();
+                        // console.log( $(".form_item > .product_id").length !== 0 );
+                        if ($('.form_item > .form_select').length !== 0) {
                             if (index === 3) {
                                 let checked = checkForm($(`[data-index=${index--}]`));
                                 if (checked) {
-                                    $(".form_order").submit();
-                                    console.log("Submit form");
+                                    let products = [];
+                                    $(".product_id").each(function () {
+                                        products.push(parseInt($(this).val()));
+                                    });
+
+                                    let counts = [];
+                                    $("input.product_count").each(function () {
+                                        counts.push(parseInt($(this).val()));
+                                    })
+
+                                    let phone = $("#order-client-phone").val();
+                                    phone = phone.replace("/[\(\)\ \+]*/", "");
+                                    let data = {
+                                        "client_name": $("#order-client-name").val(),
+                                        "client_phone": phone,
+                                        "dostavka": !$("#delivery_type").val(),
+                                        "need_date": $("#order-delivery_date").val(),
+                                        "geo_lat": $("#location-latitude").val(),
+                                        "geo_lon": $("#location-longitude").val(),
+                                        "address": $("#location-title").val(),
+                                        "note": $("#order-comment").val(),
+                                        "system_id": 1,
+                                        "products": JSON.stringify(products),
+                                        "kolvoprods": JSON.stringify(counts),
+                                    };
+
+                                    $.ajax({
+                                        url: "https://www.api.natam03.ru/v1/order/create",
+                                        data: JSON.stringify(data),
+                                        type: "POST",
+                                        headers: {
+                                            "Authorization": "Bearer DJjexxZjJRvDfY7o1fZrkNWEXeRp4YxntpyHFHBx",
+                                            "Content-Type": "application/json"
+                                        },
+                                        success: function (response) {
+                                            console.log("Check response");
+                                            console.log(response); 
+                                            if ( response.res ) {
+                                                $(".form_order").submit();
+                                            }
+
+                                        }
+                                    });
+
+                                    e.preventDefault();
                                 }
                             }
                         } else {
                             window.location.hash = '#product';
+                            swiper.allowClick = false;
+                            e.preventDefault();
                         }
                     })
                     $("#delivery_type").on('change', (e) => {
@@ -442,10 +495,14 @@ if (!empty($success = Yii::$app->session->getFlash("success"))) {
                         }
                     })
                     $('.product_order > a.btn').on('click', (e) => {
+                        console.log($(".product_id").length);
+                        if ($(".product_id").length === 0) {
+                            e.preventDefault();
+                        }
                         if (!$(e.currentTarget).hasClass('disabled')) {
                             let card = $(e.currentTarget).closest('.product_item');
                             let data = `id=${card.find('.cart_product_id').val()}&count=${card.find('.cart_product_count').val()}`;
-                            console.log(data);
+//                            console.log(data);
                             $.ajax({
                                 url: '/cart/add',
                                 data: data,

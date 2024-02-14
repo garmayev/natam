@@ -66,8 +66,10 @@ function rebuild() {
         let attr = {};
         let select_container = createElement("div", null, {class: 'form_select'});
         let select_element = createElement("select", null, {
+            class: "product_id",
             value: options.product_id,
-            "name": "Order[products][" + counter + "][product_id]"
+            "name": "Order[products][" + counter + "][product_id]",
+            "data-required": true
         });
         for (const index in products) {
             if (index == options.product_id) {
@@ -95,6 +97,7 @@ function rebuild() {
                     $(select).val(response[index].product_id);
                     container.find(".form_item:first-child").append(select);
                     let count = createElement("input", null, {
+                        class: 'product_count',
                         type: 'text',
                         value: response[index].quantity,
                         name: "Order[products][" + counter + "][product_count]",
